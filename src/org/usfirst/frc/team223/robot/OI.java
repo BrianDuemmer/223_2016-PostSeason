@@ -1,38 +1,59 @@
 package org.usfirst.frc.team223.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+
 import org.usfirst.frc.team223.robot.commands.ExampleCommand;
+import org.usfirst.frc.team223.teamLib.SmartControlStick;
 
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-    //// CREATING BUTTONS
-    // One type of button is a joystick button which is any button on a joystick.
-    // You create one by telling it which joystick it's on and which button
-    // number it is.
-    // Joystick stick = new Joystick(port);
-    // Button button = new JoystickButton(stick, buttonNumber);
-    
-    // There are a few additional built in buttons you can use. Additionally,
-    // by subclassing Button you can create custom triggers and bind those to
-    // commands the same as any other Button.
-    
-    //// TRIGGERING COMMANDS WITH BUTTONS
-    // Once you have a button, it's trivial to bind it to a button in one of
-    // three ways:
-    
-    // Start the command when the button is pressed and let it run the command
-    // until it is finished as determined by it's isFinished method.
-    // button.whenPressed(new ExampleCommand());
-    
-    // Run the command while the button is being held down and interrupt it once
-    // the button is released.
-    // button.whileHeld(new ExampleCommand());
-    
-    // Start the command when the button is released  and let it run the command
-    // until it is finished as determined by it's isFinished method.
-    // button.whenReleased(new ExampleCommand());
+	// initialize the controllers
+	private Joystick driverController = new Joystick(0);
+	private Joystick operatorController = new Joystick(1);
+	
+	public OI() {
+		
+		// bind the buttons for the driver controller
+		JoystickButton button_dA = new JoystickButton(driverController, 0);
+		JoystickButton button_dB = new JoystickButton(driverController, 1);
+		JoystickButton button_dX = new JoystickButton(driverController, 2);
+		JoystickButton button_dY = new JoystickButton(driverController, 3);
+		JoystickButton button_dL = new JoystickButton(driverController, 4);
+		JoystickButton button_dR = new JoystickButton(driverController, 5);
+		JoystickButton button_dStart = new JoystickButton(driverController, 8);
+		JoystickButton button_dBack = new JoystickButton(driverController, 9);
+		
+		// bind the analog sticks for the driver controller
+		SmartControlStick stick_dL = new SmartControlStick(driverController, 0, 1, 6);
+		stick_dL.setParams(false, false, 0.1, 1);
+		SmartControlStick stick_dR = new SmartControlStick(driverController, 4, 5, 7);
+		stick_dR.setParams(false, false, 0.1, 1);
+		
+		
+		// bind the buttons for the operator controller
+		JoystickButton button_oA = new JoystickButton(operatorController, 0);
+		JoystickButton button_oB = new JoystickButton(operatorController, 1);
+		JoystickButton button_oX = new JoystickButton(operatorController, 2);
+		JoystickButton button_oY = new JoystickButton(operatorController, 3);
+		JoystickButton button_oL = new JoystickButton(operatorController, 4);
+		JoystickButton button_oR = new JoystickButton(operatorController, 5);
+		JoystickButton button_oStart = new JoystickButton(operatorController, 8);
+		JoystickButton button_oBack = new JoystickButton(operatorController, 9);
+		
+		// bind the analog sticks to the operator controller
+		SmartControlStick stick_oL = new SmartControlStick(operatorController, 0, 1, 6);
+		stick_oL.setParams(false, false, 0.1, 1);
+		SmartControlStick stick_oR = new SmartControlStick(operatorController, 4, 5, 7);
+		stick_oR.setParams(false, false, 0.1, 1);
+		
+		
+		
+		
+	}
 }
 
