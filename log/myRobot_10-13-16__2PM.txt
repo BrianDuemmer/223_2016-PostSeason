@@ -1,0 +1,39 @@
+Buildfile: C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build.xml
+Trying to override old definition of task classloader
+clean:
+   [delete] Deleting directory C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build
+   [delete] Deleting directory C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\dist
+compile:
+    [mkdir] Created dir: C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build
+     [echo] [athena-compile] Compiling src with classpath=C:\Users\develoer/wpilib/java/current/lib/WPILib.jar:C:\Users\develoer/wpilib/java/current/lib/NetworkTables.jar: to build
+    [javac] Compiling 10 source files to C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build
+jar:
+     [echo] [athena-jar] Making jar dist/FRCUserProgram.jar.
+    [mkdir] Created dir: C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\dist
+    [mkdir] Created dir: C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build\jars
+     [echo] [athena-jar] Copying jars from C:\Users\develoer/wpilib/java/current/lib/WPILib.jar:C:\Users\develoer/wpilib/java/current/lib/NetworkTables.jar: to build/jars.
+     [copy] Copying 2 files to C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\build\jars
+      [jar] Building jar: C:\SoftwareDevelopment\Workspace_2017\223_2016-PostSeason\dist\FRCUserProgram.jar
+get-target-ip:
+     [echo] Trying Target: roboRIO-223-FRC.lan
+     [echo] roboRIO found via mDNS
+dependencies:
+     [echo] roboRIO image version validated
+     [echo] Checking for JRE. If this fails install the JRE using these instructions: https://wpilib.screenstepslive.com/s/4485/m/13503/l/288822-installing-java-8-on-the-roborio-using-the-frc-roborio-java-installer-java-only
+  [sshexec] Connecting to roboRIO-223-FRC.lan:22
+  [sshexec] cmd : test -d /usr/local/frc/JRE
+deploy:
+     [echo] [athena-deploy] Copying code over.
+      [scp] Connecting to roboRIO-223-FRC.lan:22
+      [scp] done.
+  [sshexec] Connecting to roboRIO-223-FRC.lan:22
+  [sshexec] cmd : killall -q netconsole-host || :
+      [scp] Connecting to roboRIO-223-FRC.lan:22
+      [scp] done.
+     [echo] [athena-deploy] Starting program.
+  [sshexec] Connecting to roboRIO-223-FRC.lan:22
+  [sshexec] cmd : . /etc/profile.d/natinst-path.sh; /usr/local/frc/bin/frcKillRobot.sh -t -r;
+  [sshexec] Connecting to roboRIO-223-FRC.lan:22
+  [sshexec] cmd : sync
+BUILD SUCCESSFUL
+Total time: 10 seconds

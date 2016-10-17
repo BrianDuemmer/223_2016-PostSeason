@@ -1,9 +1,12 @@
-package team223.robot.drive;
+package org.usfirst.frc.team223.robot.drive;
 
+import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.drive.driveCommands.*;
+
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import team223.robot.drive.driveCommands.*;
 
 /**
  *
@@ -11,19 +14,31 @@ import team223.robot.drive.driveCommands.*;
 public class driveTrain extends Subsystem {
 	
 	// drivetrain speed controllers
-    private SpeedController driveL1;
-    private SpeedController driveL2;
-    private SpeedController driveR1;
-    private SpeedController driveR2;
+    private CANTalon driveL1;
+    private CANTalon driveL2;
+    private CANTalon driveR1;
+    private CANTalon driveR2;
     
     public driveTrain()
     {
     	super();
-    	driveL1 = new TalonSRX(1);
-    	driveL2 = new TalonSRX(4);
+    	// Left Side drive motors
+    	driveL1 = new CANTalon(OI.MOTOR_DRIVEL1_ID);
+    	driveL1.setInverted(OI.MOTOR_DRIVEL1_INVERT);
+    	driveL1.enableBrakeMode(OI.MOTOR_DRIVEL1_BRAKE);
     	
-    	driveR1 = new TalonSRX(5);
-    	driveR2 = new TalonSRX(6);
+    	driveL2 = new CANTalon(OI.MOTOR_DRIVEL2_ID);
+    	driveL2.setInverted(OI.MOTOR_DRIVEL2_INVERT);
+    	driveL2.enableBrakeMode(OI.MOTOR_DRIVEL2_BRAKE);
+    	
+    	//Right side drive motors
+    	driveR1 = new CANTalon(OI.MOTOR_DRIVER1_ID);
+    	driveR1.setInverted(OI.MOTOR_DRIVER1_INVERT);
+    	driveR1.enableBrakeMode(OI.MOTOR_DRIVER1_BRAKE);
+    	
+    	driveR2 = new CANTalon(OI.MOTOR_DRIVER2_ID);
+    	driveR2.setInverted(OI.MOTOR_DRIVER2_INVERT);
+    	driveR2.enableBrakeMode(OI.MOTOR_DRIVER2_BRAKE);
     }
 
     public void initDefaultCommand() {
@@ -41,8 +56,8 @@ public class driveTrain extends Subsystem {
     public void driveArcade(double fwd, double turn)
     {
     	// calculate the base outputs
-    	double outLeft = fwd - turn;
-    	double outRight = fwd + turn;
+    	double outLeft = fwd + turn;
+    	double outRight = fwd - turn;
     	
     	// if the outputs are not in the domain of [-1,1], coerce them to fit into said domain
     	outLeft = (outLeft > 1) ?  1 : outLeft;

@@ -1,8 +1,9 @@
-package team223.robot.drive.driveCommands;
+package org.usfirst.frc.team223.robot.drive.driveCommands;
+
+import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
-import team223.robot.OI;
-import team223.robot.Robot;
 
 /** Sets the output of the drivetrain from the driver joystick
  *
