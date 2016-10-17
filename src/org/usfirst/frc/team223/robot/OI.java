@@ -20,22 +20,43 @@ public class OI {
 	public static SmartControlStick stick_oL;
 	public static SmartControlStick stick_oR;
 	
-	// motor mappings
-	public static int 		MOTOR_DRIVEL1_ID = 1;
-	public static boolean 	MOTOR_DRIVEL1_INVERT = false;
-	public static boolean 	MOTOR_DRIVEL1_BRAKE = true;
 	
-	public static int 		MOTOR_DRIVEL2_ID = 4;
-	public static boolean 	MOTOR_DRIVEL2_INVERT = false;
-	public static boolean 	MOTOR_DRIVEL2_BRAKE = true;
 	
-	public static int 		MOTOR_DRIVER1_ID = 5;
-	public static boolean 	MOTOR_DRIVER1_INVERT = true;
-	public static boolean 	MOTOR_DRIVER1_BRAKE = true;
 	
-	public static int 		MOTOR_DRIVER2_ID = 6;
-	public static boolean 	MOTOR_DRIVER2_INVERT = true;
-	public static boolean 	MOTOR_DRIVER2_BRAKE = true;
+	//////////////// Drive Subsystem /////////////////
+	
+	// motor configuration
+	public static int 			DRIVE_MOTOR_L1_ID = 1;
+	public static boolean	 	DRIVE_MOTOR_L1_INVERT = false;
+	public static boolean 		DRIVE_MOTOR_L1_BRAKE = true;
+	
+	public static int 			DRIVE_MOTOR_L2_ID = 4;
+	public static boolean 		DRIVE_MOTOR_L2_INVERT = false;
+	public static boolean 		DRIVE_MOTOR_L2_BRAKE = true;
+	
+	public static int 			DRIVE_MOTOR_R1_ID = 5;
+	public static boolean 		DRIVE_MOTOR_R1_INVERT = true;
+	public static boolean 		DRIVE_MOTOR_R1_BRAKE = true;
+	
+	public static int 			DRIVE_MOTOR_R2_ID = 6;
+	public static boolean 		DRIVE_MOTOR_R2_INVERT = true;
+	public static boolean 		DRIVE_MOTOR_R2_BRAKE = true;
+	
+	
+	
+	//////////// IntakeLift Subsystem /////////////
+	
+	// motor configuration
+	public static int 			INTAKELIFT_MOTOR_ID = 2;
+	public static boolean 		INTAKELIFT_MOTOR_INVERT = true;
+	public static boolean 		INTAKELIFT_MOTOR_BRAKE = true;
+	
+	// PID values
+	public static double		INTAKELIFT_PID_KP = 0.3;
+	public static double		INTAKELIFT_PID_KI = 0.01;
+	public static double		INTAKELIFT_PID_KD = 0.0001;
+	public static double		INTAKELIFT_PID_TOLERANCE = 2.0;
+	
 	
 	
 	public OI() {

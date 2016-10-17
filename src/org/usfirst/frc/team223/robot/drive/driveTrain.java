@@ -23,22 +23,22 @@ public class driveTrain extends Subsystem {
     {
     	super();
     	// Left Side drive motors
-    	driveL1 = new CANTalon(OI.MOTOR_DRIVEL1_ID);
-    	driveL1.setInverted(OI.MOTOR_DRIVEL1_INVERT);
-    	driveL1.enableBrakeMode(OI.MOTOR_DRIVEL1_BRAKE);
+    	driveL1 = new CANTalon(OI.DRIVE_MOTOR_L1_ID);
+    	driveL1.setInverted(OI.DRIVE_MOTOR_L1_INVERT);
+    	driveL1.enableBrakeMode(OI.DRIVE_MOTOR_L1_BRAKE);
     	
-    	driveL2 = new CANTalon(OI.MOTOR_DRIVEL2_ID);
-    	driveL2.setInverted(OI.MOTOR_DRIVEL2_INVERT);
-    	driveL2.enableBrakeMode(OI.MOTOR_DRIVEL2_BRAKE);
+    	driveL2 = new CANTalon(OI.DRIVE_MOTOR_L2_ID);
+    	driveL2.setInverted(OI.DRIVE_MOTOR_L2_INVERT);
+    	driveL2.enableBrakeMode(OI.DRIVE_MOTOR_L2_BRAKE);
     	
     	//Right side drive motors
-    	driveR1 = new CANTalon(OI.MOTOR_DRIVER1_ID);
-    	driveR1.setInverted(OI.MOTOR_DRIVER1_INVERT);
-    	driveR1.enableBrakeMode(OI.MOTOR_DRIVER1_BRAKE);
+    	driveR1 = new CANTalon(OI.DRIVE_MOTOR_R1_ID);
+    	driveR1.setInverted(OI.DRIVE_MOTOR_R1_INVERT);
+    	driveR1.enableBrakeMode(OI.DRIVE_MOTOR_R1_BRAKE);
     	
-    	driveR2 = new CANTalon(OI.MOTOR_DRIVER2_ID);
-    	driveR2.setInverted(OI.MOTOR_DRIVER2_INVERT);
-    	driveR2.enableBrakeMode(OI.MOTOR_DRIVER2_BRAKE);
+    	driveR2 = new CANTalon(OI.DRIVE_MOTOR_R2_ID);
+    	driveR2.setInverted(OI.DRIVE_MOTOR_R2_INVERT);
+    	driveR2.enableBrakeMode(OI.DRIVE_MOTOR_R2_BRAKE);
     }
 
     public void initDefaultCommand() {
