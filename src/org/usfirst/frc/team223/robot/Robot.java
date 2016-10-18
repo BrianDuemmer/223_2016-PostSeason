@@ -42,11 +42,16 @@ public class Robot extends IterativeRobot {
         //TODO after writing auto, make sure to kill it here, before it lays eggs
     }
     
+    public void log()
+    {
+    	//TODO log stuff
+    }
+    
     
 	public void disabledPeriodic() {   Scheduler.getInstance().run();   }
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
     public void teleopPeriodic() {   Scheduler.getInstance().run();   }
-    public void testPeriodic() {   LiveWindow.run();   }
+//    public void testPeriodic() {   LiveWindow.run();   }
 }
 
 

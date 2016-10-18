@@ -34,11 +34,7 @@ public class InterruptableLimit extends DigitalInput {
 		 */
 		boolean fireOnRising = normallyOpen ? fireOnRelease : fireOnHit;
 		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
-		
-		// set the triggering mode
-		this.setUpSourceEdge(fireOnRising, fireOnFalling);
-		
-		
+				
 		// set up the handler
 		this.requestInterrupts(new InterruptHandlerFunction<Object>()
 		{
@@ -46,9 +42,14 @@ public class InterruptableLimit extends DigitalInput {
 			@Override
 			public void interruptFired(int interruptAssertedMask, Object param) 
 			{
+				
 				// run the command
-				handler.start();
+				if (handler != null)
+					handler.start();
 			}
 		});
+		
+		// set the triggering mode
+		this.setUpSourceEdge(fireOnRising, fireOnFalling);
 	}
 }
