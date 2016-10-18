@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.usfirst.frc.team223.AdvancedX.SCDescriptor;
+import org.usfirst.frc.team223.AdvancedX.SCLoader;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.VictorSP;
-import team223.AdvancedX.SCDescriptor;
-import team223.AdvancedX.SCLoader;
 
 /**
  * This class contains all configuration data for the robot, such as port

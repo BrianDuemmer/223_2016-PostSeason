@@ -1,9 +1,10 @@
 package org.usfirst.frc.team223.robot;
 
+import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import team223.AdvancedX.SmartControlStick;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -11,8 +12,8 @@ import team223.AdvancedX.SmartControlStick;
  */
 public class OI {
 	// initialize the controllers
-	private Joystick driverController = new Joystick(0);
-	private Joystick operatorController = new Joystick(1);
+	public static Joystick driverController;
+	public static Joystick operatorController;
 	
 	public static SmartControlStick stick_dL;
 	public static SmartControlStick stick_dR;
@@ -57,9 +58,30 @@ public class OI {
 	public static double		INTAKELIFT_PID_KD = 0.0001;
 	public static double		INTAKELIFT_PID_TOLERANCE = 2.0;
 	
+	// Setpoints
+	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 15;
+	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 15;
+	public static double		INTAKELIFT_SETPOINT_MAXFWD = 8;
+	public static double		INTAKELIFT_SETPOINT_MAXREV = 95;
+	
+	// Encoder
+	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
+	public static int 			INTAKELIFT_ENCODER_ID_B = 1;
+	public static double 		INTAKELIFT_ENCODER_DEGREES__PER__COUNT = 0.0640113798;
+	public static boolean		INTAKELIFT_ENCODER_INVERT = true;
+	public static double		INTAKELIFT_ENCODER_MAX__PERIOD = 0.5;
+	public static double		INTAKELIFT_ENCODER_MIN__RATE__SEC = 0.5;
+	
+	// Limit Switch
+	public static int			INTAKELIFT_LIMIT_ID = 3;
+	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = true;
+	
 	
 	
 	public OI() {
+		
+		driverController = new Joystick(0);
+		operatorController = new Joystick(1);
 		
 		// bind the buttons for the driver controller
 		JoystickButton button_dA = new JoystickButton(driverController, 0);

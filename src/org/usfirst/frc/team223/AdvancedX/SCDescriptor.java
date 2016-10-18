@@ -1,4 +1,4 @@
-package team223.AdvancedX;
+package org.usfirst.frc.team223.AdvancedX;
 
 /**
  * Simple class used to describe a speed controller on the robot. This class operates like a C-style struct,

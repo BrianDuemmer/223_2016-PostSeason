@@ -1,5 +1,8 @@
 package org.usfirst.frc.team223.robot.IntakeLift.intakeCommands;
 
+import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.Robot;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -8,28 +11,26 @@ import edu.wpi.first.wpilibj.command.Command;
 public class SetIntakeLiftFromJoy extends Command {
 
     public SetIntakeLiftFromJoy() {
-    	requires(IntakeLift);
+    	requires(Robot.intakeLiftSubsys);
     }
 
-    // Called just before this Command runs the first time
+    
     protected void initialize() {
     }
 
-    // Called repeatedly when this Command is scheduled to run
+    // set the output
     protected void execute() {
+    	double output = OI.operatorController.getRawAxis(3) - OI.operatorController.getRawAxis(2);
+    	Robot.intakeLiftSubsys.setOutput(output);
     }
 
-    // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
         return false;
     }
 
-    // Called once after isFinished returns true
     protected void end() {
     }
 
-    // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
     protected void interrupted() {
     }
 }
