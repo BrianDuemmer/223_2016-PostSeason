@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class IntakeLimitISR extends Command {
 
-	// dummy value for testing
-	int tmpVal;
 	
     public IntakeLimitISR() {
     	// there is no requires() here because in this case, this ISR is purely
@@ -18,7 +16,7 @@ public class IntakeLimitISR extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	tmpVal = 3;
+
     }
 
     // Called repeatedly when this Command is scheduled to run

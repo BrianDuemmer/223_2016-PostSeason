@@ -26,6 +26,10 @@ public class InterruptableLimit extends DigitalInput {
 		// initialize the input channel
 		super(index);
 		
+		// Type of the command to run. Assert that handler is a valid, non-null command
+		assert(handler != null);
+		Class<?> commandType = handler.getClass();
+		
 		/*
 		 * If normally open is false, then the rising edge on the input would
 		 * corresponding to the switch being hit and vice versa. If normally
@@ -36,15 +40,20 @@ public class InterruptableLimit extends DigitalInput {
 		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 				
 		// set up the handler
-		this.requestInterrupts(new InterruptHandlerFunction<Object>()
+		this.requestInterrupts(new InterruptHandlerFunction<Class<?>>()
 		{
-			// Override this method for the new InterruptHandlerFunction to do what we want
+			// Override this method to give us a parameter to pass to the interruptFired routine
 			@Override
-			public void interruptFired(int interruptAssertedMask, Object param) 
+			public Class<?> overridableParameter()
 			{
 				
-				// run the command
-				if (handler != null)
+			}
+			
+			// Override this method for the new InterruptHandlerFunction to do what we want
+			@Override
+			public void interruptFired(int interruptAssertedMask, Class<?> param) 
+			{
+				Command cmdInst = new param;
 					handler.start();
 			}
 		});

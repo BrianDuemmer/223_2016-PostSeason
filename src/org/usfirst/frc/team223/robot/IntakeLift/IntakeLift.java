@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
 public class IntakeLift extends PIDSubsystem {
 	
-
+	// Physical objects that are part of the subsystem
 	CANTalon 			intakeLiftMot;
 	Encoder 			intakeLiftEncoder;
 	InterruptableLimit	limit;
 	
-	double 				encoderOffset;
+	// Offset for the encoder. This value is added to the value returned from encoder.getPosition();
+	private double 				encoderOffset;
 
     /**
      * Initialize the Intake Lift system. Here the motor, encoder, and limit
@@ -70,12 +71,36 @@ public class IntakeLift extends PIDSubsystem {
     public void initDefaultCommand() {   setDefaultCommand(new SetIntakeLiftFromJoy());   }
 
     // get the distance returned from the encoder
-    protected double returnPIDInput() {   return intakeLiftEncoder.getDistance();   }
+    protected double returnPIDInput() {   return getEncPos();   }
     
     protected void usePIDOutput(double output) {   setOutput(output);   }
     
-    // Set the output of the motor
+    
+    
+    
+    /** Set the output of the Intake Lift motor
+     * 
+     * @param output the value to send to the encoder
+     */
     public void setOutput(double output) {   intakeLiftMot.set(output);   }
+    
+    
+    
+    
+    /** Gets the properly scaled and adjusted position of
+     * the intake lift
+     * 
+     * @return the position of the intake lift encoder
+     */
+    public double getEncPos() {   return intakeLiftEncoder.getDistance() - encoderOffset;   }
+    
+    
+    
+    /**Sets the offset for the IntakeLift encoder
+     * 
+     * @param newOffset the new offset
+     */
+    public void setEncOffset(double newOffset) {   encoderOffset = newOffset;   }
     
 }
 
