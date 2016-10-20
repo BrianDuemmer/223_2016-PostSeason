@@ -2,6 +2,7 @@ package org.usfirst.frc.team223.robot;
 
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
+import org.usfirst.frc.team223.robot.generalCommands.*;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -73,7 +74,7 @@ public class OI {
 	
 	// motor configuration
 	public static int 			INTAKELIFT_MOTOR_ID = 2;
-	public static boolean 		INTAKELIFT_MOTOR_INVERT = false;
+	public static boolean 		INTAKELIFT_MOTOR_INVERT = true;
 	public static boolean 		INTAKELIFT_MOTOR_BRAKE = true;
 	
 	// PID values
@@ -98,7 +99,7 @@ public class OI {
 	
 	// Limit Switch
 	public static int			INTAKELIFT_LIMIT_ID = 3;
-	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = true;
+	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = false;
 	
 	
 	
@@ -156,6 +157,7 @@ public class OI {
 		button_oB.whileHeld(new IntakeLiftGotoPos(INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE));
 		
 		// When start is pressed, zero the intakeLift and ChooChoo
+		button_oStart.whenPressed(new ZeroLiftAndCC());
 		
 		// bind the analog sticks to the operator controller
 		stick_oL = new SmartControlStick(operatorController, 0, 1, 6);
