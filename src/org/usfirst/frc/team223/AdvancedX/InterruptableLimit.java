@@ -6,29 +6,73 @@ import edu.wpi.first.wpilibj.command.Command;
 
 /**
  * Class that allows for a specific command to be called when a state change
- * occurs on a digital input. Useful for avoiding polling loops.
+ * occurs on a digital input. Useful for avoiding polling loops. When an interrupt
+ * fires, a new instance of Command type "handler" is automatically created and run
  * @author Duemmer
  *
  */
 public class InterruptableLimit extends DigitalInput {
 	
+	private boolean _normallyOpen;
+	
+	
+	
 	/**Initializes the InterruptableLimit object.
 	 * 
 	 * @param index DigitalInput channel that the limit is connected to
-	 * @param handler Command to be run upon an interrupt. Make this a command
-	 * 		  that runs quickly (don't have it do much more than update a few variables)
+	 * 
+	 * @param handler Type of Command to be run upon an interrupt. 
+	 * An instance of the desired command itself should not be passed, but
+	 * rather the type of command( IE instead of passing "MyCommandInstance",
+	 *  "MyCommandInstance.getClass()" should be passed)
+	 *  
 	 * @param normallyOpen If true, the limit switch is normally open
+	 * 
 	 * @param fireOnHit If true, enables interrupts upon the switch being hit
+	 * 
 	 * @param fireOnRelease If true, enables interrupts upon the switch being released
-	 */
-	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease)
+	 */	
+	public InterruptableLimit(int index, Class<? extends Command> handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease)
 	{
 		// initialize the input channel
 		super(index);
 		
-		// Type of the command to run. Assert that handler is a valid, non-null command
+		// Make sure handler in't null
 		assert(handler != null);
-		Class<?> commandType = handler.getClass();
+		
+		
+		/**
+		 * Allocates a new instance of the InterrupHandlerFunction class. Overrides
+		 * the overridableParameter and interruptFired methods in order to allow
+		 * running of a command with type of handler.
+		 */
+		InterruptHandlerFunction<Class<? extends Command>> ISR = new InterruptHandlerFunction<Class<? extends Command>>()
+		{
+			// Override this method to give us a parameter to pass to the interruptFired routine
+			@Override
+			public Class<? extends Command> overridableParameter()
+			{
+				return handler;
+			}
+			
+			
+			
+			// Override this method for the new InterruptHandlerFunction to do what we want
+			@Override
+			public void interruptFired(int interruptAssertedMask, Class<? extends Command> param) 
+			{
+				Command cmdInst = null;
+				try {
+					cmdInst = param.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				
+				if(cmdInst != null)
+					cmdInst.start();
+			}
+		};
+		
 		
 		/*
 		 * If normally open is false, then the rising edge on the input would
@@ -40,25 +84,38 @@ public class InterruptableLimit extends DigitalInput {
 		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 				
 		// set up the handler
-		this.requestInterrupts(new InterruptHandlerFunction<Class<?>>()
-		{
-			// Override this method to give us a parameter to pass to the interruptFired routine
-			@Override
-			public Class<?> overridableParameter()
-			{
-				
-			}
-			
-			// Override this method for the new InterruptHandlerFunction to do what we want
-			@Override
-			public void interruptFired(int interruptAssertedMask, Class<?> param) 
-			{
-				Command cmdInst = new param;
-					handler.start();
-			}
-		});
+		this.requestInterrupts(ISR);
 		
 		// set the triggering mode
 		this.setUpSourceEdge(fireOnRising, fireOnFalling);
 	}
+	
+	
+	/**
+	 * Returns true if the limit is hit. Accounts for whether or not the limit is
+	 * normally open or closed
+	 * @return true if the limit is pressed, false otherwise
+	 */
+	public boolean get()
+	{
+		return super.get() ^ _normallyOpen;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

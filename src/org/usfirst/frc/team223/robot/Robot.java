@@ -3,13 +3,12 @@ package org.usfirst.frc.team223.robot;
 
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
 import org.usfirst.frc.team223.robot.drive.driveTrain;
+import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Robot extends IterativeRobot {
@@ -17,6 +16,7 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static driveTrain driveSubsys;
 	public static IntakeLift intakeLiftSubsys;
+	public static IntakeWheels intakeWheelsSubsys;
 
     Command autonomousCommand;
     SendableChooser chooser;
@@ -27,6 +27,7 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
 		driveSubsys = new driveTrain();
 		intakeLiftSubsys = new IntakeLift();
+		intakeWheelsSubsys = new IntakeWheels();
     }
 	
     
@@ -51,7 +52,6 @@ public class Robot extends IterativeRobot {
 	public void disabledPeriodic() {   Scheduler.getInstance().run();   }
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
     public void teleopPeriodic() {   Scheduler.getInstance().run();   }
-//    public void testPeriodic() {   LiveWindow.run();   }
 }
 
 

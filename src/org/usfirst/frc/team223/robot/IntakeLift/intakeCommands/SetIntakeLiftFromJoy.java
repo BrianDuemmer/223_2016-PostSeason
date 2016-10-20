@@ -20,7 +20,7 @@ public class SetIntakeLiftFromJoy extends Command {
 
     // set the output
     protected void execute() {
-    	double output = OI.operatorController.getRawAxis(3) - OI.operatorController.getRawAxis(2);
+    	double output = OI.operatorController.getRawAxis(2) - OI.operatorController.getRawAxis(3);
     	Robot.intakeLiftSubsys.setOutput(output);
     }
 

@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 public class IntakeLift extends PIDSubsystem {
 	
 	// Physical objects that are part of the subsystem
-	CANTalon 			intakeLiftMot;
-	Encoder 			intakeLiftEncoder;
-	InterruptableLimit	limit;
+	CANTalon 					intakeLiftMot;
+	Encoder 					intakeLiftEncoder;
+	public InterruptableLimit	limit;
 	
 	// Offset for the encoder. This value is added to the value returned from encoder.getPosition();
-	private double 				encoderOffset;
+	private double 		encoderOffset;
+	
+	// This tells us if the intakeLift has been zeroed since startup
+	public boolean		hasBeenZeroed;
 
     /**
      * Initialize the Intake Lift system. Here the motor, encoder, and limit
@@ -25,12 +28,18 @@ public class IntakeLift extends PIDSubsystem {
      * are loaded from OI.java
      */
     public IntakeLift() 
-    {
+    {    	
     	// set the PID constants
     	super(OI.INTAKELIFT_PID_KP, OI.INTAKELIFT_PID_KI, OI.INTAKELIFT_PID_KD);
     	
+    	// set hasBeenZeroed to false
+    	hasBeenZeroed = false;
+    	
     	// set the tolerance
     	setAbsoluteTolerance(OI.INTAKELIFT_PID_TOLERANCE);
+    	
+    	// set the allowable range for PID moves
+    	setInputRange(OI.INTAKELIFT_SETPOINT_MAXDOWN, OI.INTAKELIFT_SETPOINT_MAXUP);
     	
     	
     	
@@ -57,7 +66,7 @@ public class IntakeLift extends PIDSubsystem {
     	limit = new InterruptableLimit
 		    	(
 		    			OI.INTAKELIFT_LIMIT_ID, 
-		    			new IntakeLimitISR(), 
+		    			new IntakeLimitISR().getClass(), 
 		    			OI.INTAKELIFT_LIMIT_NORMALLY__OPEN, 
 		    			true, 
 		    			false
@@ -93,7 +102,14 @@ public class IntakeLift extends PIDSubsystem {
      * @return the position of the intake lift encoder
      */
     public double getEncPos() {   return intakeLiftEncoder.getDistance() - encoderOffset;   }
+ 
     
+    
+    /** Gets the raw position of the intake lift
+     * 
+     * @return the raw position of the intake lift encoder
+     */
+    public double getRawEncPos() {   return intakeLiftEncoder.getDistance();   }
     
     
     /**Sets the offset for the IntakeLift encoder

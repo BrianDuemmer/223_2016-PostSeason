@@ -1,9 +1,9 @@
 package org.usfirst.frc.team223.robot;
 
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	// initialize the controllers
+	////////////////// Human Input ///////////////////
 	public static Joystick driverController;
 	public static Joystick operatorController;
 	
@@ -21,6 +21,27 @@ public class OI {
 	public static SmartControlStick stick_oL;
 	public static SmartControlStick stick_oR;
 	
+	// Driver controller buttons
+	public static JoystickButton button_dA;
+	public static JoystickButton button_dB;
+	public static JoystickButton button_dX;
+	public static JoystickButton button_dY;
+	public static JoystickButton button_dL;
+	public static JoystickButton button_dR;
+	public static JoystickButton button_dStart;
+	public static JoystickButton button_dBack;
+	
+	
+	// Operator controller buttons
+	public static JoystickButton button_oA;
+	public static JoystickButton button_oB;
+	public static JoystickButton button_oX;
+	public static JoystickButton button_oY;
+	public static JoystickButton button_oL;
+	public static JoystickButton button_oR;
+	public static JoystickButton button_oStart;
+	public static JoystickButton button_oBack;
+	
 	
 	
 	
@@ -29,19 +50,22 @@ public class OI {
 	// motor configuration
 	public static int 			DRIVE_MOTOR_L1_ID = 1;
 	public static boolean	 	DRIVE_MOTOR_L1_INVERT = false;
-	public static boolean 		DRIVE_MOTOR_L1_BRAKE = true;
 	
 	public static int 			DRIVE_MOTOR_L2_ID = 4;
 	public static boolean 		DRIVE_MOTOR_L2_INVERT = false;
-	public static boolean 		DRIVE_MOTOR_L2_BRAKE = true;
 	
 	public static int 			DRIVE_MOTOR_R1_ID = 5;
 	public static boolean 		DRIVE_MOTOR_R1_INVERT = true;
-	public static boolean 		DRIVE_MOTOR_R1_BRAKE = true;
 	
 	public static int 			DRIVE_MOTOR_R2_ID = 6;
 	public static boolean 		DRIVE_MOTOR_R2_INVERT = true;
-	public static boolean 		DRIVE_MOTOR_R2_BRAKE = true;
+	
+	/* braking configuration. if DRIVE_BRAKE_HALF is true, then only one motor
+	 * on each side will be in brake mode. If DRIVE_BRAKE_FULL is true, then
+	 * both motors on each side will brake.
+	 */
+	public static boolean		DRIVE_BRAKE_HALF = true;
+	public static boolean		DRIVE_BRAKE_FULL = true;
 	
 	
 	
@@ -49,7 +73,7 @@ public class OI {
 	
 	// motor configuration
 	public static int 			INTAKELIFT_MOTOR_ID = 2;
-	public static boolean 		INTAKELIFT_MOTOR_INVERT = true;
+	public static boolean 		INTAKELIFT_MOTOR_INVERT = false;
 	public static boolean 		INTAKELIFT_MOTOR_BRAKE = true;
 	
 	// PID values
@@ -61,8 +85,8 @@ public class OI {
 	// Setpoints
 	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 15;
 	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 15;
-	public static double		INTAKELIFT_SETPOINT_MAXFWD = 8;
-	public static double		INTAKELIFT_SETPOINT_MAXREV = 95;
+	public static double		INTAKELIFT_SETPOINT_MAXDOWN = 8;
+	public static double		INTAKELIFT_SETPOINT_MAXUP = 95;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
@@ -78,20 +102,35 @@ public class OI {
 	
 	
 	
+	////////////// IntakeWheels Subsystem /////////////
+	
+	// motor configuration
+	public static int 			INTAKEWHEELS_MOTOR_ID = 7;
+	public static boolean 		INTAKEWHEELS_MOTOR_INVERT = false;
+	public static boolean 		INTAKEWHEELS_MOTOR_BRAKE = false;
+	
+	
+	
+	/////////// General Configutation Values //////////
+	
+	public static double 			ZEROLIFTANDCC_CC_START_DELAY= 0.75;
+	
+	
+	
 	public OI() {
 		
 		driverController = new Joystick(0);
 		operatorController = new Joystick(1);
 		
 		// bind the buttons for the driver controller
-		JoystickButton button_dA = new JoystickButton(driverController, 0);
-		JoystickButton button_dB = new JoystickButton(driverController, 1);
-		JoystickButton button_dX = new JoystickButton(driverController, 2);
-		JoystickButton button_dY = new JoystickButton(driverController, 3);
-		JoystickButton button_dL = new JoystickButton(driverController, 4);
-		JoystickButton button_dR = new JoystickButton(driverController, 5);
-		JoystickButton button_dStart = new JoystickButton(driverController, 8);
-		JoystickButton button_dBack = new JoystickButton(driverController, 9);
+		button_dA = new JoystickButton(driverController, 0);
+		button_dB = new JoystickButton(driverController, 1);
+		button_dX = new JoystickButton(driverController, 2);
+		button_dY = new JoystickButton(driverController, 3);
+		button_dL = new JoystickButton(driverController, 4);
+		button_dR = new JoystickButton(driverController, 5);
+		button_dStart = new JoystickButton(driverController, 8);
+		button_dBack = new JoystickButton(driverController, 9);
 		
 		// bind the analog sticks for the driver controller
 		stick_dL = new SmartControlStick(driverController, 0, 1, 6);
@@ -101,14 +140,22 @@ public class OI {
 		
 		
 		// bind the buttons for the operator controller
-		JoystickButton button_oA = new JoystickButton(operatorController, 0);
-		JoystickButton button_oB = new JoystickButton(operatorController, 1);
-		JoystickButton button_oX = new JoystickButton(operatorController, 2);
-		JoystickButton button_oY = new JoystickButton(operatorController, 3);
-		JoystickButton button_oL = new JoystickButton(operatorController, 4);
-		JoystickButton button_oR = new JoystickButton(operatorController, 5);
-		JoystickButton button_oStart = new JoystickButton(operatorController, 8);
-		JoystickButton button_oBack = new JoystickButton(operatorController, 9);
+		button_oA = new JoystickButton(operatorController, 0);
+		button_oB = new JoystickButton(operatorController, 1);
+		button_oX = new JoystickButton(operatorController, 2);
+		button_oY = new JoystickButton(operatorController, 3);
+		button_oL = new JoystickButton(operatorController, 4);
+		button_oR = new JoystickButton(operatorController, 5);
+		button_oStart = new JoystickButton(operatorController, 8);
+		button_oBack = new JoystickButton(operatorController, 9);
+		
+		
+		// bind the commands for the operator buttons
+		
+		// when B is pressed, bring the IntakeLift to the ball grab angle
+		button_oB.whileHeld(new IntakeLiftGotoPos(INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE));
+		
+		// When start is pressed, zero the intakeLift and ChooChoo
 		
 		// bind the analog sticks to the operator controller
 		stick_oL = new SmartControlStick(operatorController, 0, 1, 6);

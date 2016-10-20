@@ -4,8 +4,6 @@ import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.drive.driveCommands.*;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -25,20 +23,20 @@ public class driveTrain extends Subsystem {
     	// Left Side drive motors
     	driveL1 = new CANTalon(OI.DRIVE_MOTOR_L1_ID);
     	driveL1.setInverted(OI.DRIVE_MOTOR_L1_INVERT);
-    	driveL1.enableBrakeMode(OI.DRIVE_MOTOR_L1_BRAKE);
+    	driveL1.enableBrakeMode(OI.DRIVE_BRAKE_HALF || OI.DRIVE_BRAKE_FULL);
     	
     	driveL2 = new CANTalon(OI.DRIVE_MOTOR_L2_ID);
     	driveL2.setInverted(OI.DRIVE_MOTOR_L2_INVERT);
-    	driveL2.enableBrakeMode(OI.DRIVE_MOTOR_L2_BRAKE);
+    	driveL2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     	
     	//Right side drive motors
     	driveR1 = new CANTalon(OI.DRIVE_MOTOR_R1_ID);
     	driveR1.setInverted(OI.DRIVE_MOTOR_R1_INVERT);
-    	driveR1.enableBrakeMode(OI.DRIVE_MOTOR_R1_BRAKE);
+    	driveR1.enableBrakeMode(OI.DRIVE_BRAKE_HALF || OI.DRIVE_BRAKE_FULL);
     	
     	driveR2 = new CANTalon(OI.DRIVE_MOTOR_R2_ID);
     	driveR2.setInverted(OI.DRIVE_MOTOR_R2_INVERT);
-    	driveR2.enableBrakeMode(OI.DRIVE_MOTOR_R2_BRAKE);
+    	driveR2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     }
 
     public void initDefaultCommand() {
