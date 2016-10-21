@@ -15,6 +15,7 @@ public class ZeroLiftAndCC extends CommandGroup {
     	addParallel(new ZeroIntakeLift());
     	
     	// Sleep for a bit
-    		Timer.delay(OI.ZEROLIFTANDCC_CC_START_DELAY);
+		Timer.delay(OI.ZEROLIFTANDCC_CC_START_DELAY);
+		//addSequential(new )
     }
 }

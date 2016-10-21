@@ -2,6 +2,7 @@ package org.usfirst.frc.team223.AdvancedX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -13,8 +14,9 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class InterruptableLimit extends DigitalInput {
 	
-	private boolean _normallyOpen;
+	private boolean normallyOpen;
 	
+	private double lastHitTime;
 	
 	
 	/**Initializes the InterruptableLimit object.
@@ -29,7 +31,7 @@ public class InterruptableLimit extends DigitalInput {
 	 * 
 	 * @param fireOnRelease If true, enables interrupts upon the switch being released
 	 */	
-	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease)
+	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease, double debounceTime)
 	{
 		// initialize the input channel
 		super(index);
@@ -39,6 +41,15 @@ public class InterruptableLimit extends DigitalInput {
 		
 		// get the type of the handler command
 		Class<? extends Command> handlerType = handler.getClass();
+		
+		/*
+		 * If normally open is false, then the rising edge on the input would
+		 * corresponding to the switch being hit and vice versa. If normally
+		 * open is true, then the opposite is true: a rising edge would mean
+		 * the switch is being released, and so forth. 
+		 */
+		boolean fireOnRising = normallyOpen ? fireOnRelease : fireOnHit;
+		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 		
 		
 		
@@ -62,6 +73,16 @@ public class InterruptableLimit extends DigitalInput {
 			@Override
 			public void interruptFired(int interruptAssertedMask, Class<? extends Command> param) 
 			{
+				static
+				// Current time
+				double currTime = Timer.getFPGATimestamp();
+				
+				// if true, enough time has elapsed to run again
+				if(currTime - lastHitTime > debounceTime)
+				{
+					
+				}
+				
 				Command cmdInst = null;
 				try {
 					cmdInst = param.newInstance();
@@ -73,22 +94,9 @@ public class InterruptableLimit extends DigitalInput {
 					cmdInst.start();
 			}
 		};
-		
-		
-		/*
-		 * If normally open is false, then the rising edge on the input would
-		 * corresponding to the switch being hit and vice versa. If normally
-		 * open is true, then the opposite is true: a rising edge would mean
-		 * the switch is being released, and so forth. 
-		 */
-		boolean fireOnRising = normallyOpen ? fireOnRelease : fireOnHit;
-		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 				
 		// set up the handler
 		this.requestInterrupts(ISR);
-		
-		// set the triggering mode
-		this.setUpSourceEdge(fireOnRising, fireOnFalling);
 	}
 	
 	
@@ -99,7 +107,7 @@ public class InterruptableLimit extends DigitalInput {
 	 */
 	public boolean get()
 	{
-		return super.get() ^ _normallyOpen;
+		return super.get() ^ normallyOpen;
 	}
 }
 

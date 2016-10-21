@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 
@@ -27,12 +28,12 @@ public class Robot extends IterativeRobot {
     
     // initialize the subsystems / the OI
     public void robotInit() {
-    	DriverStation.reportError("Starting code..", false);
 		driveSubsys = new driveTrain();
 		intakeLiftSubsys = new IntakeLift();
 		intakeWheelsSubsys = new IntakeWheels();
 		chooChooSubsys = new ChooChoo();
 		oi = new OI();
+		printToDS("Starting Code...", "");
     }
 	
     
@@ -56,7 +57,22 @@ public class Robot extends IterativeRobot {
     
 	public void disabledPeriodic() {   Scheduler.getInstance().run();   }
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
-    public void teleopPeriodic() {   Scheduler.getInstance().run();   }
+    public void teleopPeriodic() 
+    {
+    	Scheduler.getInstance().run(); 
+    	intakeLiftSubsys.log();
+    }
+    
+    /**
+     * Prints a message to the DS console, such that it reads
+     * ERROR 223 : (msg) at (loc)
+     * @param msg the message to send
+     * @param loc the location that sent it
+     */
+    public static void printToDS(String msg, String loc)
+    {
+    	FRCNetworkCommunicationsLibrary.HALSendError(true, 223, false, msg, loc, "", true);
+    }
 }
 
 

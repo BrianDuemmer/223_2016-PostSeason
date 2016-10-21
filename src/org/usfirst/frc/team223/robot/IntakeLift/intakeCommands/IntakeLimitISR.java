@@ -1,5 +1,6 @@
 package org.usfirst.frc.team223.robot.IntakeLift.intakeCommands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 import org.usfirst.frc.team223.robot.OI;

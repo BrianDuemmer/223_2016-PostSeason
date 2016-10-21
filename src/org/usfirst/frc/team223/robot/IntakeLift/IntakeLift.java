@@ -2,6 +2,7 @@ package org.usfirst.frc.team223.robot.IntakeLift;
 
 import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -18,6 +19,9 @@ public class IntakeLift extends PIDSubsystem {
 	
 	// Offset for the encoder. This value is subtracted from the value returned from encoder.getPosition();
 	private double 		encoderOffset;
+	
+	// Setpoint for the position-maintainer PID
+	private double posHoldSetpoint;
 	
 	// This tells us if the intakeLift has been zeroed since startup
 	public boolean		hasBeenZeroed;
@@ -86,7 +90,11 @@ public class IntakeLift extends PIDSubsystem {
      * 
      * @return the position of the intake lift encoder
      */
-    protected double returnPIDInput() {   return intakeLiftEncoder.getDistance() - encoderOffset;    }
+    protected double returnPIDInput() 
+    {   
+    	double ret = intakeLiftEncoder.getDistance() - encoderOffset;    
+    	return ret;
+   	}
     
     
     
@@ -111,6 +119,19 @@ public class IntakeLift extends PIDSubsystem {
      * @param newOffset the new offset
      */
     public void setEncOffset(double newOffset) {   encoderOffset = newOffset;   }
+    
+    public void log()
+    {
+    	if(OI.ROBOT_ISDEBUG)
+    	{
+    		String msg = "Intake Encoder Pos: " + Double.toString(getPosition()) + "\n";
+    		msg += "Intake Encoder offset: " + Double.toString(encoderOffset) + "\n\n";
+    		
+    		// print the message to the console
+    		Robot.printToDS(msg , "");
+    		
+    	}
+    }
     
 }
 

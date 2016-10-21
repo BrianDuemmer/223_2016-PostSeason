@@ -12,6 +12,10 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+	
+	// if tru, the robot is in debug mode. Set this to false for competition.
+	public static boolean	ROBOT_ISDEBUG = true;
+	
 	////////////////// Human Input ///////////////////
 	public static Joystick driverController;
 	public static Joystick operatorController;
@@ -81,18 +85,18 @@ public class OI {
 	public static double		INTAKELIFT_PID_KP = 0.3;
 	public static double		INTAKELIFT_PID_KI = 0.01;
 	public static double		INTAKELIFT_PID_KD = 0.0001;
-	public static double		INTAKELIFT_PID_TOLERANCE = 2.0;
+	public static double		INTAKELIFT_PID_TOLERANCE = 0.5;
 	
 	// Setpoints
 	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 15;
-	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 15;
-	public static double		INTAKELIFT_SETPOINT_MAXDOWN = 8;
+	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 5;
+	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
 	public static double		INTAKELIFT_SETPOINT_MAXUP = 95;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
 	public static int 			INTAKELIFT_ENCODER_ID_B = 1;
-	public static double 		INTAKELIFT_ENCODER_DEGREES__PER__COUNT = 0.0640113798;
+	public static double 		INTAKELIFT_ENCODER_DEGREES__PER__COUNT = 0.08284475384;
 	public static boolean		INTAKELIFT_ENCODER_INVERT = true;
 	public static double		INTAKELIFT_ENCODER_MAX__PERIOD = 0.5;
 	public static double		INTAKELIFT_ENCODER_MIN__RATE__SEC = 0.5;
@@ -153,19 +157,19 @@ public class OI {
 		operatorController = new Joystick(1);
 		
 		// bind the buttons for the driver controller
-		button_dA = new JoystickButton(driverController, 1);
-		button_dB = new JoystickButton(driverController, 2);
-		button_dX = new JoystickButton(driverController, 3);
-		button_dY = new JoystickButton(driverController, 4);
-		button_dL = new JoystickButton(driverController, 5);
-		button_dR = new JoystickButton(driverController, 6);
-		button_dStart = new JoystickButton(driverController, 9);
-		button_dBack = new JoystickButton(driverController, 10);
+		button_dA = new JoystickButton(driverController, 0);
+		button_dB = new JoystickButton(driverController, 1);
+		button_dX = new JoystickButton(driverController, 2);
+		button_dY = new JoystickButton(driverController, 3);
+		button_dL = new JoystickButton(driverController, 4);
+		button_dR = new JoystickButton(driverController, 5);
+		button_dStart = new JoystickButton(driverController, 8);
+		button_dBack = new JoystickButton(driverController, 9);
 		
 		// bind the analog sticks for the driver controller
-		stick_dL = new SmartControlStick(driverController, 0, 1, 7);
+		stick_dL = new SmartControlStick(driverController, 0, 1, 6);
 		stick_dL.setParams(false, true, 0.1, 1);
-		stick_dR = new SmartControlStick(driverController, 4, 5, 8);
+		stick_dR = new SmartControlStick(driverController, 4, 5, 7);
 		stick_dR.setParams(false, true, 0.1, 1);
 		
 		
@@ -176,13 +180,13 @@ public class OI {
 		button_oY = new JoystickButton(operatorController, 4);
 		button_oL = new JoystickButton(operatorController, 5);
 		button_oR = new JoystickButton(operatorController, 6);
-		button_oStart = new JoystickButton(operatorController, 9);
-		button_oBack = new JoystickButton(operatorController, 10);
+		button_oStart = new JoystickButton(operatorController, 8);
+		button_oBack = new JoystickButton(operatorController, 7);
 		
 		// bind the analog sticks to the operator controller
-		stick_oL = new SmartControlStick(operatorController, 0, 1, 7);
+		stick_oL = new SmartControlStick(operatorController, 0, 1, 9);
 		stick_oL.setParams(false, true, 0.1, 1);
-		stick_oR = new SmartControlStick(operatorController, 4, 5, 8);
+		stick_oR = new SmartControlStick(operatorController, 4, 5, 10);
 		stick_oR.setParams(false, true, 0.1, 1);
 		
 		

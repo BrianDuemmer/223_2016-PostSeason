@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetIntakeLiftFromJoy extends Command {
 
-	// Setpoint for the position-maintainer PID
-	static double posHoldSetpoint;
 	
 	
 	/**
@@ -31,7 +29,6 @@ public class SetIntakeLiftFromJoy extends Command {
     
     protected void execute() {
     	double manualOutput = OI.operatorController.getRawAxis(3) - OI.operatorController.getRawAxis(2);
- 
     	
     	// if the manual output setting is nonzero, disable the PID and send it to the motor
     	if(manualOutput != 0)
@@ -43,7 +40,7 @@ public class SetIntakeLiftFromJoy extends Command {
     		Robot.intakeLiftSubsys.setOutput(manualOutput);
     		
     		// Update the position-maintainer setpoint
-    		posHoldSetpoint = Robot.intakeLiftSubsys.getPosition();
+    		Robot.intakeLiftSubsys.setSetpoint(Robot.intakeLiftSubsys.getPosition());
     	}
     	
     	
@@ -52,9 +49,6 @@ public class SetIntakeLiftFromJoy extends Command {
     	{
     		// Enable the PID
     		Robot.intakeLiftSubsys.enable();
-    		
-    		// Tell it to try to go to the position - hold setpoint
-    		Robot.intakeLiftSubsys.setSetpoint(posHoldSetpoint);
     	}
     	
     	
