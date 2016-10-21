@@ -6,7 +6,7 @@ import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.ZeroIntakeLift;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-/** Zeroes both the intake and the choo choo
+/** Zeroes both the intakeLift and the choo choo
  *
  */
 public class ZeroLiftAndCC extends CommandGroup {

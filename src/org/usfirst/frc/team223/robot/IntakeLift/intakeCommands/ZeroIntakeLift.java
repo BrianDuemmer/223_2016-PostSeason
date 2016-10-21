@@ -6,11 +6,13 @@ import org.usfirst.frc.team223.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Zeroes the intakeLift on the robot
  */
 public class ZeroIntakeLift extends Command {
 
-	
+	/**
+	 * Zeroes the intakeLift on the robot
+	 */
     public ZeroIntakeLift() {
     	requires(Robot.intakeLiftSubsys);
     }

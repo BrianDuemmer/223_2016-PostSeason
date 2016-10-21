@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team223.robot;
 
+import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
 import org.usfirst.frc.team223.robot.drive.driveTrain;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
@@ -18,6 +19,7 @@ public class Robot extends IterativeRobot {
 	public static driveTrain driveSubsys;
 	public static IntakeLift intakeLiftSubsys;
 	public static IntakeWheels intakeWheelsSubsys;
+	public static ChooChoo chooChooSubsys;
 
     Command autonomousCommand;
     SendableChooser chooser;
@@ -29,6 +31,7 @@ public class Robot extends IterativeRobot {
 		driveSubsys = new driveTrain();
 		intakeLiftSubsys = new IntakeLift();
 		intakeWheelsSubsys = new IntakeWheels();
+		chooChooSubsys = new ChooChoo();
 		oi = new OI();
     }
 	

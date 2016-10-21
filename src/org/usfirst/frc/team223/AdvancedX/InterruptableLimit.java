@@ -21,10 +21,7 @@ public class InterruptableLimit extends DigitalInput {
 	 * 
 	 * @param index DigitalInput channel that the limit is connected to
 	 * 
-	 * @param handler Type of Command to be run upon an interrupt. 
-	 * An instance of the desired command itself should not be passed, but
-	 * rather the type of command( IE instead of passing "MyCommandInstance",
-	 *  "MyCommandInstance.getClass()" should be passed)
+	 * @param handler Command to be run upon an interrupt. 
 	 *  
 	 * @param normallyOpen If true, the limit switch is normally open
 	 * 
@@ -32,7 +29,7 @@ public class InterruptableLimit extends DigitalInput {
 	 * 
 	 * @param fireOnRelease If true, enables interrupts upon the switch being released
 	 */	
-	public InterruptableLimit(int index, Class<? extends Command> handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease)
+	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease)
 	{
 		// initialize the input channel
 		super(index);
@@ -40,11 +37,15 @@ public class InterruptableLimit extends DigitalInput {
 		// Make sure handler in't null
 		assert(handler != null);
 		
+		// get the type of the handler command
+		Class<? extends Command> handlerType = handler.getClass();
+		
+		
 		
 		/**
 		 * Allocates a new instance of the InterrupHandlerFunction class. Overrides
 		 * the overridableParameter and interruptFired methods in order to allow
-		 * running of a command with type of handler.
+		 * running of a command with type of handlerType.
 		 */
 		InterruptHandlerFunction<Class<? extends Command>> ISR = new InterruptHandlerFunction<Class<? extends Command>>()
 		{
@@ -52,7 +53,7 @@ public class InterruptableLimit extends DigitalInput {
 			@Override
 			public Class<? extends Command> overridableParameter()
 			{
-				return handler;
+				return handlerType;
 			}
 			
 			

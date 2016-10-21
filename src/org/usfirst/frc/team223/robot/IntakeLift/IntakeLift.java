@@ -16,7 +16,7 @@ public class IntakeLift extends PIDSubsystem {
 	Encoder 					intakeLiftEncoder;
 	public InterruptableLimit	limit;
 	
-	// Offset for the encoder. This value is added to the value returned from encoder.getPosition();
+	// Offset for the encoder. This value is subtracted from the value returned from encoder.getPosition();
 	private double 		encoderOffset;
 	
 	// This tells us if the intakeLift has been zeroed since startup
@@ -42,7 +42,6 @@ public class IntakeLift extends PIDSubsystem {
     	setInputRange(OI.INTAKELIFT_SETPOINT_MAXDOWN, OI.INTAKELIFT_SETPOINT_MAXUP);
     	
     	
-    	
     	// initialize motor
     	intakeLiftMot = new CANTalon(OI.INTAKELIFT_MOTOR_ID);
     	intakeLiftMot.setInverted(OI.INTAKELIFT_MOTOR_INVERT);
@@ -66,7 +65,7 @@ public class IntakeLift extends PIDSubsystem {
     	limit = new InterruptableLimit
 		    	(
 		    			OI.INTAKELIFT_LIMIT_ID, 
-		    			new IntakeLimitISR().getClass(), 
+		    			new IntakeLimitISR(), 
 		    			OI.INTAKELIFT_LIMIT_NORMALLY__OPEN, 
 		    			true, 
 		    			false
@@ -78,12 +77,16 @@ public class IntakeLift extends PIDSubsystem {
     
     // Set the default command to output to the motor from the joystick
     public void initDefaultCommand() {   setDefaultCommand(new SetIntakeLiftFromJoy());   }
-
-    // get the distance returned from the encoder
-    protected double returnPIDInput() {   return getEncPos();   }
-    
     protected void usePIDOutput(double output) {   setOutput(output);   }
+
     
+    
+    /** Gets the properly scaled and adjusted position of
+     * the intake lift
+     * 
+     * @return the position of the intake lift encoder
+     */
+    protected double returnPIDInput() {   return intakeLiftEncoder.getDistance() - encoderOffset;    }
     
     
     
@@ -92,16 +95,6 @@ public class IntakeLift extends PIDSubsystem {
      * @param output the value to send to the encoder
      */
     public void setOutput(double output) {   intakeLiftMot.set(output);   }
-    
-    
-    
-    
-    /** Gets the properly scaled and adjusted position of
-     * the intake lift
-     * 
-     * @return the position of the intake lift encoder
-     */
-    public double getEncPos() {   return intakeLiftEncoder.getDistance() - encoderOffset;   }
  
     
     
@@ -110,6 +103,7 @@ public class IntakeLift extends PIDSubsystem {
      * @return the raw position of the intake lift encoder
      */
     public double getRawEncPos() {   return intakeLiftEncoder.getDistance();   }
+    
     
     
     /**Sets the offset for the IntakeLift encoder

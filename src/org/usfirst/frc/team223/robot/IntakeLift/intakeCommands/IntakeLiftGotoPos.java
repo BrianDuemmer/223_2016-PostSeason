@@ -42,8 +42,9 @@ public class IntakeLiftGotoPos extends Command {
         		!Robot.intakeLiftSubsys.hasBeenZeroed;
     }
 
-    // Stop the motor
+    // Stop the motor, and disable the PID
     protected void end() {
+    	Robot.intakeLiftSubsys.disable();
     	Robot.intakeLiftSubsys.setOutput(0);
     }
 

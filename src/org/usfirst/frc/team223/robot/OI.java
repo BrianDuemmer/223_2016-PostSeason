@@ -112,9 +112,38 @@ public class OI {
 	
 	
 	
+	//////////////// ChooChoo Subsystem ///////////////
+	
+	// motor configuration
+	public static int 			CHOOCHOO_MOTOR_ID = 3;
+	public static boolean 		CHOOCHOO_MOTOR_INVERT = false;
+	public static boolean 		CHOOCHOO_MOTOR_BRAKE = true;
+	
+	// PID values
+	public static double		CHOOCHOO_PID_KP = 0.3;
+	public static double		CHOOCHOO_PID_KI = 0.01;
+	public static double		CHOOCHOO_PID_KD = 0.0001;
+	public static double		CHOOCHOO_PID_TOLERANCE = 3.0;
+	public static double		CHOOCHOO_PID_ENABLE__ANGLE = 60.0;
+	
+	// Setpoints
+	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 310.0;
+	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 336.0;
+
+	// Encoder
+	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
+	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.002793296;
+	public static boolean		CHOOCHOO_ENCODER_INVERT = true;
+	
+	// Beam Sensor
+	public static int			CHOOCHOO_BEAM_ID = 2;
+	public static boolean		CHOOCHOO_BEAM_NORMALLY__OPEN = false;
+	
+	
+	
 	/////////// General Configutation Values //////////
 	
-	public static double 			ZEROLIFTANDCC_CC_START_DELAY= 0.75;
+	public static double 		ZEROLIFTANDCC_CC_START_DELAY= 0.75;
 	
 	
 	
@@ -124,31 +153,37 @@ public class OI {
 		operatorController = new Joystick(1);
 		
 		// bind the buttons for the driver controller
-		button_dA = new JoystickButton(driverController, 0);
-		button_dB = new JoystickButton(driverController, 1);
-		button_dX = new JoystickButton(driverController, 2);
-		button_dY = new JoystickButton(driverController, 3);
-		button_dL = new JoystickButton(driverController, 4);
-		button_dR = new JoystickButton(driverController, 5);
-		button_dStart = new JoystickButton(driverController, 8);
-		button_dBack = new JoystickButton(driverController, 9);
+		button_dA = new JoystickButton(driverController, 1);
+		button_dB = new JoystickButton(driverController, 2);
+		button_dX = new JoystickButton(driverController, 3);
+		button_dY = new JoystickButton(driverController, 4);
+		button_dL = new JoystickButton(driverController, 5);
+		button_dR = new JoystickButton(driverController, 6);
+		button_dStart = new JoystickButton(driverController, 9);
+		button_dBack = new JoystickButton(driverController, 10);
 		
 		// bind the analog sticks for the driver controller
-		stick_dL = new SmartControlStick(driverController, 0, 1, 6);
+		stick_dL = new SmartControlStick(driverController, 0, 1, 7);
 		stick_dL.setParams(false, true, 0.1, 1);
-		stick_dR = new SmartControlStick(driverController, 4, 5, 7);
+		stick_dR = new SmartControlStick(driverController, 4, 5, 8);
 		stick_dR.setParams(false, true, 0.1, 1);
 		
 		
 		// bind the buttons for the operator controller
-		button_oA = new JoystickButton(operatorController, 0);
-		button_oB = new JoystickButton(operatorController, 1);
-		button_oX = new JoystickButton(operatorController, 2);
-		button_oY = new JoystickButton(operatorController, 3);
-		button_oL = new JoystickButton(operatorController, 4);
-		button_oR = new JoystickButton(operatorController, 5);
-		button_oStart = new JoystickButton(operatorController, 8);
-		button_oBack = new JoystickButton(operatorController, 9);
+		button_oA = new JoystickButton(operatorController, 1);
+		button_oB = new JoystickButton(operatorController, 2);
+		button_oX = new JoystickButton(operatorController, 3);
+		button_oY = new JoystickButton(operatorController, 4);
+		button_oL = new JoystickButton(operatorController, 5);
+		button_oR = new JoystickButton(operatorController, 6);
+		button_oStart = new JoystickButton(operatorController, 9);
+		button_oBack = new JoystickButton(operatorController, 10);
+		
+		// bind the analog sticks to the operator controller
+		stick_oL = new SmartControlStick(operatorController, 0, 1, 7);
+		stick_oL.setParams(false, true, 0.1, 1);
+		stick_oR = new SmartControlStick(operatorController, 4, 5, 8);
+		stick_oR.setParams(false, true, 0.1, 1);
 		
 		
 		// bind the commands for the operator buttons
@@ -158,16 +193,7 @@ public class OI {
 		
 		// When start is pressed, zero the intakeLift and ChooChoo
 		button_oStart.whenPressed(new ZeroLiftAndCC());
-		
-		// bind the analog sticks to the operator controller
-		stick_oL = new SmartControlStick(operatorController, 0, 1, 6);
-		stick_oL.setParams(false, true, 0.1, 1);
-		stick_oR = new SmartControlStick(operatorController, 4, 5, 7);
-		stick_oR.setParams(false, true, 0.1, 1);
-		
-		
-		
-		
+
 	}
 }
 
