@@ -16,8 +16,6 @@ public class InterruptableLimit extends DigitalInput {
 	
 	private boolean normallyOpen;
 	
-	private double lastHitTime;
-	
 	
 	/**Initializes the InterruptableLimit object.
 	 * 
@@ -30,6 +28,8 @@ public class InterruptableLimit extends DigitalInput {
 	 * @param fireOnHit If true, enables interrupts upon the switch being hit
 	 * 
 	 * @param fireOnRelease If true, enables interrupts upon the switch being released
+	 * 
+	 * @param debounceTime time (in seconds) to debounce the digital signal coming in
 	 */	
 	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease, double debounceTime)
 	{
@@ -60,6 +60,8 @@ public class InterruptableLimit extends DigitalInput {
 		 */
 		InterruptHandlerFunction<Class<? extends Command>> ISR = new InterruptHandlerFunction<Class<? extends Command>>()
 		{
+			private double lastHitTime = 0;
+			
 			// Override this method to give us a parameter to pass to the interruptFired routine
 			@Override
 			public Class<? extends Command> overridableParameter()
@@ -73,25 +75,27 @@ public class InterruptableLimit extends DigitalInput {
 			@Override
 			public void interruptFired(int interruptAssertedMask, Class<? extends Command> param) 
 			{
-				static
 				// Current time
 				double currTime = Timer.getFPGATimestamp();
 				
 				// if true, enough time has elapsed to run again
 				if(currTime - lastHitTime > debounceTime)
 				{
+					// update the lastHitTime
+					lastHitTime = currTime;
 					
+					// run the command
+					Command cmdInst = null;
+					try {
+						cmdInst = param.newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					
+					if(cmdInst != null)
+						cmdInst.start();
 				}
 				
-				Command cmdInst = null;
-				try {
-					cmdInst = param.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-				
-				if(cmdInst != null)
-					cmdInst.start();
 			}
 		};
 				

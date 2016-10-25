@@ -47,7 +47,14 @@ public class ZeroIntakeLift extends Command {
     // Turn off the motor, and update the position hold setpoint
     protected void end() {
     	Robot.intakeLiftSubsys.setOutput(0);
-    	// Robot.intakeLiftSubsys.setSetpoint(OI.INTAKELIFT_SETPOINT_LIMIT__POS);
+    	
+    	// If not in dedicated PID mode, hold at the limit position
+    	if(!Robot.intakeLiftSubsys.inPIDmove)
+    		Robot.intakeLiftSubsys.setSetpoint(OI.INTAKELIFT_SETPOINT_LIMIT__POS);
+    	
+    	// if we are, carry on with the move
+    	else
+    		Robot.intakeLiftSubsys.enable();
     }
 
     // Called when another command which requires one or more of the same

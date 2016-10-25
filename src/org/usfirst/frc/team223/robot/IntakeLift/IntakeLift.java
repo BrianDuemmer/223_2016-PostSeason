@@ -20,11 +20,11 @@ public class IntakeLift extends PIDSubsystem {
 	// Offset for the encoder. This value is subtracted from the value returned from encoder.getPosition();
 	private double 		encoderOffset;
 	
-	// Setpoint for the position-maintainer PID
-	private double posHoldSetpoint;
-	
 	// This tells us if the intakeLift has been zeroed since startup
 	public boolean		hasBeenZeroed;
+	
+	// If true, the IntakeLift is in dedicated PID mode (not on position hold)
+	public boolean		inPIDmove;
 
     /**
      * Initialize the Intake Lift system. Here the motor, encoder, and limit
@@ -72,7 +72,8 @@ public class IntakeLift extends PIDSubsystem {
 		    			new IntakeLimitISR(), 
 		    			OI.INTAKELIFT_LIMIT_NORMALLY__OPEN, 
 		    			true, 
-		    			false
+		    			false,
+		    			OI.INTAKELIFT_LIMIT_DEBOUNCE__TIME
     			);
     	
     	// enable interrupts

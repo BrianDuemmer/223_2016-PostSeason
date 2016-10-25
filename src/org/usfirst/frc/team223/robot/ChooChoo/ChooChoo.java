@@ -51,7 +51,8 @@ public class ChooChoo extends PIDSubsystem {
 		    			new ChooChooISR(), 
 		    			OI.CHOOCHOO_BEAM_NORMALLY__OPEN,
 		    			true, 
-		    			false
+		    			false,
+		    			OI.CHOOCHOO_BEAM_DEBOUNCE__TIME
     			);
     	
     	// enable interrupts

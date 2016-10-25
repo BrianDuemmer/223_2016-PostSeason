@@ -20,6 +20,7 @@ public class IntakeLiftGotoPos extends Command {
     public IntakeLiftGotoPos(double setpoint) {
     	requires(Robot.intakeLiftSubsys);
     	_setpoint = setpoint;
+    	Robot.intakeLiftSubsys.inPIDmove = true;
     }
 
     protected void initialize() {
@@ -46,6 +47,7 @@ public class IntakeLiftGotoPos extends Command {
     protected void end() {
     	Robot.intakeLiftSubsys.setOutput(0);
     	Robot.intakeLiftSubsys.disable();
+    	Robot.intakeLiftSubsys.inPIDmove = false;
     }
 
     // Called when another command which requires one or more of the same
