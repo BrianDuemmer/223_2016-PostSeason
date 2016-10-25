@@ -12,8 +12,12 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ChooChooGotoSetpoint extends Command {
 
+	double setpoint;
+	
     public ChooChooGotoSetpoint(double setpoint, boolean goForward) {
     	requires(Robot.chooChooSubsys);
+    	if(setpoint > 360)
+    	
     }
 
 

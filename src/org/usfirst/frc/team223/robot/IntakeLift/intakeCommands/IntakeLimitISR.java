@@ -21,6 +21,7 @@ public class IntakeLimitISR extends Command {
     }
 
     protected void initialize() {
+
     	double newIntakeEncoderOffset = Robot.intakeLiftSubsys.getRawEncPos() - OI.INTAKELIFT_SETPOINT_LIMIT__POS;
     	Robot.intakeLiftSubsys.setEncOffset(newIntakeEncoderOffset);
     	//make sure the rest of code knows that we have been zeroed

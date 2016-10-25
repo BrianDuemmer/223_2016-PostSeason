@@ -104,7 +104,7 @@ public class OI {
 	// Limit Switch
 	public static int			INTAKELIFT_LIMIT_ID = 3;
 	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = false;
-	public static double		INTAKELIFT_LIMIT_DEBOUNCE__TIME = 0.1;
+	public static double		INTAKELIFT_LIMIT_DEBOUNCE__TIME = 1;
 	
 	
 	
@@ -139,6 +139,7 @@ public class OI {
 	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
 	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.002793296;
 	public static boolean		CHOOCHOO_ENCODER_INVERT = true;
+	public static double		CHOOCHOO_ENCODER_WRAP__THRESHOLD = 20;
 	
 	// Beam Sensor
 	public static int			CHOOCHOO_BEAM_ID = 2;

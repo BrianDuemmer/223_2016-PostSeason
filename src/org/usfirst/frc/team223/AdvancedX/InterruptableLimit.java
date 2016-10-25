@@ -51,43 +51,47 @@ public class InterruptableLimit extends DigitalInput {
 		boolean fireOnRising = normallyOpen ? fireOnRelease : fireOnHit;
 		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 		
-		
+		// Create the arg object to pass to the ISR
+		InterruptableLimitArg arg = new InterruptableLimitArg(handlerType, this, fireOnRising, fireOnFalling);
 		
 		/**
 		 * Allocates a new instance of the InterrupHandlerFunction class. Overrides
 		 * the overridableParameter and interruptFired methods in order to allow
 		 * running of a command with type of handlerType.
 		 */
-		InterruptHandlerFunction<Class<? extends Command>> ISR = new InterruptHandlerFunction<Class<? extends Command>>()
+		InterruptHandlerFunction<InterruptableLimitArg> ISR = new InterruptHandlerFunction<InterruptableLimitArg>()
 		{
 			private double lastHitTime = 0;
+			private boolean prevState;
 			
 			// Override this method to give us a parameter to pass to the interruptFired routine
 			@Override
-			public Class<? extends Command> overridableParameter()
+			public InterruptableLimitArg overridableParameter()
 			{
-				return handlerType;
+				prevState = arg.input.get();
+				return arg;
 			}
-			
 			
 			
 			// Override this method for the new InterruptHandlerFunction to do what we want
 			@Override
-			public void interruptFired(int interruptAssertedMask, Class<? extends Command> param) 
+			public void interruptFired(int interruptAssertedMask, InterruptableLimitArg param) 
 			{
 				// Current time
 				double currTime = Timer.getFPGATimestamp();
 				
-				// if true, enough time has elapsed to run again
-				if(currTime - lastHitTime > debounceTime)
-				{
-					// update the lastHitTime
-					lastHitTime = currTime;
-					
+				// did the proper edge occur?
+				boolean correctEdge = prevState ? param.onFalling : param.onRising;
+				
+				// if true, enough time has elapsed to run again, and the edge is correct
+				boolean canRun = currTime - lastHitTime > debounceTime && correctEdge;
+				
+				if(canRun)
+				{	
 					// run the command
 					Command cmdInst = null;
 					try {
-						cmdInst = param.newInstance();
+						cmdInst = param.type.newInstance();
 					} catch (InstantiationException | IllegalAccessException e) {
 						e.printStackTrace();
 					}
@@ -96,11 +100,21 @@ public class InterruptableLimit extends DigitalInput {
 						cmdInst.start();
 				}
 				
+				// update the lastHitTime
+				lastHitTime = currTime;
+				
+				// Disable interrupts for a certain time
+				param.input.disableInterrupts();
+				Timer.delay(debounceTime);
+				param.input.enableInterrupts();
 			}
 		};
 				
 		// set up the handler
 		this.requestInterrupts(ISR);
+		
+		// Set the proper interrupt state
+		this.setUpSourceEdge(fireOnRising, fireOnFalling);
 	}
 	
 	

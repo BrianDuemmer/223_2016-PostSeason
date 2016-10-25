@@ -22,6 +22,12 @@ public class ChooChoo extends PIDSubsystem {
 	// Offset for the encoder. This value is subtracted from the 
 	// value returned from encoder.getPosition().
 	private double 		encoderOffset;
+	
+	// Previous position of the encoder
+	private double		prevEncPos;
+	
+	// Encoder wrap angle
+	private double		encWrap;
 
     /**
      * Initialize the ChooChoo (catapult) system. Here all of the subsystem 
@@ -57,6 +63,8 @@ public class ChooChoo extends PIDSubsystem {
     	
     	// enable interrupts
     	chooChooBeam.enableInterrupts();
+    	
+    	prevEncPos = 0;
     }
     
     
@@ -71,8 +79,17 @@ public class ChooChoo extends PIDSubsystem {
      */
     protected double returnPIDInput() 
     {
-    	double ret = OI.CHOOCHOO_ENCODER_INVERT ? chooChooMot.get() * -1 : chooChooMot.get();
-    	return ret - encoderOffset;
+    	double currPos = getRawEncPos();
+    	
+    	// true if wrapped forward
+    	if(prevEncPos >= 360 - OI.CHOOCHOO_ENCODER_WRAP__THRESHOLD && currPos <= OI.CHOOCHOO_ENCODER_WRAP__THRESHOLD)
+    		encWrap += 360;
+    	
+    	//true if wrapped backwards
+    	if(currPos > 360 - OI.CHOOCHOO_ENCODER_WRAP__THRESHOLD && prevEncPos <= OI.CHOOCHOO_ENCODER_WRAP__THRESHOLD)
+    		encWrap -= 360;
+    	
+    	return currPos + encWrap - encoderOffset;
     }
     
     
