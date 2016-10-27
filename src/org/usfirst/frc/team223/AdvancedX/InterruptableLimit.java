@@ -58,6 +58,7 @@ public class InterruptableLimit extends DigitalInput {
 		// Create the arg object to pass to the ISR
 		InterruptableLimitArg arg = new InterruptableLimitArg(handlerType, this, fireOnRising, fireOnFalling, origState, debounceTime);
 		
+		
 		/**
 		 * Allocates a new instance of the InterrupHandlerFunction class. Overrides
 		 * the overridableParameter and interruptFired methods in order to allow
@@ -76,9 +77,9 @@ public class InterruptableLimit extends DigitalInput {
 			public void interruptFired(int interruptAssertedMask, InterruptableLimitArg param) 
 			{
 				// Timestamps
-				double currTime = Timer.getFPGATimestamp();
 				double riseTime = param.input.readRisingTimestamp();
 				double fallTime = param.input.readFallingTimestamp();
+				double currTime = Timer.getFPGATimestamp();
 				
 				// Edge type
 				boolean isRising;
@@ -97,14 +98,14 @@ public class InterruptableLimit extends DigitalInput {
 					isRising = !param.originalState;
 				
 				// If they aren't zero, then we have tracked interrupts.
-				// Whichever edge has the older (smaller) timestamp just occurred
+				// Whichever edge has the newer (bigger) timestamp just occurred
 				else
 				{
-					isRising = fallTime > riseTime;
+					isRising = fallTime < riseTime;
 				}
 				
 				// See if enough time has elapsed since the last interrupt
-				enoughTime = currTime - Math.max(riseTime, fallTime) > param.debounceTime;
+				enoughTime = currTime - Math.min(riseTime, fallTime) > param.debounceTime;
 				
 				// See if the edge is correct
 				correctEdge = (param.onRising && isRising) || (param.onFalling && !isRising);

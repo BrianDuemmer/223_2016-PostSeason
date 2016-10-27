@@ -21,7 +21,7 @@ public class SetIntakeLiftFromJoy extends Command {
 	 */
     public SetIntakeLiftFromJoy() {   requires(Robot.intakeLiftSubsys);  }
     protected void initialize() {}
-    protected boolean isFinished() {   return false;   }
+    protected boolean isFinished() {   return true;   }
     protected void end() {}
     protected void interrupted() {}
     

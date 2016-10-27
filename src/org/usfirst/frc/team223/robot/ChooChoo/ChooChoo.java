@@ -39,6 +39,9 @@ public class ChooChoo extends PIDSubsystem {
     	// Set the PID constants
     	super(OI.CHOOCHOO_PID_KP, OI.CHOOCHOO_PID_KI, OI.CHOOCHOO_PID_KD);
     	
+    	// Set the tolerance
+    	setAbsoluteTolerance(OI.CHOOCHOO_PID_TOLERANCE);
+    	
     	// set hasBeenZeroed to false
     	hasBeenZeroed = false;
     	

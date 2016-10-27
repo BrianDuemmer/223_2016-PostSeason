@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class SetCCfromJoy extends Command {
 
     public SetCCfromJoy() {   requires(Robot.chooChooSubsys);   }
-    protected boolean isFinished() {   return false;   }
+    protected boolean isFinished() {   return true;   }
     protected void initialize() {}
     protected void end() {}
     protected void interrupted() {}
@@ -22,6 +22,8 @@ public class SetCCfromJoy extends Command {
     	
     	double out = OI.stick_oL.getX();
     	Robot.chooChooSubsys.setOutput(out);
+    	
+    	//this.setInterruptible(true);
     }
 
 

@@ -28,7 +28,7 @@ public class ChooChooISR extends Command {
     
    
     // all this has to do is update a variable, so it finishes essentially instantly
-    protected boolean isFinished() {   return true;   }
+    protected boolean isFinished() {   return Robot.chooChooSubsys.hasBeenZeroed;   }
     protected void end() {}
     protected void interrupted() {}
     protected void execute() {}
