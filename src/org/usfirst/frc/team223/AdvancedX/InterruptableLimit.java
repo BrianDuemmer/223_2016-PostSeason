@@ -21,7 +21,8 @@ public class InterruptableLimit extends DigitalInput {
 	 * 
 	 * @param index DigitalInput channel that the limit is connected to
 	 * 
-	 * @param handler Command to be run upon an interrupt. 
+	 * @param handler Command to be run upon an interrupt. Note that the constructor for
+	 * this command cannot have any parameters.
 	 *  
 	 * @param normallyOpen If true, the limit switch is normally open
 	 * 
@@ -51,8 +52,11 @@ public class InterruptableLimit extends DigitalInput {
 		boolean fireOnRising = normallyOpen ? fireOnRelease : fireOnHit;
 		boolean fireOnFalling = normallyOpen ? fireOnHit : fireOnRelease;
 		
+		// Original pin state
+		boolean origState = super.get();
+		
 		// Create the arg object to pass to the ISR
-		InterruptableLimitArg arg = new InterruptableLimitArg(handlerType, this, fireOnRising, fireOnFalling);
+		InterruptableLimitArg arg = new InterruptableLimitArg(handlerType, this, fireOnRising, fireOnFalling, origState, debounceTime);
 		
 		/**
 		 * Allocates a new instance of the InterrupHandlerFunction class. Overrides
@@ -61,32 +65,55 @@ public class InterruptableLimit extends DigitalInput {
 		 */
 		InterruptHandlerFunction<InterruptableLimitArg> ISR = new InterruptHandlerFunction<InterruptableLimitArg>()
 		{
-			private double lastHitTime = 0;
-			private boolean prevState;
 			
 			// Override this method to give us a parameter to pass to the interruptFired routine
 			@Override
-			public InterruptableLimitArg overridableParameter()
-			{
-				prevState = arg.input.get();
-				return arg;
-			}
+			public InterruptableLimitArg overridableParameter(){   return arg;   }
 			
 			
 			// Override this method for the new InterruptHandlerFunction to do what we want
 			@Override
 			public void interruptFired(int interruptAssertedMask, InterruptableLimitArg param) 
 			{
-				// Current time
+				// Timestamps
 				double currTime = Timer.getFPGATimestamp();
+				double riseTime = param.input.readRisingTimestamp();
+				double fallTime = param.input.readFallingTimestamp();
 				
-				// did the proper edge occur?
-				boolean correctEdge = prevState ? param.onFalling : param.onRising;
+				// Edge type
+				boolean isRising;
 				
-				// if true, enough time has elapsed to run again, and the edge is correct
-				boolean canRun = currTime - lastHitTime > debounceTime && correctEdge;
+				// Tells us if the edge is correct
+				boolean correctEdge;
 				
-				if(canRun)
+				// Tells if enough time has elapsed
+				boolean enoughTime;
+				
+				
+				
+				// If both are 0, the no interrupts have occurred yet.
+				// Use the original State to tell what edge just occurred
+				if(riseTime == 0 && fallTime == 0)
+					isRising = !param.originalState;
+				
+				// If they aren't zero, then we have tracked interrupts.
+				// Whichever edge has the older (smaller) timestamp just occurred
+				else
+				{
+					isRising = fallTime > riseTime;
+				}
+				
+				// See if enough time has elapsed since the last interrupt
+				enoughTime = currTime - Math.max(riseTime, fallTime) > param.debounceTime;
+				
+				// See if the edge is correct
+				correctEdge = (param.onRising && isRising) || (param.onFalling && !isRising);
+				
+				
+				
+				
+				// If the edge is right and enough time has elapsed, run the handler command
+				if(enoughTime && correctEdge)
 				{	
 					// run the command
 					Command cmdInst = null;
@@ -99,22 +126,14 @@ public class InterruptableLimit extends DigitalInput {
 					if(cmdInst != null)
 						cmdInst.start();
 				}
-				
-				// update the lastHitTime
-				lastHitTime = currTime;
-				
-				// Disable interrupts for a certain time
-				param.input.disableInterrupts();
-				Timer.delay(debounceTime);
-				param.input.enableInterrupts();
 			}
 		};
 				
 		// set up the handler
 		this.requestInterrupts(ISR);
 		
-		// Set the proper interrupt state
-		this.setUpSourceEdge(fireOnRising, fireOnFalling);
+		// We want to catch both edges, in order to debounce properly
+		this.setUpSourceEdge(true, true);
 	}
 	
 	

@@ -6,17 +6,18 @@ import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-/** Moves the choo choo to a specified position. This command accomplishes this
- * by running the motor full forward or reverse, depending on the direction
- * given, until it is a certain angle away from the setpoint and moving towards
- * it. It then kicks on the PID to bring it in close.
+/** Moves the choo choo to a specified position. The direction must be
+ *  specified, to avoid the Choo Choo firing or not firing when it shouldn't
  *
  */
 public class ChooChooGotoSetpoint extends Command {
 
 	double newSet;
 	
-    public ChooChooGotoSetpoint(double setpoint, boolean goForward) {
+	/** Moves the choo choo to a specified position. The direction must be
+	 *  specified, to avoid the Choo Choo firing or not firing when it shouldn't
+	 */
+    public ChooChooGotoSetpoint(double setpoint, boolean goForward, boolean forceRotation) {
     	double currPos = Robot.chooChooSubsys.getPosition();
     	
     	requires(Robot.chooChooSubsys);
@@ -24,16 +25,20 @@ public class ChooChooGotoSetpoint extends Command {
     	//normalize the setpoint angle
     	setpoint = AngleUtil.norm360(setpoint);
     	
-    	// Wrap it the proper amount of times
-    	newSet = 360 * Math.floor(currPos / 360) + setpoint;
-    	
-    	// Subtract 360 if currPos >= 0 and < 360
-    	if(currPos >= 0 && currPos < 360)
-    		newSet -= 360;
+    	// Get the minimum amount of complete rotations, and add the setpoint to that
+    	if(currPos >= 0)
+        	newSet = 360 * Math.floor(currPos / 360) + setpoint;
+    	else
+        	newSet = 360 * Math.ceil(currPos / 360) + setpoint;
     	
     	//make sure it moves the right way
-    	if(goForward)
-    		newSet += 360;
+    	if(!goForward)
+    		newSet -= 360;
+    	
+    	// If we are already on target and we want a full rotation,
+    	// Add or subtract 360 from the setpoint, depending on direction
+    	if(forceRotation && Robot.chooChooSubsys.onAbsoluteTarget(newSet))
+    		newSet += goForward ? 360 : -360;
     }
 
 
@@ -49,8 +54,18 @@ public class ChooChooGotoSetpoint extends Command {
 
 
     protected boolean isFinished() {
+    	// Turn off the PID
+    	Robot.chooChooSubsys.disable();
+    	
+    	// Stop if on target
     	boolean stop = Robot.chooChooSubsys.onTarget();
+    	
+    	// or the back button is pressed
     	stop |= OI.button_oBack.get();
+    	
+    	// or we are not zeroed
+    	stop |= !Robot.chooChooSubsys.hasBeenZeroed;
+    	
         return stop;
     }
 

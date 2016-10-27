@@ -71,6 +71,7 @@ public class SCLoader {
 	
 	
 	
+	@SuppressWarnings("unused")
 	private void configSCs()
 	{
 		// iterate through the list and get the proper speed controller

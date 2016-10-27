@@ -25,22 +25,11 @@ public class ChooChooISR extends Command {
     	//make sure the rest of code knows that we have been zeroed
     	Robot.chooChooSubsys.hasBeenZeroed = true;
     }
-
-
-    protected void execute() {
-    }
-
+    
    
     // all this has to do is update a variable, so it finishes essentially instantly
-    protected boolean isFinished() {
-        return true;
-    }
-
-    // Called once after isFinished returns true
-    protected void end() {
-    }
-
-
-    protected void interrupted() {
-    }
+    protected boolean isFinished() {   return true;   }
+    protected void end() {}
+    protected void interrupted() {}
+    protected void execute() {}
 }

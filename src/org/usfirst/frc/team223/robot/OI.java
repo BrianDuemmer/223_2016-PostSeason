@@ -1,6 +1,7 @@
 package org.usfirst.frc.team223.robot;
 
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 import org.usfirst.frc.team223.robot.generalCommands.*;
 
@@ -129,11 +130,11 @@ public class OI {
 	public static double		CHOOCHOO_PID_KI = 0.01;
 	public static double		CHOOCHOO_PID_KD = 0.0001;
 	public static double		CHOOCHOO_PID_TOLERANCE = 3.0;
-	public static double		CHOOCHOO_PID_ENABLE__ANGLE = 60.0;
 	
 	// Setpoints
 	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 310.0;
 	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 336.0;
+	public static double		CHOOCHOO_SETPOINT_UNLOAD__ANGLE = 0;
 
 	// Encoder
 	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
@@ -193,10 +194,16 @@ public class OI {
 		stick_oR.setParams(false, true, 0.1, 1);
 		
 		
-		// bind the commands for the operator buttons
+		////////////////////////// Operator Buttons ///////////////////////////
 		
-		// when B is pressed, bring the IntakeLift to the ball grab angle
-		button_oB.whileHeld(new IntakeLiftGotoPos(INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE));
+		// when X is pressed, bring the IntakeLift to the ball grab angle
+		button_oX.whileHeld(new IntakeLiftGotoPos(INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE));
+		
+		// When A is pressed, load the ChooChoo
+		button_oA.whenPressed(new LoadCC(true));
+		
+		// When the left stick is pressed, unload the ChooChoo
+		stick_oL.getButton().whenPressed(new UnloadCC());
 		
 		// When start is pressed, zero the intakeLift and ChooChoo
 		button_oStart.whenPressed(new ZeroLiftAndCC());
