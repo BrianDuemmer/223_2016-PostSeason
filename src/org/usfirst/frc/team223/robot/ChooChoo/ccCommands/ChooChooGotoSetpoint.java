@@ -12,15 +12,29 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ChooChooGotoSetpoint extends Command {
 
-	double newSet;
+	// Constructor inputs
+	double setpoint;
+	boolean goForward;
+	boolean forceRotation;
 	
 	/** Moves the choo choo to a specified position. The direction must be
 	 *  specified, to avoid the Choo Choo firing or not firing when it shouldn't
 	 */
     public ChooChooGotoSetpoint(double setpoint, boolean goForward, boolean forceRotation) {
-    	double currPos = Robot.chooChooSubsys.getPosition();
-    	
     	requires(Robot.chooChooSubsys);
+    	this.setpoint = setpoint;
+    	this.goForward = goForward;
+    	this.forceRotation = forceRotation;
+    	
+    	// Say that we cannot be interrupted
+//    	this.setInterruptible(false);
+    }
+
+
+    protected void initialize() {
+    	
+    	double newSet;
+    	double currPos = Robot.chooChooSubsys.getPosition();
     	
     	//normalize the setpoint angle
     	setpoint = AngleUtil.norm360(setpoint);
@@ -39,10 +53,7 @@ public class ChooChooGotoSetpoint extends Command {
     	// Add or subtract 360 from the setpoint, depending on direction
     	if(forceRotation && Robot.chooChooSubsys.onAbsoluteTarget(newSet))
     		newSet += goForward ? 360 : -360;
-    }
-
-
-    protected void initialize() {
+    	
     	// Turn on the PID and move towards newSet
     	Robot.chooChooSubsys.setSetpoint(newSet);
     	Robot.chooChooSubsys.enable();
