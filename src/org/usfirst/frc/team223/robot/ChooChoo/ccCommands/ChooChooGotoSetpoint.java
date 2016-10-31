@@ -35,7 +35,7 @@ public class ChooChooGotoSetpoint extends Command {
     	
     	double newSet;
     	double currPos = Robot.chooChooSubsys.getPosition();
-    	
+    	  
     	//normalize the setpoint angle
     	setpoint = AngleUtil.norm360(setpoint);
     	

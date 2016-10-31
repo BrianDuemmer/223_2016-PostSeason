@@ -2,6 +2,7 @@ package org.usfirst.frc.team223.robot.ChooChoo;
 
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
 import edu.wpi.first.wpilibj.CANTalon;
@@ -49,9 +50,10 @@ public class ChooChoo extends PIDSubsystem {
     	chooChooMot = new CANTalon(OI.CHOOCHOO_MOTOR_ID);
     	chooChooMot.setInverted(OI.CHOOCHOO_MOTOR_INVERT);
     	chooChooMot.enableBrakeMode(OI.CHOOCHOO_MOTOR_BRAKE);
+    	chooChooMot.setSafetyEnabled(false);
     	
     	// initialize the encoder
-    	chooChooMot.configEncoderCodesPerRev((int)(1 / OI.CHOOCHOO_ENCODER_DEGREES__PER__COUNT));
+    	chooChooMot.setEncPosition(0);
     	
     	// initialize the beam sensor
     	chooChooBeam = new InterruptableLimit
@@ -90,7 +92,12 @@ public class ChooChoo extends PIDSubsystem {
      */
 	public double getRawEncPos() 
 	{
-		return OI.CHOOCHOO_ENCODER_INVERT ? chooChooMot.get() * -1 : chooChooMot.get();
+		// Get the raw encoder position
+		double ret = OI.CHOOCHOO_ENCODER_INVERT ? chooChooMot.getEncPosition() * -1 : chooChooMot.getEncPosition();
+		
+		// Scale it and return
+		ret *= OI.CHOOCHOO_ENCODER_DEGREES__PER__COUNT;
+		return ret;
 	}
 	
 	
@@ -153,6 +160,19 @@ public class ChooChoo extends PIDSubsystem {
      */
 	public void setEncOffset(double newChooChooOffset) {   encoderOffset = newChooChooOffset;   }
     protected void usePIDOutput(double output) {   setOutput(output);   }
+    
+    public void log()
+    {
+    	if(OI.ROBOT_ISDEBUG)
+    	{
+    		String msg = "ChooChoo Encoder Pos: " + Double.toString(getPosition()) + "\n";
+    		msg += "ChooChoo Encoder offset: " + Double.toString(encoderOffset) + "\n\n";
+    		
+    		// print the message to the console
+    		Robot.printToDS(msg , "");
+    		
+    	}
+    }
 }
 
 

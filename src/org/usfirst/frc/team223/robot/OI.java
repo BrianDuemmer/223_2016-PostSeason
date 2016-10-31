@@ -92,7 +92,7 @@ public class OI {
 	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 15;
 	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 5;
 	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
-	public static double		INTAKELIFT_SETPOINT_MAXUP = 95;
+	public static double		INTAKELIFT_SETPOINT_MAXUP = 115;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
@@ -105,7 +105,7 @@ public class OI {
 	// Limit Switch
 	public static int			INTAKELIFT_LIMIT_ID = 3;
 	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = false;
-	public static double		INTAKELIFT_LIMIT_DEBOUNCE__TIME = 1;
+	public static double		INTAKELIFT_LIMIT_DEBOUNCE__TIME = 0.1;
 	
 	
 	
@@ -132,14 +132,14 @@ public class OI {
 	public static double		CHOOCHOO_PID_TOLERANCE = 3.0;
 	
 	// Setpoints
-	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 310.0;
-	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 336.0;
+	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 295.0;
+	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 321.0;
 	public static double		CHOOCHOO_SETPOINT_UNLOAD__ANGLE = 0;
 
 	// Encoder
 	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
 	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.002793296;
-	public static boolean		CHOOCHOO_ENCODER_INVERT = true;
+	public static boolean		CHOOCHOO_ENCODER_INVERT = false;
 	public static double		CHOOCHOO_ENCODER_WRAP__THRESHOLD = 20;
 	
 	// Beam Sensor

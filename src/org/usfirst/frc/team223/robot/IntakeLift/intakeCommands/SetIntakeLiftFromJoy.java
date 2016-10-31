@@ -19,9 +19,15 @@ public class SetIntakeLiftFromJoy extends Command {
 	 * Maintenance PID, which deals with the fact that the lift is so heavy, that it
 	 * falls under its own weight, even with brake mode enabled.
 	 */
-    public SetIntakeLiftFromJoy() {   requires(Robot.intakeLiftSubsys);  }
+    public SetIntakeLiftFromJoy() 
+    {   
+    	requires(Robot.intakeLiftSubsys);
+    	
+    	// Make sure this is allowed to be interrupted
+    	this.setInterruptible(true);
+    }
     protected void initialize() {}
-    protected boolean isFinished() {   return true;   }
+    protected boolean isFinished() {   return false;   }
     protected void end() {}
     protected void interrupted() {}
     

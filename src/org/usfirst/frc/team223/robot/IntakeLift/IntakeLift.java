@@ -51,6 +51,7 @@ public class IntakeLift extends PIDSubsystem {
     	intakeLiftMot = new CANTalon(OI.INTAKELIFT_MOTOR_ID);
     	intakeLiftMot.setInverted(OI.INTAKELIFT_MOTOR_INVERT);
     	intakeLiftMot.enableBrakeMode(OI.INTAKELIFT_MOTOR_BRAKE);
+    	intakeLiftMot.setSafetyEnabled(false);
     	
     	
     	

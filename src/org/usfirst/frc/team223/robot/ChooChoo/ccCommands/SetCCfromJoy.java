@@ -10,8 +10,12 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetCCfromJoy extends Command {
 
-    public SetCCfromJoy() {   requires(Robot.chooChooSubsys);   }
-    protected boolean isFinished() {   return true;   }
+    public SetCCfromJoy() 
+    {   
+    	requires(Robot.chooChooSubsys); 
+    	this.setInterruptible(true);
+    }
+    protected boolean isFinished() {   return false;   }
     protected void initialize() {}
     protected void end() {}
     protected void interrupted() {}
