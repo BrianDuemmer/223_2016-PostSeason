@@ -4,7 +4,6 @@ import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
-import org.usfirst.frc.team223.robot.generalCommands.DummyCommand;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
@@ -84,7 +83,14 @@ public class IntakeLift extends PIDSubsystem {
     
     // Set the default command to output to the motor from the joystick
     public void initDefaultCommand() {   setDefaultCommand(new SetIntakeLiftFromJoy());   }
-    protected void usePIDOutput(double output) {   setOutput(output);   }
+    
+    
+    protected void usePIDOutput(double output) 
+    {   
+    	// Only update the output if the PID is enabled
+    	if(this.getPIDController().isEnabled())
+    		setOutput(output);  
+    }
 
     
     

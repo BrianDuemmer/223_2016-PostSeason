@@ -20,8 +20,19 @@ public class setDriveFromJoy extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	// Cheesy drive the robot
-    	Robot.driveSubsys.driveArcade(OI.stick_dL.getY(), OI.stick_dR.getX());
+    	// Calculate the base outputs
+    	double yOut = OI.stick_dL.getY();
+    	double xOut = OI.stick_dR.getX();
+    	
+    	// Scale the output for fine adjust if necessary
+    	if(OI.button_dL.get())
+    	{
+    		yOut *= OI.DRIVE_FINE__ADJ__OUT;
+    		xOut *= OI.DRIVE_FINE__ADJ__OUT;
+    	}
+    	
+    	// set the output
+    	Robot.driveSubsys.driveArcade(yOut, xOut);
     }
 
     // Make this return true when this Command no longer needs to run execute()

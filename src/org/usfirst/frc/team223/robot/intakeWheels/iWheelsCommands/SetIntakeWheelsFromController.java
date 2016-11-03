@@ -18,10 +18,10 @@ public class SetIntakeWheelsFromController extends Command {
     	
     	// If left bumper pressed, output ball. If Right pressed, intake ball.
     	// if neither or both are pressed, output zero
-    	double outA = OI.button_oL.get() ?  -1 : 0;
-    	double outB = OI.button_oR.get() ?   1 : 0;
+    	double outA = OI.button_oL.get() ?   1 : 0;
+    	double outB = OI.button_oR.get() ?  -1 : 0;
     	
-    	Robot.intakeWheelsSubsys.setOutput(outA + outB);
+    	Robot.intakeWheelsSubsys.setOutput((outA + outB) * OI.INTAKEWHEELS_MOTOR_SCALAR);
     }
 
     // Called repeatedly when this Command is scheduled to run

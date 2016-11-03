@@ -66,12 +66,33 @@ public class OI {
 	public static int 			DRIVE_MOTOR_R2_ID = 6;
 	public static boolean 		DRIVE_MOTOR_R2_INVERT = true;
 	
+	public static int			DRIVE_ENCODER_L_CP__FOOT = 57;
+	public static int			DRIVE_ENCODER_R_CP__FOOT = 57;
+	
+	public static boolean		DRIVE_ENCODER_L_INVERT = true;
+	public static boolean		DRIVE_ENCODER_R_INVERT = true;
+	
+	public static double		DRIVE_L_PID_KP = 0.3;
+	public static double		DRIVE_L_PID_KI = 0.01;
+	public static double		DRIVE_L_PID_KD = 0.0;
+	public static double		DRIVE_L_PID_KF = 10;
+	
+	public static double		DRIVE_R_PID_KP = 0.3;
+	public static double		DRIVE_R_PID_KI = 0.01;
+	public static double		DRIVE_R_PID_KD = 0.0;
+	public static double		DRIVE_R_PID_KF = 10;
+	
+	public static double		DRIVE_FINE__ADJ__OUT = 0.375;
+	
+	public static double		DRIVE_WHEELBASE_WIDTH = 1.708;
+	
+	
 	/* braking configuration. if DRIVE_BRAKE_HALF is true, then only one motor
 	 * on each side will be in brake mode. If DRIVE_BRAKE_FULL is true, then
 	 * both motors on each side will brake.
 	 */
 	public static boolean		DRIVE_BRAKE_HALF = true;
-	public static boolean		DRIVE_BRAKE_FULL = true;
+	public static boolean		DRIVE_BRAKE_FULL = false;
 	
 	
 	
@@ -89,10 +110,10 @@ public class OI {
 	public static double		INTAKELIFT_PID_TOLERANCE = 0.5;
 	
 	// Setpoints
-	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 15;
+	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 0;
 	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 5;
 	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
-	public static double		INTAKELIFT_SETPOINT_MAXUP = 115;
+	public static double		INTAKELIFT_SETPOINT_MAXUP = 107;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
@@ -115,6 +136,7 @@ public class OI {
 	public static int 			INTAKEWHEELS_MOTOR_ID = 7;
 	public static boolean 		INTAKEWHEELS_MOTOR_INVERT = false;
 	public static boolean 		INTAKEWHEELS_MOTOR_BRAKE = false;
+	public static double		INTAKEWHEELS_MOTOR_SCALAR = 0.7;
 	
 	
 	
@@ -151,7 +173,7 @@ public class OI {
 	
 	/////////// General Configutation Values //////////
 	
-	public static double 		ZEROLIFTANDCC_CC_START_DELAY= 0.75;
+	public static double 		ZEROLIFTANDCC_CC_START_DELAY= 1.5;
 	
 	
 	
@@ -161,19 +183,19 @@ public class OI {
 		operatorController = new Joystick(1);
 		
 		// bind the buttons for the driver controller
-		button_dA = new JoystickButton(driverController, 0);
-		button_dB = new JoystickButton(driverController, 1);
-		button_dX = new JoystickButton(driverController, 2);
-		button_dY = new JoystickButton(driverController, 3);
-		button_dL = new JoystickButton(driverController, 4);
-		button_dR = new JoystickButton(driverController, 5);
-		button_dStart = new JoystickButton(driverController, 8);
-		button_dBack = new JoystickButton(driverController, 9);
+		button_dA = new JoystickButton(driverController, 1);
+		button_dB = new JoystickButton(driverController, 2);
+		button_dX = new JoystickButton(driverController, 3);
+		button_dY = new JoystickButton(driverController, 4);
+		button_dL = new JoystickButton(driverController, 5);
+		button_dR = new JoystickButton(driverController, 6);
+		button_dStart = new JoystickButton(driverController, 7);
+		button_dBack = new JoystickButton(driverController, 8);
 		
 		// bind the analog sticks for the driver controller
-		stick_dL = new SmartControlStick(driverController, 0, 1, 6);
+		stick_dL = new SmartControlStick(driverController, 0, 1, 9);
 		stick_dL.setParams(false, true, 0.1, 1);
-		stick_dR = new SmartControlStick(driverController, 4, 5, 7);
+		stick_dR = new SmartControlStick(driverController, 4, 5, 10);
 		stick_dR.setParams(false, true, 0.1, 1);
 		
 		

@@ -24,6 +24,9 @@ public class ChooChooISR extends Command {
     	
     	//make sure the rest of code knows that we have been zeroed
     	Robot.chooChooSubsys.hasBeenZeroed = true;
+    	
+    	// Log us entering the ISR
+    	Robot.printToDS("Entering BeamISR ", "ChooChoo");
     }
     
    

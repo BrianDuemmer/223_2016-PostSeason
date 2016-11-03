@@ -26,7 +26,8 @@ public class Robot extends IterativeRobot {
 
     
     // initialize the subsystems / the OI
-    public void robotInit() {
+    public void robotInit() 
+    {
 		driveSubsys = new driveTrain();
 		intakeLiftSubsys = new IntakeLift();
 		intakeWheelsSubsys = new IntakeWheels();
@@ -59,7 +60,9 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() 
     {
     	Scheduler.getInstance().run(); 
-    	intakeLiftSubsys.log();
+    	
+//    	printToDS("Active Command: " +chooChooSubsys.getCurrentCommand().getName(), "ChooChoo");
+//    	intakeLiftSubsys.log();
 //    	chooChooSubsys.log();
     }
     

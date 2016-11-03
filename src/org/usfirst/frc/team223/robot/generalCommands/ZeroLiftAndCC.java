@@ -21,6 +21,6 @@ public class ZeroLiftAndCC extends CommandGroup {
 		Timer.delay(OI.ZEROLIFTANDCC_CC_START_DELAY);
 		
 		// Zero the chooChoo after some time has elapsed
-		addSequential(new ZeroCC());
+//		addSequential(new ZeroCC());
     }
 }

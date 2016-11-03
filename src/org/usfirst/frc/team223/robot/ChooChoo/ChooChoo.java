@@ -150,7 +150,10 @@ public class ChooChoo extends PIDSubsystem {
      * 
      * @param output the value to send to the encoder
      */
-    public void setOutput(double output) {   chooChooMot.set(output);   }
+    public void setOutput(double output) 
+    {   
+    	chooChooMot.set(output); 	
+    }
     
     
     
@@ -159,7 +162,13 @@ public class ChooChoo extends PIDSubsystem {
      * @param newOffset the new offset
      */
 	public void setEncOffset(double newChooChooOffset) {   encoderOffset = newChooChooOffset;   }
-    protected void usePIDOutput(double output) {   setOutput(output);   }
+    protected void usePIDOutput(double output) 
+    {   
+    	// Only update the output if the PID is enabled
+    	if(this.getPIDController().isEnabled())
+    		setOutput(output);   
+    	
+    }
     
     public void log()
     {
@@ -173,6 +182,7 @@ public class ChooChoo extends PIDSubsystem {
     		
     	}
     }
+
 }
 
 

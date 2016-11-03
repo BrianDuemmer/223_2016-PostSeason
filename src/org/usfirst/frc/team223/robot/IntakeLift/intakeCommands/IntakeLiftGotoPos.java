@@ -39,8 +39,8 @@ public class IntakeLiftGotoPos extends Command {
     // the intake lift hasn't been zeroed
     protected boolean isFinished() {
         return 	Robot.intakeLiftSubsys.onTarget() 		|| 
-        		OI.button_oBack.get() 					/*|| 
-        		!Robot.intakeLiftSubsys.hasBeenZeroed*/;
+        		OI.button_oBack.get() 					|| 
+        		Robot.intakeLiftSubsys.hasBeenZeroed;
     }
 
     // Stop the motor, and disable the PID

@@ -16,8 +16,12 @@ public class SetCCfromJoy extends Command {
     	this.setInterruptible(true);
     }
     protected boolean isFinished() {   return false;   }
-    protected void initialize() {}
-    protected void end() {}
+    
+    // Say that we are entering the command
+    protected void initialize() {  Robot.printToDS("Entering setFromJoy ", "ChooChoo");}
+    
+    // Say that we are leaving the command
+    protected void end() { Robot.printToDS("Leaving setFromJoy ", "ChooChoo"); }
     protected void interrupted() {}
 
     // Disable the PID, then set the output
