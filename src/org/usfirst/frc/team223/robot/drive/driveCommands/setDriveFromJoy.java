@@ -12,6 +12,7 @@ public class setDriveFromJoy extends Command {
 
     public setDriveFromJoy() {
     	requires(Robot.driveSubsys);
+    	this.setInterruptible(true);
     }
 
     // Called just before this Command runs the first time

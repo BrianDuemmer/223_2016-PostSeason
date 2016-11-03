@@ -3,6 +3,7 @@ package org.usfirst.frc.team223.robot;
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
+import org.usfirst.frc.team223.robot.drive.driveCommands.DriveVelForTime;
 import org.usfirst.frc.team223.robot.generalCommands.*;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -113,7 +114,7 @@ public class OI {
 	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 0;
 	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 5;
 	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
-	public static double		INTAKELIFT_SETPOINT_MAXUP = 107;
+	public static double		INTAKELIFT_SETPOINT_MAXUP = 113;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
@@ -214,6 +215,11 @@ public class OI {
 		stick_oL.setParams(false, true, 0.1, 1);
 		stick_oR = new SmartControlStick(operatorController, 4, 5, 10);
 		stick_oR.setParams(false, true, 0.1, 1);
+		
+		/////////////////////////// Driver Buttons ////////////////////////////
+		
+		// When A is pressed, drive at 2 ft/sec for 3 sec straight
+		button_dA.whenPressed(new DriveVelForTime(2.0, 3.0, 0.0));
 		
 		
 		////////////////////////// Operator Buttons ///////////////////////////

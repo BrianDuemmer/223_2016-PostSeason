@@ -30,8 +30,6 @@ public class SetCCfromJoy extends Command {
     	
     	double out = OI.stick_oL.getX();
     	Robot.chooChooSubsys.setOutput(out);
-    	
-    	//this.setInterruptible(true);
     }
 
 

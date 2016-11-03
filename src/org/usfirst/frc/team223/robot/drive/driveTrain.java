@@ -53,7 +53,9 @@ public class driveTrain extends Subsystem {
     	driveL1.reverseSensor(OI.DRIVE_ENCODER_L_INVERT);
     	driveL1.setPIDSourceType(PIDSourceType.kRate);
     	
+    	// Configure the DriveSide
     	leftSide.setPIDSource(driveL1);
+    	leftSide.setPIDSrcScalings(OI.DRIVE_ENCODER_L_CP__FOOT, OI.DRIVE_ENCODER_L_INVERT);
     	
     	// Configure the PID
     	leftSide.setPID
@@ -81,12 +83,9 @@ public class driveTrain extends Subsystem {
     	rightSide.addMotor(driveR1);
     	rightSide.addMotor(driveR2);
     	
-    	// Configure the encoder
-    	driveR1.configEncoderCodesPerRev(OI.DRIVE_ENCODER_R_CP__FOOT);
-    	driveR1.reverseSensor(OI.DRIVE_ENCODER_R_INVERT);
-    	driveR1.setPIDSourceType(PIDSourceType.kRate);
-    	
+    	// Configure the DriveSide
     	rightSide.setPIDSource(driveR1);
+    	rightSide.setPIDSrcScalings(OI.DRIVE_ENCODER_R_CP__FOOT, OI.DRIVE_ENCODER_R_INVERT);
     	
     	// Configure the PID
     	rightSide.setPID
@@ -131,5 +130,63 @@ public class driveTrain extends Subsystem {
     	rightSide.setRawOutput(outRight);
     	
     }
+
+
+
+
+	/**
+	 * @return the leftSide
+	 */
+	public DriveSide getLeftSide() {
+		return leftSide;
+	}
+
+
+
+
+	/**
+	 * @param leftSide the leftSide to set
+	 */
+	public void setLeftSide(DriveSide leftSide) {
+		this.leftSide = leftSide;
+	}
+
+
+
+
+	/**
+	 * @return the rightSide
+	 */
+	public DriveSide getRightSide() {
+		return rightSide;
+	}
+
+
+
+
+	/**
+	 * @param rightSide the rightSide to set
+	 */
+	public void setRightSide(DriveSide rightSide) {
+		this.rightSide = rightSide;
+	}
+	
+	
+	
+	/**
+	 * Logs the encoder positions and velocities to the driverstation
+	 * @param showLeft if true, prints the data for the left encoder
+	 * @param showRight if true, prints the data for the right encoder
+	 */
+	public void logEnc(boolean showLeft ,boolean showRight)
+	{
+		if(showLeft)
+			Robot.printToDS("left - v:" + String.format("%3.3f", new Double((double)driveL1.getEncVelocity())) + 
+								  " p: " + String.format("%3.3f", new Double((double)driveL1.getEncPosition())), "Drive");
+		
+		if(showRight)
+			Robot.printToDS("right - v:" + String.format("%3.3f", new Double((double)driveR1.getEncVelocity())) + 
+								  " p: " + String.format("%3.3f", new Double((double)driveR1.getEncPosition())), "Drive");
+	}
 }
 

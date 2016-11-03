@@ -1,54 +1,91 @@
 package org.usfirst.frc.team223.robot.drive.driveCommands;
 
+import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /** Drives at a certain velocity for a certain time, and at a certain angle
  *
  */
 public class DriveVelForTime extends Command {
-
-	double vel;
-	double time;
-	double degPerFoot;
 	
 	// setpoint velocities
 	double leftVel;
 	double rightVel;
+	
+	// timestamps
+	double runTime;
+	double stopTime;
 	
 	double radius;
 	
     public DriveVelForTime(double vel, double time, double degPerFoot) {
     	requires(Robot.driveSubsys);
     	
-    	// Update instance variables
-    	this.vel = vel;
-    	this.time = time;
-    	this.degPerFoot = degPerFoot;
+    	// Wheelbase compensation factor
+    	double wbComp = OI.DRIVE_WHEELBASE_WIDTH * 0.5;
     	
-    	// Calculate radius. we want it to only be positive
-    	radius = Math.abs(180 / (Math.PI * degPerFoot));
-    
-    	if()
+    	// If degrees per foot is zero, just drive straight
+    	if(degPerFoot == 0)
+    	{
+    		// set radius to NaN
+    		radius = Double.NaN;
+    		
+    		// set each side velocity to be the same
+    		leftVel = vel;
+    		rightVel = vel;
+    	}
     	
+    	//If degrees per foot is nonzero, calculate a turn
+    	else
+    	{
+	    	// Calculate radius. we want it to only be positive
+	    	radius = Math.abs(180 / (Math.PI * degPerFoot));
+	    	
+	    	// Invert the wheelbase width compensation if necessary
+	    	wbComp *= Math.signum(degPerFoot);
+	    	
+	    	// Calculate the adjusted velocities for each side
+	    	leftVel =  	(vel * (radius + wbComp) / radius);
+	    	rightVel = 	(vel * (radius - wbComp) / radius);
+    	}
+    	
+    	// Save the running time
+    	runTime = time;
     }
 
  
-    protected void initialize() {
-    }
+    // Record the stopping time
+    protected void initialize() {   stopTime = Timer.getFPGATimestamp() + runTime;   }
 
 
     protected void execute() {
+    	// Set the setpoints for each side. Eventually a smarter correction
+    	// algorithm will be used here
+    	Robot.driveSubsys.getLeftSide().setSetpoint(leftVel);
+    	Robot.driveSubsys.getRightSide().setSetpoint(rightVel);
     }
 
 
-    protected boolean isFinished() {
-        return false;
+    protected boolean isFinished() 
+    {
+    	//Stop when the the time runs out
+    	boolean stop = Timer.getFPGATimestamp() > stopTime;
+    	
+    	// Or the back button is pressed
+    	stop |= OI.button_dBack.get();
+    	
+        return stop;
     }
 
 
-    protected void end() {
+    protected void end() 
+    {
+    	// Turn off the PIDs and stop the motors
+    	Robot.driveSubsys.getLeftSide().setRawOutput(0);
+    	Robot.driveSubsys.getRightSide().setRawOutput(0);
     }
 
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
@@ -21,6 +22,10 @@ public class DriveSide extends PIDSubsystem
 	
 	// All of the motors
 	List<SpeedController> motors;
+	
+	// Encoder data
+	double distPerPulse;
+	boolean invert;
 	
 	
 	/**
@@ -51,11 +56,26 @@ public class DriveSide extends PIDSubsystem
 	
 	
 	/**
-	 * Sets the PID source for the driveSide. this is usually an encoder / CANTalon. Make sure
-	 * it is set to velocity, not displacement
+	 * Sets the PID source for the driveSide. this is usually an encoder / CANTalon.
 	 * @param src the PIDsource to use
 	 */
-	public void setPIDSource(PIDSource src){   pidSrc = src;   }
+	public void setPIDSource(PIDSource src)
+	{   
+		pidSrc = src;   
+		pidSrc.setPIDSourceType(PIDSourceType.kRate);
+	}
+	
+	
+	/**
+	 * Sets the scalings for the PIDSource
+	 * @param distPerPulse the value that is multiplied by the value returned by the PIDSource
+	 * @param invert if true, multiplies the output of PIDSource by -1
+	 */
+	public void setPIDSrcScalings(double distPerPulse, boolean invert)
+	{
+		this.distPerPulse = distPerPulse;
+		this.invert = invert;
+	}
 	
 	
 	/**
@@ -70,10 +90,21 @@ public class DriveSide extends PIDSubsystem
 	/**
 	 * returns the input from the PID source provided by {@link setPIDSource}
 	 */
-	public double getPID() {
+	public double getPID() 
+	{
+		double pidVal;
+		
 		// if the pid source is valid, use that
 		if(pidSrc != null)
-			return pidSrc.pidGet();
+		{
+			// get the value from the PIDSource
+			pidVal = pidSrc.pidGet();
+		
+			// Scale and invert as necessary
+			pidVal *= distPerPulse;
+			pidVal *= invert  ?  -1 : 1;
+			return pidVal;
+		}
 		
 		// if it is null, return 0.
 		else
@@ -105,11 +136,15 @@ public class DriveSide extends PIDSubsystem
 	 */
 	public void setSetpoint(double setpoint)
 	{
-		// set the setpoint
-		super.setSetpoint(setpoint);
-		
-		// enable the PID
-		this.enable();
+		// Don't run if a PID Source hasn't been set
+		if(pidSrc != null)
+		{
+			// set the setpoint
+			super.setSetpoint(setpoint);
+			
+			// enable the PID
+			this.enable();
+		}
 	}
 	
 	
@@ -140,4 +175,29 @@ public class DriveSide extends PIDSubsystem
 			output(output);
 		
 	}
+	
+	public String reportPIDSource(String name)
+	{
+		String ret = "";
+		
+		if(pidSrc != null)
+		{
+			ret = name = " - " + String.format("%.3f", new Double(this.returnPIDInput()));
+		}
+		
+		return ret;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
