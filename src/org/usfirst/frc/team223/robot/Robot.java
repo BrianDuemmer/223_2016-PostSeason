@@ -64,7 +64,7 @@ public class Robot extends IterativeRobot {
 //    	printToDS("Active Command: " +chooChooSubsys.getCurrentCommand().getName(), "ChooChoo");
 //    	intakeLiftSubsys.log();
 //    	chooChooSubsys.log();
-//    	driveSubsys.logEnc(true, true);
+    	driveSubsys.logEnc(true, true);
     }
     
     /**

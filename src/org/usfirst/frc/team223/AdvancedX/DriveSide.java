@@ -3,6 +3,7 @@ package org.usfirst.frc.team223.AdvancedX;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -27,14 +28,21 @@ public class DriveSide extends PIDSubsystem
 	double distPerPulse;
 	boolean invert;
 	
+	//max output
+	double maxOut;
+	
 	
 	/**
-	 * Constructor for the DriveSide. Don't forget
+	 * Constructor for the DriveSide. Make sure to configure the motors, PID, 
+	 * and PIDsource before use
 	 */
 	public DriveSide()
 	{
 		super(0, 0, 0);
 		motors = new ArrayList<SpeedController>();
+		
+		// Set the maximum output to a safe default
+		maxOut = 1;
 	}
 	
 	
@@ -94,21 +102,26 @@ public class DriveSide extends PIDSubsystem
 	{
 		double pidVal;
 		
-		// if the pid source is valid, use that
-		if(pidSrc != null)
-		{
-			// get the value from the PIDSource
+		// if the PID Source is null, return 0
+		if(pidSrc == null)
+			return 0;
+		
+		
+		// if the PID Source is not null and is a CANTalon, use a workaround to deal with the
+		// fact that pidGet will NOT return speed, even if rate is the PIDSource mode.
+		if(pidSrc.getClass() == CANTalon.class)
+			pidVal = ((CANTalon)pidSrc).getSpeed();
+			
+		
+		// if the PID Source is not null and not a CANTalon, just use pidGet
+		else
 			pidVal = pidSrc.pidGet();
 		
-			// Scale and invert as necessary
-			pidVal *= distPerPulse;
-			pidVal *= invert  ?  -1 : 1;
-			return pidVal;
-		}
-		
-		// if it is null, return 0.
-		else
-			return 0;
+		// Scale and invert as necessary
+		pidVal *= distPerPulse;
+		pidVal *= invert  ?  -1 : 1;
+		return pidVal;
+
 	}
 
 	
@@ -120,8 +133,8 @@ public class DriveSide extends PIDSubsystem
 	 */
 	public void setRawOutput(double out)
 	{
-		// Turn off the PID
-		this.disable();
+		// Turn off the PID and reset
+		this.getPIDController().reset();
 		
 		// Set the output
 		output(out);
@@ -155,9 +168,12 @@ public class DriveSide extends PIDSubsystem
 	 */
 	protected void output(double output) {
 		
+		// Coerce the output to an allowable range specified by maxOut
+		double newOut = output > 0  ?  Math.min(output, maxOut) : Math.max(output, maxOut * -1);
+		
 		// Iterate through all of the motors and set their outputs
 		for(SpeedController i : motors)
-			i.set(output);
+			i.set(newOut);
 		
 	}
 
@@ -176,17 +192,30 @@ public class DriveSide extends PIDSubsystem
 		
 	}
 	
+	/**
+	 * Returns a string containing some information about the PIDSource, in the format
+	 * 
+	 * "name - value"
+	 */
 	public String reportPIDSource(String name)
 	{
 		String ret = "";
 		
 		if(pidSrc != null)
 		{
-			ret = name = " - " + String.format("%.3f", new Double(this.returnPIDInput()));
+			ret = name + ": \t" + String.format("%.3f", new Double(this.returnPIDInput()));
 		}
 		
 		return ret;
 	}
+	
+	
+	/**
+	 * Sets the maximum allowable output to send to the motors.
+	 * this should be between [0,1]. Default is 1.
+	 * @param output
+	 */
+	public void setMaxOutput(double output) {   maxOut = output;   }
 }
 
 

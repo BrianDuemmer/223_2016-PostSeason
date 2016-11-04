@@ -6,6 +6,7 @@ import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.drive.driveCommands.*;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -33,7 +34,7 @@ public class driveTrain extends Subsystem {
     	leftSide = new DriveSide();
     	rightSide = new DriveSide();
     	
-    	// Initialize the left side
+    	/////////////////////// Left Side Drive motors /////////////////////////
     	
     	// Initialize the left Side drive motors
     	driveL1 = new CANTalon(OI.DRIVE_MOTOR_L1_ID);
@@ -44,18 +45,19 @@ public class driveTrain extends Subsystem {
     	driveL2.setInverted(OI.DRIVE_MOTOR_L2_INVERT);
     	driveL2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     	
+    	// Configure the SRX to use the encoder
+    	driveL1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+    	driveL1.setPIDSourceType(PIDSourceType.kRate);
+    	driveL1.setEncPosition(0);
+    	
     	// add the motors
     	leftSide.addMotor(driveL1);
     	leftSide.addMotor(driveL2);
     	
-    	// Configure the encoder
-    	driveL1.configEncoderCodesPerRev(OI.DRIVE_ENCODER_L_CP__FOOT);
-    	driveL1.reverseSensor(OI.DRIVE_ENCODER_L_INVERT);
-    	driveL1.setPIDSourceType(PIDSourceType.kRate);
-    	
     	// Configure the DriveSide
     	leftSide.setPIDSource(driveL1);
     	leftSide.setPIDSrcScalings(OI.DRIVE_ENCODER_L_CP__FOOT, OI.DRIVE_ENCODER_L_INVERT);
+    	leftSide.setMaxOutput(OI.DRIVE_MAX__OUTPUT);
     	
     	// Configure the PID
     	leftSide.setPID
@@ -68,7 +70,9 @@ public class driveTrain extends Subsystem {
     	
     	
     	
-    	// Right Side drive motors
+    	
+    	
+    	////////////////////// Right Side drive motors ////////////////////////
     	
     	//Right side drive motors
     	driveR1 = new CANTalon(OI.DRIVE_MOTOR_R1_ID);
@@ -79,6 +83,11 @@ public class driveTrain extends Subsystem {
     	driveR2.setInverted(OI.DRIVE_MOTOR_R2_INVERT);
     	driveR2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     	
+    	// Configure the SRX to use the encoder
+    	driveR1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+    	driveR1.setPIDSourceType(PIDSourceType.kRate);
+    	driveR1.setEncPosition(0);
+    	
     	// add the motors
     	rightSide.addMotor(driveR1);
     	rightSide.addMotor(driveR2);
@@ -86,6 +95,7 @@ public class driveTrain extends Subsystem {
     	// Configure the DriveSide
     	rightSide.setPIDSource(driveR1);
     	rightSide.setPIDSrcScalings(OI.DRIVE_ENCODER_R_CP__FOOT, OI.DRIVE_ENCODER_R_INVERT);
+    	rightSide.setMaxOutput(OI.DRIVE_MAX__OUTPUT);
     	
     	// Configure the PID
     	rightSide.setPID
@@ -181,12 +191,10 @@ public class driveTrain extends Subsystem {
 	public void logEnc(boolean showLeft ,boolean showRight)
 	{
 		if(showLeft)
-			Robot.printToDS("left - v:" + String.format("%3.3f", new Double((double)driveL1.getEncVelocity())) + 
-								  " p: " + String.format("%3.3f", new Double((double)driveL1.getEncPosition())), "Drive");
+			Robot.printToDS(leftSide.reportPIDSource("Left side"), "Drive");
 		
 		if(showRight)
-			Robot.printToDS("right - v:" + String.format("%3.3f", new Double((double)driveR1.getEncVelocity())) + 
-								  " p: " + String.format("%3.3f", new Double((double)driveR1.getEncPosition())), "Drive");
+			Robot.printToDS(rightSide.reportPIDSource("Right side"), "Drive");
 	}
 }
 

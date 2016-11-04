@@ -67,23 +67,24 @@ public class OI {
 	public static int 			DRIVE_MOTOR_R2_ID = 6;
 	public static boolean 		DRIVE_MOTOR_R2_INVERT = true;
 	
-	public static int			DRIVE_ENCODER_L_CP__FOOT = 57;
-	public static int			DRIVE_ENCODER_R_CP__FOOT = 57;
+	public static double		DRIVE_ENCODER_L_CP__FOOT = 0.01291423;
+	public static double		DRIVE_ENCODER_R_CP__FOOT = 0.01291423;
 	
 	public static boolean		DRIVE_ENCODER_L_INVERT = true;
-	public static boolean		DRIVE_ENCODER_R_INVERT = true;
+	public static boolean		DRIVE_ENCODER_R_INVERT = false;
 	
 	public static double		DRIVE_L_PID_KP = 0.3;
-	public static double		DRIVE_L_PID_KI = 0.01;
+	public static double		DRIVE_L_PID_KI = 0.001;
 	public static double		DRIVE_L_PID_KD = 0.0;
-	public static double		DRIVE_L_PID_KF = 10;
+	public static double		DRIVE_L_PID_KF = 20;
 	
 	public static double		DRIVE_R_PID_KP = 0.3;
-	public static double		DRIVE_R_PID_KI = 0.01;
+	public static double		DRIVE_R_PID_KI = 0.001;
 	public static double		DRIVE_R_PID_KD = 0.0;
-	public static double		DRIVE_R_PID_KF = 10;
+	public static double		DRIVE_R_PID_KF = 20;
 	
 	public static double		DRIVE_FINE__ADJ__OUT = 0.375;
+	public static double		DRIVE_MAX__OUTPUT = 0.999;
 	
 	public static double		DRIVE_WHEELBASE_WIDTH = 1.708;
 	
@@ -220,6 +221,15 @@ public class OI {
 		
 		// When A is pressed, drive at 2 ft/sec for 3 sec straight
 		button_dA.whenPressed(new DriveVelForTime(2.0, 3.0, 0.0));
+		
+		// When B is pressed, drive at 4 ft/sec for 1.5 sec straight
+		button_dB.whenPressed(new DriveVelForTime(4.0, 1.5, 0.0));
+		
+		// When A is pressed, drive at 2 ft/sec for 3 sec at 10 deg per foot
+		button_dX.whenPressed(new DriveVelForTime(2.0, 3.0, 10.0));
+		
+		// When B is pressed, drive at 4 ft/sec for 1.5 sec at -10 deg per foot
+		button_dY.whenPressed(new DriveVelForTime(4.0, 1.5, -10.0));
 		
 		
 		////////////////////////// Operator Buttons ///////////////////////////
