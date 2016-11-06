@@ -10,6 +10,11 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
 
+/**
+ * Class for the intake lift subsystem. Does not include the intake wheels.
+ * @author Brian Duemmer
+ *
+ */
 public class IntakeLift extends PIDSubsystem {
 	
 	// Physical objects that are part of the subsystem

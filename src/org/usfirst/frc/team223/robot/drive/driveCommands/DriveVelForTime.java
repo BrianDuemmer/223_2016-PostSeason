@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 /** Drives at a certain velocity for a certain time, and at a certain angle
  *
+ *@author Brian Duemmer
  */
 public class DriveVelForTime extends Command {
 	
@@ -64,8 +65,7 @@ public class DriveVelForTime extends Command {
     protected void execute() {
     	// Set the setpoints for each side. Eventually a smarter correction
     	// algorithm will be used here
-    	Robot.driveSubsys.getLeftSide().setSetpoint(leftVel);
-    	Robot.driveSubsys.getRightSide().setSetpoint(rightVel);
+    	Robot.driveSubsys.getController().setRawVel(leftVel, rightVel);
     }
 
 
@@ -84,8 +84,7 @@ public class DriveVelForTime extends Command {
     protected void end() 
     {
     	// Turn off the PIDs and stop the motors
-    	Robot.driveSubsys.getLeftSide().setRawOutput(0);
-    	Robot.driveSubsys.getRightSide().setRawOutput(0);
+    	Robot.driveSubsys.getController().setRawOut(0, 0);
     }
 
 

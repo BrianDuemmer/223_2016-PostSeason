@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.command.Command;
  * Sets the output of the intakeLift from a controller. Also runs the state
  * Maintenance PID, which deals with the fact that the lift is so heavy, that it
  * falls under its own weight, even with brake mode enabled.
+ * 
+ * @author Brian Duemmer
  */
 public class SetIntakeLiftFromJoy extends Command {
 

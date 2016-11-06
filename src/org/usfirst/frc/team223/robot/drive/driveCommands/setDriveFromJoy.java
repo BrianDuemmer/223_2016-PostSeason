@@ -6,7 +6,7 @@ import org.usfirst.frc.team223.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /** Sets the output of the drivetrain from the driver joystick
- *
+ *@author Brian Duemmer
  */
 public class setDriveFromJoy extends Command {
 

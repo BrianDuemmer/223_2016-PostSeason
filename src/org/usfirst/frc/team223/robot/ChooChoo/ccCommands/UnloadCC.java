@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  * Unloads the Choo Choo mechanism
+ * 
+ * @author Brian Duemmer
  */
 public class UnloadCC extends CommandGroup {
     

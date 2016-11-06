@@ -6,7 +6,9 @@ import org.usfirst.frc.team223.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Interrupt service routine for the ChooChoo beam sensor. Gets run whenever 
+ * the beam sensor is hit.
+ * @author Brian Duemmer
  */
 public class ChooChooISR extends Command {
 

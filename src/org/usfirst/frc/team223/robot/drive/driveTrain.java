@@ -1,17 +1,23 @@
 package org.usfirst.frc.team223.robot.drive;
 
 import org.usfirst.frc.team223.AdvancedX.DriveSide;
+import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
 import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.drive.driveCommands.*;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
-/**
+/** Acts as the drivetrain Subsystem of the robot.
  *
+ *@author Brian Duemmer
  */
 public class driveTrain extends Subsystem {
 	
@@ -21,18 +27,25 @@ public class driveTrain extends Subsystem {
     private CANTalon driveR1;
     private CANTalon driveR2;
     
-    // DriveSides
-    private DriveSide leftSide;
-    private DriveSide rightSide;
+    
+    // NavX
+    private AHRS navx;
+    
+    // Cascade controller
+    private TankCascadeController controller;
+    
     
     
     public driveTrain()
     {
+    	// Call the superclass constructor
     	super();
     	
-    	// Initialize the driveSides
-    	leftSide = new DriveSide();
-    	rightSide = new DriveSide();
+    	// Initialize the driveSides to run at the proper period
+    	DriveSide leftSide = new DriveSide(OI.DRIVE_SLAVE__PID_PERIOD);
+    	DriveSide rightSide = new DriveSide(OI.DRIVE_SLAVE__PID_PERIOD);
+    	
+    	
     	
     	/////////////////////// Left Side Drive motors /////////////////////////
     	
@@ -105,15 +118,42 @@ public class driveTrain extends Subsystem {
     					OI.DRIVE_R_PID_KD,
     					OI.DRIVE_R_PID_KF
     			);
+    	
+    	
+    	
+    	
+    	// Configre the navX
+    	navx = new AHRS(SerialPort.Port.kMXP);
+    	
+    	
+    	// Initialize the Cascade controller
+    	controller = new TankCascadeController(leftSide, rightSide, (Gyro) navx, OI.DRIVE_MASTER__PID_PERIOD, OI.DRIVE_SLAVE__PID_PERIOD);
+    	
+    	// Configure the position PID
+    	controller.setPosPID
+    			(
+    					OI.DRIVE_POS_PID_KP,
+    					OI.DRIVE_POS_PID_KI,
+    					OI.DRIVE_POS_PID_KD,
+    					OI.DRIVE_POS_PID_KF
+				);
+    	
+    	// Configure the turn PID
+    	controller.setTurnPID
+    			(
+    					OI.DRIVE_TURN_PID_KP,
+    					OI.DRIVE_TURN_PID_KI,
+    					OI.DRIVE_TURN_PID_KD,
+    					OI.DRIVE_TURN_PID_KF
+				);
     }
 
     
     
-    
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        setDefaultCommand(new setDriveFromJoy());
-    }
+    /**
+     * Set the default command to {@link setDriveFromJoy}
+     */
+    public void initDefaultCommand() {   setDefaultCommand(new setDriveFromJoy());   }
     
     
     /** Drives the robot from an open loop forward and turn value.
@@ -136,50 +176,19 @@ public class driveTrain extends Subsystem {
     	outRight = (outRight < -1) ?  -1 : outRight;
     	
     	// set the outputs
-    	leftSide.setRawOutput(outLeft);
-    	rightSide.setRawOutput(outRight);
-    	
+    	controller.setRawOut(outLeft, outRight);
     }
-
-
-
-
+	
+    
+    
+	
 	/**
-	 * @return the leftSide
+	 * @return the Cascade Controller
 	 */
-	public DriveSide getLeftSide() {
-		return leftSide;
+	public TankCascadeController getController() {
+		return controller;
 	}
-
-
-
-
-	/**
-	 * @param leftSide the leftSide to set
-	 */
-	public void setLeftSide(DriveSide leftSide) {
-		this.leftSide = leftSide;
-	}
-
-
-
-
-	/**
-	 * @return the rightSide
-	 */
-	public DriveSide getRightSide() {
-		return rightSide;
-	}
-
-
-
-
-	/**
-	 * @param rightSide the rightSide to set
-	 */
-	public void setRightSide(DriveSide rightSide) {
-		this.rightSide = rightSide;
-	}
+	
 	
 	
 	
@@ -191,10 +200,25 @@ public class driveTrain extends Subsystem {
 	public void logEnc(boolean showLeft ,boolean showRight)
 	{
 		if(showLeft)
-			Robot.printToDS(leftSide.reportPIDSource("Left side"), "Drive");
+			Robot.printToDS(controller.getLeftSide().reportPIDSource("Left side"), "Drive");
 		
 		if(showRight)
-			Robot.printToDS(rightSide.reportPIDSource("Right side"), "Drive");
+			Robot.printToDS(controller.getRightSide().reportPIDSource("Right side"), "Drive");
 	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

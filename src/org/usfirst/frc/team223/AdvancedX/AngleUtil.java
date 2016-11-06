@@ -2,7 +2,7 @@ package org.usfirst.frc.team223.AdvancedX;
 
 /**
  * Provides a convenient class fo doing some basic angle utilities
- * @author develoer
+ * @author Brian Duemmer
  *
  */
 public class AngleUtil {
@@ -15,6 +15,9 @@ public class AngleUtil {
 	public static double norm360(double angle)
 	{
 		double newAngle = angle % 360;
+		
+		// if newAngle is negative, add 360
+		newAngle += newAngle < 0  ?  360 : 0;
 		return newAngle;
 	}
 	
@@ -25,8 +28,10 @@ public class AngleUtil {
 	 */
 	public static double norm180(double angle)
 	{
-		double newAngle = angle % 360;
-		newAngle -= 180;
+		double newAngle = norm360(angle);
+		
+		// if newAngle is > 180, subtract it from 180
+		newAngle = newAngle > 180  ?  180 - newAngle : newAngle;
 		return newAngle;
 	}
 }

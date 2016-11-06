@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.command.Command;
 
 /**
  * Sets the output of the intake wheels from a controller
+ * 
+ * @author Brian Duemmer
  */
 public class SetIntakeWheelsFromController extends Command {
 	

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /** Zeroes both the intakeLift and the choo choo
- *
+ *@author Brian Duemmer
  */
 public class ZeroLiftAndCC extends CommandGroup {
 	
@@ -21,6 +21,6 @@ public class ZeroLiftAndCC extends CommandGroup {
 		Timer.delay(OI.ZEROLIFTANDCC_CC_START_DELAY);
 		
 		// Zero the chooChoo after some time has elapsed
-//		addSequential(new ZeroCC());
+		addSequential(new ZeroCC());
     }
 }

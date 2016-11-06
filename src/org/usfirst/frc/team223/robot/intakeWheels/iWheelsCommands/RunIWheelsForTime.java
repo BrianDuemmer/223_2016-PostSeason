@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  * Sets the output of the intake wheels for a specified time before turning them
  * back off
+ * 
+ * @author Brian Duemmer
  */
 public class RunIWheelsForTime extends Command {
 

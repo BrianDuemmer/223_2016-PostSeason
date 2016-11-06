@@ -8,6 +8,8 @@ import org.usfirst.frc.team223.robot.Robot;
 /** Set the encoder offset such that the value returned by intakeLift.getEncPos()
  * is the angle specified by INTAKELIFT_SETPOINT_LIMIT__POS, essentially setting the
  * zero point for the Intake lift
+ * 
+ * @author Brian Duemmer
  *
  */
 public class IntakeLimitISR extends Command {

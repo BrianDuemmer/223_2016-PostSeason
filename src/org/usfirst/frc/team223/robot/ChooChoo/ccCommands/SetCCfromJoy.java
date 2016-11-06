@@ -6,7 +6,9 @@ import org.usfirst.frc.team223.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Sets the ChooChoo output from the joystick
+ * 
+ * @author Brian Duemmer
  */
 public class SetCCfromJoy extends Command {
 

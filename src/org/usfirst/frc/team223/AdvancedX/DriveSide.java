@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
  * Implements a single side of a standard tank style drivetrain. This has an embedded
  * PID that controls the velocity of the wheels. This is usually used as a subset of a full
  * drivetrain class that implements two of these, to allow for finer, more independent control
- * @author Duemmer
+ * @author Brian Duemmer
  *
  */
 public class DriveSide extends PIDSubsystem
@@ -30,6 +30,23 @@ public class DriveSide extends PIDSubsystem
 	
 	//max output
 	double maxOut;
+	
+	
+	/**
+	 * Constructor for the DriveSide. Make sure to configure the motors, PID, 
+	 * and PIDsource before use
+	 * @param period the time, in seconds, between PID updates
+	 */
+	public DriveSide( double period)
+	{
+		super(0, 0, 0, period);
+		motors = new ArrayList<SpeedController>();
+		
+		// Set the maximum output to a safe default
+		maxOut = 1;
+	}
+	
+	
 	
 	
 	/**
@@ -59,6 +76,7 @@ public class DriveSide extends PIDSubsystem
 	{
 		this.getPIDController().setPID(kp, ki, kd, kf);
 	}
+
 
 	
 	

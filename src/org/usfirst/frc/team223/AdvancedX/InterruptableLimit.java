@@ -9,12 +9,55 @@ import edu.wpi.first.wpilibj.command.Command;
  * Class that allows for a specific command to be called when a state change
  * occurs on a digital input. Useful for avoiding polling loops. When an interrupt
  * fires, a new instance of Command type "handler" is automatically created and run
- * @author Duemmer
+ * @author Brian Duemmer
  *
  */
 public class InterruptableLimit extends DigitalInput {
 	
 	private boolean normallyOpen;
+	
+	
+	
+	
+	/**
+	 * Provides a simple, easy POD class to pass multiple arguments into an
+	 * InterruptableLimit ISR
+	 * @author Brian Duemmer
+	 *
+	 */
+	class InterruptableLimitArg {
+		public Class<? extends Command> type;
+		public DigitalInput input;
+		public boolean onRising;
+		public boolean onFalling;
+		public boolean originalState;
+		public double debounceTime;
+		
+		
+		/**
+		 * Provides a simple, easy POD class to pass multiple arguments into an
+		 * InterruptableLimit ISR
+		 * @param type command type to run
+		 * @param input reference to the digitalInput
+		 * @param onRising Whether to fire on the rising edge
+		 * @param onFalling Whether to fire on the falling edge
+		 * @param originalState The original pin state
+		 * @param debounceTime the time (in seconds) that a pin state must hold in order to be counted as an interrupt
+		 */
+		InterruptableLimitArg(Class<? extends Command> type, DigitalInput input, boolean onRising, boolean onFalling, boolean originalState, double debounceTime)
+		{
+			this.type = type;
+			this.input = input;
+			this.onRising = onRising;
+			this.onFalling = onFalling;
+			this.originalState = originalState;
+			this.debounceTime = debounceTime;
+		}
+	}
+	
+	
+	
+	
 	
 	
 	/**Initializes the InterruptableLimit object.

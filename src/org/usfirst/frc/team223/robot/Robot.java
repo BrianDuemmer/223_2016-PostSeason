@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 
+/**
+ * Main entry - point class for the robot project
+ * @author Brian Duemmer
+ *
+ */
 public class Robot extends IterativeRobot {
 
 	public static OI oi;

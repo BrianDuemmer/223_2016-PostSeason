@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /** Moves the Choo Choo into the loaded position, and optionally fires
  * it.
+ * 
+ * @author Brian Duemmer
  */
 public class LoadCC extends CommandGroup {
 

@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * calling the constructor, setParams should be called to initialize the rest
  * the data. This is done so as not to have excessive parameters 
  * in the constructor
+ * 
+ * @author Brian Duemmer
  */
 public class SmartControlStick {
 	

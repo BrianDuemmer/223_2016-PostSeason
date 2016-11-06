@@ -9,7 +9,11 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
 
-
+/**
+ * Subsystem to control the Choo Choo (catapult) mechanism
+ * @author Brian Duemmer
+ *
+ */
 public class ChooChoo extends PIDSubsystem {
 
 	// Physical objects that are part of the subsystem

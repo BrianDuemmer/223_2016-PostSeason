@@ -2,7 +2,8 @@ package org.usfirst.frc.team223.robot.generalCommands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-/**
+/** A dummy commandGroup that does nothing. Fro testing purposes only.
+ * @author Brian Duemmer
  *
  */
 public class DummyCommandGroup extends CommandGroup {

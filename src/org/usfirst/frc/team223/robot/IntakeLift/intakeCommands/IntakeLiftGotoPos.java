@@ -7,6 +7,8 @@ import org.usfirst.frc.team223.robot.Robot;
 
 /**
  * Moves the intakeLift to a specified position via PID
+ * 
+ * @author Brian Duemmer
  */
 public class IntakeLiftGotoPos extends Command {
 

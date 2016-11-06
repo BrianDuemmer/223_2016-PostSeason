@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
- *
+ * The class that contains the intake wheels subsystem. Does not include 
+ * intake lift.
+ * 
+ * @author Brian Duemmer
  */
 public class IntakeWheels extends Subsystem {
     

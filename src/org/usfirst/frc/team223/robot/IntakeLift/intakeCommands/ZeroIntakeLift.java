@@ -3,11 +3,12 @@ package org.usfirst.frc.team223.robot.IntakeLift.intakeCommands;
 import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  * Zeroes the intakeLift on the robot
+ * 
+ * @author Brian Duemmer
  */
 public class ZeroIntakeLift extends Command {
 

@@ -4,6 +4,7 @@ import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 import org.usfirst.frc.team223.robot.drive.driveCommands.DriveVelForTime;
+import org.usfirst.frc.team223.robot.drive.driveCommands.SetYawAngle;
 import org.usfirst.frc.team223.robot.generalCommands.*;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
+ * 
+ * @author Brian Duemmer
  */
 public class OI {
 	
@@ -73,20 +76,37 @@ public class OI {
 	public static boolean		DRIVE_ENCODER_L_INVERT = true;
 	public static boolean		DRIVE_ENCODER_R_INVERT = false;
 	
-	public static double		DRIVE_L_PID_KP = 0.3;
-	public static double		DRIVE_L_PID_KI = 0.001;
-	public static double		DRIVE_L_PID_KD = 0.0;
-	public static double		DRIVE_L_PID_KF = 20;
-	
-	public static double		DRIVE_R_PID_KP = 0.3;
-	public static double		DRIVE_R_PID_KI = 0.001;
-	public static double		DRIVE_R_PID_KD = 0.0;
-	public static double		DRIVE_R_PID_KF = 20;
-	
 	public static double		DRIVE_FINE__ADJ__OUT = 0.375;
 	public static double		DRIVE_MAX__OUTPUT = 0.999;
 	
 	public static double		DRIVE_WHEELBASE_WIDTH = 1.708;
+	
+	
+	public static double		DRIVE_L_PID_KP = 0.3;
+	public static double		DRIVE_L_PID_KI = 0.001;
+	public static double		DRIVE_L_PID_KD = 0.0;
+	public static double		DRIVE_L_PID_KF = 0.25;
+	
+	public static double		DRIVE_R_PID_KP = 0.3;
+	public static double		DRIVE_R_PID_KI = 0.001;
+	public static double		DRIVE_R_PID_KD = 0.0;
+	public static double		DRIVE_R_PID_KF = 0.25;
+	
+	public static double		DRIVE_SLAVE__PID_PERIOD = 0.05;
+	
+	//TODO Tune the position and turning PIDs
+	public static double		DRIVE_POS_PID_KP = 0.0;
+	public static double		DRIVE_POS_PID_KI = 0.0;
+	public static double		DRIVE_POS_PID_KD = 0.0;
+	public static double		DRIVE_POS_PID_KF = 0.0;
+	
+	public static double		DRIVE_TURN_PID_KP = 0.0;
+	public static double		DRIVE_TURN_PID_KI = 0.0;
+	public static double		DRIVE_TURN_PID_KD = 0.0;
+	public static double		DRIVE_TURN_PID_KF = 0.0;
+	
+	public static double		DRIVE_MASTER__PID_PERIOD = 0.2;
+	
 	
 	
 	/* braking configuration. if DRIVE_BRAKE_HALF is true, then only one motor
@@ -230,6 +250,9 @@ public class OI {
 		
 		// When B is pressed, drive at 4 ft/sec for 1.5 sec at -10 deg per foot
 		button_dY.whenPressed(new DriveVelForTime(4.0, 1.5, -10.0));
+		
+		// When Start is pressed, reset the navX
+		button_dStart.whenPressed(new SetYawAngle(0, true));
 		
 		
 		////////////////////////// Operator Buttons ///////////////////////////

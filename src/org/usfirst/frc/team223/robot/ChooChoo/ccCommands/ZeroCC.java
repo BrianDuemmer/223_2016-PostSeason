@@ -6,7 +6,9 @@ import org.usfirst.frc.team223.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Zeroes the choo choo mechanism, by running it towards the rising edge of
+ * the beam sensor
+ * @author Brian Duemmer
  */
 public class ZeroCC extends Command {
 

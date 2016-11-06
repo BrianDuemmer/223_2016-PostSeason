@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
 /** Moves the choo choo to a specified position. The direction must be
  *  specified, to avoid the Choo Choo firing or not firing when it shouldn't
  *
+ *@author Brian Duemmer
  */
 public class ChooChooGotoSetpoint extends Command {
 

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 /** A dummy command that does nothing. For testing purposes only.
  *
+ *@author Brian Duemmer
  */
 public class DummyCommand extends Command {
 
