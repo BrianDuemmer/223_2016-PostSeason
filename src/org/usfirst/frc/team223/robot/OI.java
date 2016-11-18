@@ -1,12 +1,19 @@
 package org.usfirst.frc.team223.robot;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+import org.usfirst.frc.team223.AdvancedX.robotParser.*;
 import org.usfirst.frc.team223.robot.Auto.CrossDefenseBasic;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 import org.usfirst.frc.team223.robot.drive.driveCommands.DriveVelForTime;
 import org.usfirst.frc.team223.robot.drive.driveCommands.SetYawAngle;
 import org.usfirst.frc.team223.robot.generalCommands.*;
+import org.xml.sax.SAXException;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -19,8 +26,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class OI {
 	
-	// if tru, the robot is in debug mode. Set this to false for competition.
-	public static boolean	ROBOT_ISDEBUG = true;
 	
 	////////////////// Human Input ///////////////////
 	public static Joystick driverController;
@@ -53,153 +58,64 @@ public class OI {
 	public static JoystickButton button_oStart;
 	public static JoystickButton button_oBack;
 	
+	//////////////////// Parser Data ////////////////////
+	public static String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
 	
 	
 	
 	//////////////// Drive Subsystem /////////////////
 	
-	// motor configuration
-	public static int 			DRIVE_MOTOR_L1_ID = 1;
-	public static boolean	 	DRIVE_MOTOR_L1_INVERT = false;
+	public TankCascadeData 		DRIVE_DATA; 
 	
-	public static int 			DRIVE_MOTOR_L2_ID = 4;
-	public static boolean 		DRIVE_MOTOR_L2_INVERT = false;
+	public double				DRIVE_VEL__FOR__TIME_BRAKE__TIME;
+	public int					DRIVE_DEFAULT__BRAKE__COUNT;
 	
-	public static int 			DRIVE_MOTOR_R1_ID = 5;
-	public static boolean 		DRIVE_MOTOR_R1_INVERT = true;
-	
-	public static int 			DRIVE_MOTOR_R2_ID = 6;
-	public static boolean 		DRIVE_MOTOR_R2_INVERT = true;
-	
-	public static double		DRIVE_ENCODER_L_CP__FOOT = 0.01291423;
-	public static double		DRIVE_ENCODER_R_CP__FOOT = 0.01291423;
-	
-	public static boolean		DRIVE_ENCODER_L_INVERT = true;
-	public static boolean		DRIVE_ENCODER_R_INVERT = false;
-	
-	public static double		DRIVE_FINE__ADJ__OUT = 0.375;
-	public static double		DRIVE_MAX__OUTPUT = 0.999;
-	
-	public static double		DRIVE_WHEELBASE_WIDTH = 1.708;
-	
-	
-	public static double		DRIVE_L_PID_KP = 0.275;
-	public static double		DRIVE_L_PID_KI = 0.075;
-	public static double		DRIVE_L_PID_KD = 0.0;
-	public static double		DRIVE_L_PID_KF = 0.2;
-	
-	public static double		DRIVE_R_PID_KP = 0.275;
-	public static double		DRIVE_R_PID_KI = 0.075;
-	public static double		DRIVE_R_PID_KD = 0.0;
-	public static double		DRIVE_R_PID_KF = 0.2;
-	
-	public static double		DRIVE_SLAVE__PID_PERIOD = 0.05;
-	
-	//TODO Tune the position and turning PIDs
-	public static double		DRIVE_POS_PID_KP = 0.0;
-	public static double		DRIVE_POS_PID_KI = 0.0;
-	public static double		DRIVE_POS_PID_KD = 0.0;
-	public static double		DRIVE_POS_PID_KF = 0.0;
-	
-	public static double		DRIVE_TURN_PID_KP = 0.0;
-	public static double		DRIVE_TURN_PID_KI = 0.0;
-	public static double		DRIVE_TURN_PID_KD = 0.0;
-	public static double		DRIVE_TURN_PID_KF = 0.0;
-	
-	public static double		DRIVE_MASTER__PID_PERIOD = 0.2;
-	
-	public static double		DRIVE_VEL__FOR__TIME_BRAKE__TIME = 0.75;
-	public static int			DRIVE_DEFAULT__BRAKE__COUNT = 1;
-	
-	public static int			FLASHLIGHT_RELAY_PORT = 0;
-	public static double		FLASHLIGHT_HOLD__TIME = 2;
+	public int					FLASHLIGHT_RELAY_PORT;
+	public double				FLASHLIGHT_HOLD__TIME;
 	
 	
 	
 	//////////// IntakeLift Subsystem /////////////
 	
-	// motor configuration
-	public static int 			INTAKELIFT_MOTOR_ID = 2;
-	public static boolean 		INTAKELIFT_MOTOR_INVERT = true;
-	public static boolean 		INTAKELIFT_MOTOR_BRAKE = true;
-	
-	// PID values
-	public static double		INTAKELIFT_PID_KP = 0.3;
-	public static double		INTAKELIFT_PID_KI = 0.01;
-	public static double		INTAKELIFT_PID_KD = 0.0001;
-	public static double		INTAKELIFT_PID_TOLERANCE = 0.5;
+	public MotorData			INTAKELIFT_MOTOR_DATA;
+	public PIDData				INTAKELIFT_PID_DATA;
+	public EncoderData			INTAKELIFT_ENCODER_DATA;
+	public LimitData			INTAKELIFT_LIMIT_DATA;
 	
 	// Setpoints
-	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 0;
-	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 8;
-	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
-	public static double		INTAKELIFT_SETPOINT_MAXUP = 118;
-	
-	// Encoder
-	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
-	public static int 			INTAKELIFT_ENCODER_ID_B = 1;
-	public static double 		INTAKELIFT_ENCODER_DEGREES__PER__COUNT = 0.08284475384;
-	public static boolean		INTAKELIFT_ENCODER_INVERT = true;
-	public static double		INTAKELIFT_ENCODER_MAX__PERIOD = 0.5;
-	public static double		INTAKELIFT_ENCODER_MIN__RATE__SEC = 0.5;
-	
-	// Limit Switch
-	public static int			INTAKELIFT_LIMIT_ID = 3;
-	public static boolean		INTAKELIFT_LIMIT_NORMALLY__OPEN = false;
-	public static double		INTAKELIFT_LIMIT_DEBOUNCE__TIME = 0.1;
-	
-	
+	public double				INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE;
+	public double				INTAKELIFT_SETPOINT_LIMIT__POS;
+	public double				INTAKELIFT_SETPOINT_MAXDOWN;
+	public double				INTAKELIFT_SETPOINT_MAXUP;
+		
 	
 	////////////// IntakeWheels Subsystem /////////////
 	
-	// motor configuration
-	public static int 			INTAKEWHEELS_MOTOR_ID = 7;
-	public static boolean 		INTAKEWHEELS_MOTOR_INVERT = false;
-	public static boolean 		INTAKEWHEELS_MOTOR_BRAKE = false;
-	public static double		INTAKEWHEELS_MOTOR_SCALAR = 0.7;
-	
+	public MotorData			INTAKEWHEELS_MOTOR_DATA;
 	
 	
 	//////////////// ChooChoo Subsystem ///////////////
 	
-	// motor configuration
-	public static int 			CHOOCHOO_MOTOR_ID = 3;
-	public static boolean 		CHOOCHOO_MOTOR_INVERT = false;
-	public static boolean 		CHOOCHOO_MOTOR_BRAKE = true;
-	
-	// PID values
-	public static double		CHOOCHOO_PID_KP = 0.275;
-	public static double		CHOOCHOO_PID_KI = 0.0001;
-	public static double		CHOOCHOO_PID_KD = 0.0;
-	public static double		CHOOCHOO_PID_KF = 0.25;
-	public static double		CHOOCHOO_PID_TOLERANCE = 5.0;
+	public MotorData			CHOOCHOO_MOTOR_DATA;
+	public PIDData				CHOOCHOO_PID_DATA;
+	public EncoderData			CHOOCHOO_ENCODER_DATA;
+	public LimitData			CHOOCHOO_LIMIT_DATA;
 	
 	// Setpoints
-	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 295.0;
-	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 310.0;
-	public static double		CHOOCHOO_SETPOINT_UNLOAD__ANGLE = 0;
-
-	// Encoder
-	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
-	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.00293005598116326649909393815397;
-	public static boolean		CHOOCHOO_ENCODER_INVERT = false;
-	public static double		CHOOCHOO_ENCODER_WRAP__THRESHOLD = 20;
-	
-	// Beam Sensor
-	public static int			CHOOCHOO_BEAM_ID = 2;
-	public static boolean		CHOOCHOO_BEAM_NORMALLY__OPEN = false;
-	public static double		CHOOCHOO_BEAM_DEBOUNCE__TIME = 0.01;
+	public double				CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE;
+	public double				CHOOCHOO_SETPOINT_LOAD__ANGLE;
+	public double				CHOOCHOO_SETPOINT_UNLOAD__ANGLE;
 	
 	
 	//////////// Auto Configutation Values ////////////
-	public static double		AUTO_LOWBAR_INTAKE__ANGLE = 0;
-	public static double		AUTO_STD__DEF_INTAKE__ANGLE = 70;
+	public double				AUTO_LOWBAR_INTAKE__ANGLE;
+	public double				AUTO_STD__DEF_INTAKE__ANGLE;
 	
 	
 	
 	/////////// General Configutation Values //////////
 	
-	public static double 		ZEROLIFTANDCC_CC_START_DELAY= 1.5;
+	public double 				ZEROLIFTANDCC_CC_START_DELAY;
 	
 	
 	
@@ -261,6 +177,74 @@ public class OI {
 		// When start is pressed, zero the intakeLift and ChooChoo
 		button_oStart.whenPressed(new ZeroLiftAndCC());
 
+	}
+	
+	
+	
+	
+	/**
+	 * Loads the entire robot's data from the specified file, and allocates the physical
+	 * objects (motors, PID loops, etc.) accordingly.
+	 * @param configPath the path to the configuration file to read
+	 * @return if <code>TRUE</code>, then the file was loaded successfully
+	 */
+	public boolean loadRobot(String configPath)
+	{
+		GXMLparser parser = null;
+		
+		// try to initialize the parser. if it fails, print an error, and return false
+		try {
+			parser = new GXMLparser(configPath);
+		} catch (Exception e) 
+		{
+			Robot.print("Failed to open Configuration file at path \"" + configPath + "\"", true);
+			return false;
+		}
+		
+		// Try to parse the robot data
+		
+		// Drivetrain
+		try {   
+			this.DRIVE_DATA = parser.parseTankCascade("DriveTrain"); 
+			Robot.print("Loaded TankCascadeController \"DriveTrain\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load TankCascadeController \"DriveTrain\"", true);   }
+		
+		
+		
+		//Intake Lift
+		try {   
+			this.INTAKELIFT_ENCODER_DATA = parser.parseEncoder("IntakeLift/encoder"); 
+			Robot.print("Loaded Encoder \"IntakeLift/encoder\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Encoder \"IntakeLift/encoder\"", true);   }
+		
+		try {   
+			this.INTAKELIFT_MOTOR_DATA = parser.parseMotor("IntakeLift/motor"); 
+			Robot.print("Loaded Motor \"IntakeLift/motor\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Motor \"IntakeLift/motor\"", true);   }
+		
+		try {   
+			this.INTAKELIFT_PID_DATA = parser.parsePID("IntakeLift/PID"); 
+			Robot.print("Loaded PID \"IntakeLift/PID\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load PID \"IntakeLift/PID\"", true);   }
+		
+		try {   
+			this.INTAKELIFT_LIMIT_DATA = parser.parseLimit("IntakeLift/limit"); 
+			Robot.print("Loaded Limit \"IntakeLift/limit\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Limit \"IntakeLift/limit\"", true);   }
+		
+		try {
+			this.INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = parser.parseSetpoint("IntakeLift/setpoints", "ballGrabAngle");
+			Robot.print("Loaded setpoint \"ballGrabAngle\" on IntakeLift", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"ballGrabAngle\" on IntakeLift", true);   }
+		
+		
+		
 	}
 }
 

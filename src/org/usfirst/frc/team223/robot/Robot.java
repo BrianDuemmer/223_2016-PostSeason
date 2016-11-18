@@ -81,9 +81,18 @@ public class Robot extends IterativeRobot {
      * @param msg the message to send
      * @param loc the location that sent it
      */
-    public static void printToDS(String msg, String loc)
+    public static void printToDS(String msg)
     {
-    	FRCNetworkCommunicationsLibrary.HALSendError(true, 223, false, msg, loc, "", true);
+    	FRCNetworkCommunicationsLibrary.HALSendError(true, 223, false, msg, "", "", true);
+    }
+    
+    
+    /**
+     * Prints a piece of data to the robot log file, and optionally the DriverStation
+     */
+    public static void print(String data, boolean toDS)
+    {
+    	printToDS(data);
     }
 }
 
