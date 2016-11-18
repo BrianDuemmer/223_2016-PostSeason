@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team223.robot;
 
+import org.usfirst.frc.team223.robot.Auto.CrossDefenseBasic;
 import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
 import org.usfirst.frc.team223.robot.drive.driveTrain;
@@ -25,6 +26,7 @@ public class Robot extends IterativeRobot {
 	public static IntakeLift intakeLiftSubsys;
 	public static IntakeWheels intakeWheelsSubsys;
 	public static ChooChoo chooChooSubsys;
+	Command auto;
 
     Command autonomousCommand;
     SendableChooser chooser;
@@ -38,6 +40,7 @@ public class Robot extends IterativeRobot {
 		intakeWheelsSubsys = new IntakeWheels();
 		chooChooSubsys = new ChooChoo();
 		oi = new OI();
+		auto = new CrossDefenseBasic(6, 11, OI.AUTO_STD__DEF_INTAKE__ANGLE);
 		printToDS("Starting Code...", "");
     }
 	
@@ -47,11 +50,11 @@ public class Robot extends IterativeRobot {
     }
 	
     public void autonomousInit() {
-    	//TODO write autonomous
+    	auto.start();
     }
     
     public void teleopInit() {
-        //TODO after writing auto, make sure to kill it here, before it lays eggs
+        auto.cancel();
     }
     
     public void log()
@@ -69,7 +72,7 @@ public class Robot extends IterativeRobot {
 //    	printToDS("Active Command: " +chooChooSubsys.getCurrentCommand().getName(), "ChooChoo");
 //    	intakeLiftSubsys.log();
 //    	chooChooSubsys.log();
-    	driveSubsys.logEnc(true, true);
+//    	driveSubsys.logEnc(true, true);
     }
     
     /**

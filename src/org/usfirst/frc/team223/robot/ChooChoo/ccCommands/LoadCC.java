@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class LoadCC extends CommandGroup {
 
     public LoadCC(boolean canFire) {
-    	// Log us entering the command
-    	Robot.printToDS("Entering LoadCC ", "ChooChoo");
     	
     	// See if the position of the ChooChoo is down and in the right position
     	boolean loaded = Robot.chooChooSubsys.onAbsoluteTarget(OI.CHOOCHOO_SETPOINT_LOAD__ANGLE);
@@ -23,8 +21,5 @@ public class LoadCC extends CommandGroup {
     	// If we aren't loaded, or we are allowed to fire, run the choo choo
     	if(!loaded || (loaded && canFire))
     		addSequential(new ChooChooGotoSetpoint(OI.CHOOCHOO_SETPOINT_LOAD__ANGLE, true, true));
-    	
-    	// Log us leaving the command
-    	Robot.printToDS("Leaving LoadCC ", "ChooChoo");
     }
 }

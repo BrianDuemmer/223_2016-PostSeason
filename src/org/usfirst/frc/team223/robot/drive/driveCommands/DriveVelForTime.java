@@ -85,6 +85,14 @@ public class DriveVelForTime extends Command {
     {
     	// Turn off the PIDs and stop the motors
     	Robot.driveSubsys.getController().setRawOut(0, 0);
+    	
+    	// Turn on the brakes
+    	Robot.driveSubsys.getController().getLeftSide().setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
+    	Robot.driveSubsys.getController().getRightSide().setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
+    	
+    	// Wait for a little
+    	Timer.delay(OI.DRIVE_VEL__FOR__TIME_BRAKE__TIME);
+    	
     }
 
 

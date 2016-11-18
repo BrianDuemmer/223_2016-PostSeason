@@ -27,15 +27,10 @@ public class ChooChooGotoSetpoint extends Command {
     	this.goForward = goForward;
     	this.forceRotation = forceRotation;
     	
-    	// Say that we cannot be interrupted
-//    	this.setInterruptible(false);
     }
 
 
     protected void initialize() {
-    	
-    	// inform that we are running this command
-    	Robot.printToDS("Entering GotoSetpoint ", "ChooChoo");
     	
     	double newSet;
     	double currPos = Robot.chooChooSubsys.getPosition();
@@ -85,9 +80,6 @@ public class ChooChooGotoSetpoint extends Command {
     protected void end() {
     	// Turn off the PID
     	Robot.chooChooSubsys.disable();
-    	
-    	// inform that we are leaving the command
-    	Robot.printToDS("Leaving gotoSetpoint ", "ChooChoo");
     }
 
 

@@ -228,6 +228,33 @@ public class DriveSide extends PIDSubsystem
 	}
 	
 	
+	
+	/**
+	 * Sets the amount of motors to set into brake mode.
+	 * Only works for {@link CANTalon}s.
+	 */
+	public void setBrakeCount(int motCt)
+	{
+		// iterate over the motor list
+		for(SpeedController i : motors)
+		{
+			// if the motor is a CANTalon, and motCt > 0, turn on the brakes and decrement motCt
+			if(i.getClass() == CANTalon.class && motCt > 0)
+			{
+				motCt--;
+				((CANTalon)i).enableBrakeMode(true);
+			}
+			
+			// if the motor is a CANTalon, and motCt <= 0, turn off the brakes
+			else if(i.getClass() == CANTalon.class)
+				((CANTalon)i).enableBrakeMode(false);
+		}
+	}
+	
+	
+	
+	
+	
 	/**
 	 * Sets the maximum allowable output to send to the motors.
 	 * this should be between [0,1]. Default is 1.

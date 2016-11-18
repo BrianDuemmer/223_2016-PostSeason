@@ -1,6 +1,7 @@
 package org.usfirst.frc.team223.robot;
 
 import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+import org.usfirst.frc.team223.robot.Auto.CrossDefenseBasic;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 import org.usfirst.frc.team223.robot.drive.driveCommands.DriveVelForTime;
@@ -82,15 +83,15 @@ public class OI {
 	public static double		DRIVE_WHEELBASE_WIDTH = 1.708;
 	
 	
-	public static double		DRIVE_L_PID_KP = 0.3;
-	public static double		DRIVE_L_PID_KI = 0.001;
+	public static double		DRIVE_L_PID_KP = 0.275;
+	public static double		DRIVE_L_PID_KI = 0.075;
 	public static double		DRIVE_L_PID_KD = 0.0;
-	public static double		DRIVE_L_PID_KF = 0.25;
+	public static double		DRIVE_L_PID_KF = 0.2;
 	
-	public static double		DRIVE_R_PID_KP = 0.3;
-	public static double		DRIVE_R_PID_KI = 0.001;
+	public static double		DRIVE_R_PID_KP = 0.275;
+	public static double		DRIVE_R_PID_KI = 0.075;
 	public static double		DRIVE_R_PID_KD = 0.0;
-	public static double		DRIVE_R_PID_KF = 0.25;
+	public static double		DRIVE_R_PID_KF = 0.2;
 	
 	public static double		DRIVE_SLAVE__PID_PERIOD = 0.05;
 	
@@ -107,14 +108,11 @@ public class OI {
 	
 	public static double		DRIVE_MASTER__PID_PERIOD = 0.2;
 	
+	public static double		DRIVE_VEL__FOR__TIME_BRAKE__TIME = 0.75;
+	public static int			DRIVE_DEFAULT__BRAKE__COUNT = 1;
 	
-	
-	/* braking configuration. if DRIVE_BRAKE_HALF is true, then only one motor
-	 * on each side will be in brake mode. If DRIVE_BRAKE_FULL is true, then
-	 * both motors on each side will brake.
-	 */
-	public static boolean		DRIVE_BRAKE_HALF = true;
-	public static boolean		DRIVE_BRAKE_FULL = false;
+	public static int			FLASHLIGHT_RELAY_PORT = 0;
+	public static double		FLASHLIGHT_HOLD__TIME = 2;
 	
 	
 	
@@ -133,9 +131,9 @@ public class OI {
 	
 	// Setpoints
 	public static double		INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = 0;
-	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 5;
+	public static double		INTAKELIFT_SETPOINT_LIMIT__POS = 8;
 	public static double		INTAKELIFT_SETPOINT_MAXDOWN = -4;
-	public static double		INTAKELIFT_SETPOINT_MAXUP = 113;
+	public static double		INTAKELIFT_SETPOINT_MAXUP = 118;
 	
 	// Encoder
 	public static int 			INTAKELIFT_ENCODER_ID_A = 0;
@@ -170,19 +168,20 @@ public class OI {
 	public static boolean 		CHOOCHOO_MOTOR_BRAKE = true;
 	
 	// PID values
-	public static double		CHOOCHOO_PID_KP = 0.3;
-	public static double		CHOOCHOO_PID_KI = 0.01;
-	public static double		CHOOCHOO_PID_KD = 0.0001;
-	public static double		CHOOCHOO_PID_TOLERANCE = 3.0;
+	public static double		CHOOCHOO_PID_KP = 0.275;
+	public static double		CHOOCHOO_PID_KI = 0.0001;
+	public static double		CHOOCHOO_PID_KD = 0.0;
+	public static double		CHOOCHOO_PID_KF = 0.25;
+	public static double		CHOOCHOO_PID_TOLERANCE = 5.0;
 	
 	// Setpoints
 	public static double		CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = 295.0;
-	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 321.0;
+	public static double		CHOOCHOO_SETPOINT_LOAD__ANGLE = 310.0;
 	public static double		CHOOCHOO_SETPOINT_UNLOAD__ANGLE = 0;
 
 	// Encoder
 	public static int 			CHOOCHOO_ENCODER_CAN_ID = 2;
-	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.002793296;
+	public static double 		CHOOCHOO_ENCODER_DEGREES__PER__COUNT = 0.00293005598116326649909393815397;
 	public static boolean		CHOOCHOO_ENCODER_INVERT = false;
 	public static double		CHOOCHOO_ENCODER_WRAP__THRESHOLD = 20;
 	
@@ -190,6 +189,11 @@ public class OI {
 	public static int			CHOOCHOO_BEAM_ID = 2;
 	public static boolean		CHOOCHOO_BEAM_NORMALLY__OPEN = false;
 	public static double		CHOOCHOO_BEAM_DEBOUNCE__TIME = 0.01;
+	
+	
+	//////////// Auto Configutation Values ////////////
+	public static double		AUTO_LOWBAR_INTAKE__ANGLE = 0;
+	public static double		AUTO_STD__DEF_INTAKE__ANGLE = 70;
 	
 	
 	
@@ -239,21 +243,9 @@ public class OI {
 		
 		/////////////////////////// Driver Buttons ////////////////////////////
 		
-		// When A is pressed, drive at 2 ft/sec for 3 sec straight
-		button_dA.whenPressed(new DriveVelForTime(2.0, 3.0, 0.0));
-		
-		// When B is pressed, drive at 4 ft/sec for 1.5 sec straight
-		button_dB.whenPressed(new DriveVelForTime(4.0, 1.5, 0.0));
-		
-		// When A is pressed, drive at 2 ft/sec for 3 sec at 10 deg per foot
-		button_dX.whenPressed(new DriveVelForTime(2.0, 3.0, 10.0));
-		
-		// When B is pressed, drive at 4 ft/sec for 1.5 sec at -10 deg per foot
-		button_dY.whenPressed(new DriveVelForTime(4.0, 1.5, -10.0));
-		
-		// When Start is pressed, reset the navX
-		button_dStart.whenPressed(new SetYawAngle(0, true));
-		
+		// When Rb is pressed, update the flashlight
+		button_dR.whenPressed(new SetFlashlight());
+		button_dR.whenReleased(new SetFlashlight());
 		
 		////////////////////////// Operator Buttons ///////////////////////////
 		

@@ -11,6 +11,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -29,10 +30,14 @@ public class driveTrain extends Subsystem {
     
     
     // NavX
-    private AHRS navx;
+//    private AHRS navx;
+    
     
     // Cascade controller
     private TankCascadeController controller;
+    
+    // Flashlight relay
+    private Relay light;
     
     
     
@@ -52,11 +57,9 @@ public class driveTrain extends Subsystem {
     	// Initialize the left Side drive motors
     	driveL1 = new CANTalon(OI.DRIVE_MOTOR_L1_ID);
     	driveL1.setInverted(OI.DRIVE_MOTOR_L1_INVERT);
-    	driveL1.enableBrakeMode(OI.DRIVE_BRAKE_HALF || OI.DRIVE_BRAKE_FULL);
     	
     	driveL2 = new CANTalon(OI.DRIVE_MOTOR_L2_ID);
     	driveL2.setInverted(OI.DRIVE_MOTOR_L2_INVERT);
-    	driveL2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     	
     	// Configure the SRX to use the encoder
     	driveL1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
@@ -71,6 +74,7 @@ public class driveTrain extends Subsystem {
     	leftSide.setPIDSource(driveL1);
     	leftSide.setPIDSrcScalings(OI.DRIVE_ENCODER_L_CP__FOOT, OI.DRIVE_ENCODER_L_INVERT);
     	leftSide.setMaxOutput(OI.DRIVE_MAX__OUTPUT);
+    	leftSide.setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
     	
     	// Configure the PID
     	leftSide.setPID
@@ -90,11 +94,9 @@ public class driveTrain extends Subsystem {
     	//Right side drive motors
     	driveR1 = new CANTalon(OI.DRIVE_MOTOR_R1_ID);
     	driveR1.setInverted(OI.DRIVE_MOTOR_R1_INVERT);
-    	driveR1.enableBrakeMode(OI.DRIVE_BRAKE_HALF || OI.DRIVE_BRAKE_FULL);
     	
     	driveR2 = new CANTalon(OI.DRIVE_MOTOR_R2_ID);
     	driveR2.setInverted(OI.DRIVE_MOTOR_R2_INVERT);
-    	driveR2.enableBrakeMode(OI.DRIVE_BRAKE_FULL);
     	
     	// Configure the SRX to use the encoder
     	driveR1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
@@ -109,6 +111,7 @@ public class driveTrain extends Subsystem {
     	rightSide.setPIDSource(driveR1);
     	rightSide.setPIDSrcScalings(OI.DRIVE_ENCODER_R_CP__FOOT, OI.DRIVE_ENCODER_R_INVERT);
     	rightSide.setMaxOutput(OI.DRIVE_MAX__OUTPUT);
+    	rightSide.setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
     	
     	// Configure the PID
     	rightSide.setPID
@@ -123,11 +126,11 @@ public class driveTrain extends Subsystem {
     	
     	
     	// Configre the navX
-    	navx = new AHRS(SerialPort.Port.kMXP);
+//    	navx = new AHRS(SerialPort.Port.kMXP);
     	
     	
     	// Initialize the Cascade controller
-    	controller = new TankCascadeController(leftSide, rightSide, (Gyro) navx, OI.DRIVE_MASTER__PID_PERIOD, OI.DRIVE_SLAVE__PID_PERIOD);
+    	controller = new TankCascadeController(leftSide, rightSide, (Gyro) null, OI.DRIVE_MASTER__PID_PERIOD, OI.DRIVE_SLAVE__PID_PERIOD);
     	
     	// Configure the position PID
     	controller.setPosPID
@@ -146,6 +149,9 @@ public class driveTrain extends Subsystem {
     					OI.DRIVE_TURN_PID_KD,
     					OI.DRIVE_TURN_PID_KF
 				);
+    	
+    	// Initialize the flashlight
+    	light = new Relay(OI.FLASHLIGHT_RELAY_PORT, Relay.Direction.kForward);
     }
 
     
@@ -204,6 +210,24 @@ public class driveTrain extends Subsystem {
 		
 		if(showRight)
 			Robot.printToDS(controller.getRightSide().reportPIDSource("Right side"), "Drive");
+	}
+
+
+
+	/**
+	 * @return the light
+	 */
+	public Relay getLight() {
+		return light;
+	}
+
+
+
+	/**
+	 * @param light the light to set
+	 */
+	public void setLight(Relay light) {
+		this.light = light;
 	}
 
 }

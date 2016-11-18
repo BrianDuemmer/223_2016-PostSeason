@@ -19,11 +19,11 @@ public class SetCCfromJoy extends Command {
     }
     protected boolean isFinished() {   return false;   }
     
-    // Say that we are entering the command
-    protected void initialize() {  Robot.printToDS("Entering setFromJoy ", "ChooChoo");}
+
+    protected void initialize() {}
     
-    // Say that we are leaving the command
-    protected void end() { Robot.printToDS("Leaving setFromJoy ", "ChooChoo"); }
+
+    protected void end() {}
     protected void interrupted() {}
 
     // Disable the PID, then set the output

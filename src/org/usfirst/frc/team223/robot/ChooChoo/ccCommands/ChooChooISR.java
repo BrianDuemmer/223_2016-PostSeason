@@ -22,13 +22,16 @@ public class ChooChooISR extends Command {
     protected void initialize() 
     {
     	double newChooChooOffset = Robot.chooChooSubsys.getRawEncPos() - OI.CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE;
+    	
+    	// Account for angle wrapping. If it is negative, add 360
+    	newChooChooOffset %= 360;
+    	newChooChooOffset  +=  newChooChooOffset > 0  ?  0 : 360;
+    	
     	Robot.chooChooSubsys.setEncOffset(newChooChooOffset);
     	
     	//make sure the rest of code knows that we have been zeroed
     	Robot.chooChooSubsys.hasBeenZeroed = true;
     	
-    	// Log us entering the ISR
-    	Robot.printToDS("Entering BeamISR ", "ChooChoo");
     }
     
    

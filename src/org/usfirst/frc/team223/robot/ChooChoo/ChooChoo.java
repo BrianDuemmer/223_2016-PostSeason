@@ -42,7 +42,7 @@ public class ChooChoo extends PIDSubsystem {
     public ChooChoo() 
     {
     	// Set the PID constants
-    	super(OI.CHOOCHOO_PID_KP, OI.CHOOCHOO_PID_KI, OI.CHOOCHOO_PID_KD);
+    	super(OI.CHOOCHOO_PID_KP, OI.CHOOCHOO_PID_KI, OI.CHOOCHOO_PID_KD, .02, OI.CHOOCHOO_PID_KF);
     	
     	// Set the tolerance
     	setAbsoluteTolerance(OI.CHOOCHOO_PID_TOLERANCE);
@@ -139,12 +139,17 @@ public class ChooChoo extends PIDSubsystem {
 	 */
 	public boolean onAbsoluteTarget(double target)
 	{
-		// Get the absolute position and setpoint
-		double pos = returnPIDInput() % 360;
+		// read our current position
+		double pos = returnPIDInput();
+		
+		// Scale all of our ranges to be between 0 and 360
+		pos %= 360;
+		
 		target %= 360;
-
-		// See if we are within the tolerance for the PID
-		boolean onTarget = Math.abs(pos - target) <= OI.CHOOCHOO_PID_TOLERANCE;
+		
+ 		// See if we are within the tolerance threshold
+		boolean onTarget = Math.abs(target - pos) <= OI.CHOOCHOO_PID_TOLERANCE;
+		
 		return onTarget;
 	}
     

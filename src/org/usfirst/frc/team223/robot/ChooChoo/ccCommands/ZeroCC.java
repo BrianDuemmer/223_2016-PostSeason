@@ -18,9 +18,6 @@ public class ZeroCC extends Command {
 
     protected void initialize() {
     	Robot.chooChooSubsys.hasBeenZeroed = false;
-    	
-    	// Log us entering the command
-    	Robot.printToDS("Entering ZeroCC ", "ChooChoo");
     }
 
 
@@ -51,8 +48,6 @@ public class ZeroCC extends Command {
     protected void end() {
     	Robot.chooChooSubsys.setOutput(0);
     	
-    	// Log us leaving the command
-    	Robot.printToDS("Leaving ZeroCC ", "ChooChoo");
     }
 
 
