@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="debug_jar" name="Create Runnable Jar for Project helloJar2">
+	
+
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+	
+	<property name="target.ip" value="pi-223-0.local"/>
+	<property name="target.user" value="pi"/>
+	<property name="target.pass" value="223pi"/>
+
+
+	<property name="target.path" value="/home/pi/223/bin"/>
+	<property name="target.jarName" value="helloJar.jar"/>
+
+
+	
+	
+    <target name="create_jar" depends="clean_jar">
+        <jar destfile="${dir.jarfile}/${target.jarName}" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="pack.MainClass"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${dir.buildfile}/bin"/>
+        </jar>
+    </target>
+	
+	
+	<target name="clean_jar">
+		<delete file="${dir.jarfile}/${target.jarName}"/>
+	</target>
+	
+	
+	<target name="run_jar" depends="create_jar">
+		<java jar="${dir.jarfile}/${target.jarName}" fork="true"/>
+	</target>
+	
+	
+	
+	<target name="deploy_jar" depends="create_jar">
+		
+		<scp file="${dir.jarfile}/${target.jarName}"
+			todir="${target.user}@${target.ip}: ${target.path}/${target.jarName}"
+			password="${target.pass}"
+			trust="true" />
+		
+		<sshexec host="${target.ip}"
+			username="${target.user}"
+			password="${target.pass}"
+			trust="true"
+			failonerror="true"
+			command="sh ${target.path}/runAsync.sh ${target.path}/${target.jarName} ${target.path}/log.txt" />
+	</target>
+	
+	
+	<target name="debug_deploy">
+		<scp file="${dir.jarfile}/${target.jarName}"
+			todir="${target.user}@${target.ip}: ${target.path}/${target.jarName}"
+			password="${target.pass}"
+			trust="true" />
+		
+		<sshexec host="${target.ip}"
+			username="${target.user}"
+			password="${target.pass}"
+			trust="true"
+			failonerror="true"
+			command="sh ${target.path}/debugAsync.sh ${target.path}/${target.jarName} ${target.path}/log.txt 8000" />
+	</target>
+</project>

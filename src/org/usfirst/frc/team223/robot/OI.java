@@ -1,21 +1,17 @@
 package org.usfirst.frc.team223.robot;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.usfirst.frc.team223.AdvancedX.SmartControlStick;
+import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.AdvancedX.robotParser.*;
-import org.usfirst.frc.team223.robot.Auto.CrossDefenseBasic;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
-import org.usfirst.frc.team223.robot.drive.driveCommands.DriveVelForTime;
-import org.usfirst.frc.team223.robot.drive.driveCommands.SetYawAngle;
 import org.usfirst.frc.team223.robot.generalCommands.*;
-import org.xml.sax.SAXException;
 
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
@@ -65,22 +61,30 @@ public class OI {
 	
 	//////////////// Drive Subsystem /////////////////
 	
-	public TankCascadeData 		DRIVE_DATA; 
+	public TankCascadeData 		DRIVE_DATA;
+	public TankCascadeController DRIVE_HDL;
 	
 	public double				DRIVE_VEL__FOR__TIME_BRAKE__TIME;
 	public int					DRIVE_DEFAULT__BRAKE__COUNT;
 	
 	public int					FLASHLIGHT_RELAY_PORT;
 	public double				FLASHLIGHT_HOLD__TIME;
+	public Relay				FLASHLIGHT_HDL;
 	
 	
 	
 	//////////// IntakeLift Subsystem /////////////
 	
 	public MotorData			INTAKELIFT_MOTOR_DATA;
+	public CANTalon				INTAKELIFT_MOTOR_HDL;
+	
 	public PIDData				INTAKELIFT_PID_DATA;
+	
 	public EncoderData			INTAKELIFT_ENCODER_DATA;
+	public Encoder				INTAKELIFT_ENCODER_HDL;
+	
 	public LimitData			INTAKELIFT_LIMIT_DATA;
+	public InterruptableLimit	INTAKELIFT_LIMIT_HDL;
 	
 	// Setpoints
 	public double				INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE;
@@ -92,14 +96,20 @@ public class OI {
 	////////////// IntakeWheels Subsystem /////////////
 	
 	public MotorData			INTAKEWHEELS_MOTOR_DATA;
+	public CANTalon				INTAKEWHEELS_MOTOR_HDL;
 	
 	
 	//////////////// ChooChoo Subsystem ///////////////
 	
 	public MotorData			CHOOCHOO_MOTOR_DATA;
+	public CANTalon				CHOOCHOO_MOTOR_HDL;
+	
 	public PIDData				CHOOCHOO_PID_DATA;
+	
 	public EncoderData			CHOOCHOO_ENCODER_DATA;
+	
 	public LimitData			CHOOCHOO_LIMIT_DATA;
+	public InterruptableLimit	CHOOCHOO_LIMIT_HDL;
 	
 	// Setpoints
 	public double				CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE;
@@ -183,12 +193,12 @@ public class OI {
 	
 	
 	/**
-	 * Loads the entire robot's data from the specified file, and allocates the physical
-	 * objects (motors, PID loops, etc.) accordingly.
+	 * Loads the entire robot's data from the specified file, and populates all of the data
+	 * needed to run the robot. Be sure to call {@link allocateRobot()} afterwards.
 	 * @param configPath the path to the configuration file to read
 	 * @return if <code>TRUE</code>, then the file was loaded successfully
 	 */
-	public boolean loadRobot(String configPath)
+	public boolean loadData(String configPath)
 	{
 		GXMLparser parser = null;
 		
@@ -243,7 +253,85 @@ public class OI {
 			}
 		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"ballGrabAngle\" on IntakeLift", true);   }
 		
+		try {
+			this.INTAKELIFT_SETPOINT_LIMIT__POS = parser.parseSetpoint("IntakeLift/setpoints", "limitPos");
+			Robot.print("Loaded setpoint \"limitPos\" on IntakeLift", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"limitPos\" on IntakeLift", true);   }
 		
+		try {
+			this.INTAKELIFT_SETPOINT_MAXDOWN = parser.parseSetpoint("IntakeLift/setpoints", "maxDown");
+			Robot.print("Loaded setpoint \"maxDown\" on IntakeLift", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"maxDown\" on IntakeLift", true);   }
+		
+		try {
+			this.INTAKELIFT_SETPOINT_MAXUP = parser.parseSetpoint("IntakeLift/setpoints", "maxUp");
+			Robot.print("Loaded setpoint \"maxUp\" on IntakeLift", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"maxUp\" on IntakeLift", true);   }
+		
+	
+		
+		
+		// Choo Choo
+		try {   
+			this.CHOOCHOO_ENCODER_DATA= parser.parseEncoder("ChooChoo/encoder"); 
+			Robot.print("Loaded Encoder \"ChooChoo/encoder\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Encoder \"ChooChoo/encoder\"", true);   }
+		
+		try {   
+			this.CHOOCHOO_MOTOR_DATA = parser.parseMotor("ChooChoo/motor"); 
+			Robot.print("Loaded Motor \"ChooChoo/motor\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Motor \"ChooChoo/motor\"", true);   }
+		
+		try {   
+			this.CHOOCHOO_PID_DATA = parser.parsePID("ChooChoo/PID"); 
+			Robot.print("Loaded PID \"ChooChoo/PID\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load PID \"ChooChoo/PID\"", true);   }
+		
+		try {   
+			this.CHOOCHOO_LIMIT_DATA = parser.parseLimit("ChooChoo/limit"); 
+			Robot.print("Loaded Limit \"ChooChoo/limit\"", false);
+			} 
+		catch (XPathExpressionException e) {   Robot.print("Failed to load Limit \"ChooChoo/limit\"", true);   }
+		
+		try {
+			this.CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "beamHitAngle");
+			Robot.print("Loaded setpoint \"beamHitAngle\" on ChooChoo", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"beamHitAngle\" on ChooChoo", true);   }
+		
+		try {
+			this.CHOOCHOO_SETPOINT_LOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "loadAngle");
+			Robot.print("Loaded setpoint \"loadAngle\" on ChooChoo", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"loadAngle\" on ChooChoo", true);   }
+		
+		try {
+			this.CHOOCHOO_SETPOINT_UNLOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "unloadAngle");
+			Robot.print("Loaded setpoint \"unloadAngle\" on ChooChoo", false);
+			}
+		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"unloadAngle\" on ChooChoo", true);   }
+
+		
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Allocates all of the physical attributes of the robot (motors, PID loops, etc.). this
+	 * automatically loads everything from the data elements loaded from {@link loadData(...)}
+	 */
+	public void allocateRobot()
+	{
 		
 	}
 }
