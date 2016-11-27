@@ -1,7 +1,6 @@
 package org.usfirst.frc.team223.robot;
 
-import javax.xml.xpath.XPathExpressionException;
-
+import org.apache.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.AdvancedX.robotParser.*;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
@@ -56,6 +55,9 @@ public class OI {
 	
 	//////////////////// Parser Data ////////////////////
 	public static String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
+	
+	//////////////////// Logger Data ////////////////////
+	public static Logger logger;
 	
 	
 	
@@ -200,122 +202,37 @@ public class OI {
 	 */
 	public boolean loadData(String configPath)
 	{
-		GXMLparser parser = null;
+		// Initialize the config file to be ready to be parsed
+			GXMLparser parser = new GXMLparser(configPath, logger);
 		
-		// try to initialize the parser. if it fails, print an error, and return false
-		try {
-			parser = new GXMLparser(configPath);
-		} catch (Exception e) 
-		{
-			Robot.print("Failed to open Configuration file at path \"" + configPath + "\"", true);
-			return false;
-		}
+			
+		//////////////////// Parse the robot data ////////////////////
 		
-		// Try to parse the robot data
-		
-		// Drivetrain
-		try {   
+		// Drivetrain 
 			this.DRIVE_DATA = parser.parseTankCascade("DriveTrain"); 
-			Robot.print("Loaded TankCascadeController \"DriveTrain\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load TankCascadeController \"DriveTrain\"", true);   }
-		
-		
 		
 		//Intake Lift
-		try {   
 			this.INTAKELIFT_ENCODER_DATA = parser.parseEncoder("IntakeLift/encoder"); 
-			Robot.print("Loaded Encoder \"IntakeLift/encoder\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Encoder \"IntakeLift/encoder\"", true);   }
-		
-		try {   
-			this.INTAKELIFT_MOTOR_DATA = parser.parseMotor("IntakeLift/motor"); 
-			Robot.print("Loaded Motor \"IntakeLift/motor\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Motor \"IntakeLift/motor\"", true);   }
-		
-		try {   
+			this.INTAKELIFT_MOTOR_DATA = parser.parseMotor("IntakeLift/motor");  
 			this.INTAKELIFT_PID_DATA = parser.parsePID("IntakeLift/PID"); 
-			Robot.print("Loaded PID \"IntakeLift/PID\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load PID \"IntakeLift/PID\"", true);   }
-		
-		try {   
 			this.INTAKELIFT_LIMIT_DATA = parser.parseLimit("IntakeLift/limit"); 
-			Robot.print("Loaded Limit \"IntakeLift/limit\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Limit \"IntakeLift/limit\"", true);   }
-		
-		try {
 			this.INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = parser.parseSetpoint("IntakeLift/setpoints", "ballGrabAngle");
-			Robot.print("Loaded setpoint \"ballGrabAngle\" on IntakeLift", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"ballGrabAngle\" on IntakeLift", true);   }
-		
-		try {
 			this.INTAKELIFT_SETPOINT_LIMIT__POS = parser.parseSetpoint("IntakeLift/setpoints", "limitPos");
-			Robot.print("Loaded setpoint \"limitPos\" on IntakeLift", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"limitPos\" on IntakeLift", true);   }
-		
-		try {
 			this.INTAKELIFT_SETPOINT_MAXDOWN = parser.parseSetpoint("IntakeLift/setpoints", "maxDown");
-			Robot.print("Loaded setpoint \"maxDown\" on IntakeLift", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"maxDown\" on IntakeLift", true);   }
-		
-		try {
 			this.INTAKELIFT_SETPOINT_MAXUP = parser.parseSetpoint("IntakeLift/setpoints", "maxUp");
-			Robot.print("Loaded setpoint \"maxUp\" on IntakeLift", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"maxUp\" on IntakeLift", true);   }
-		
-	
-		
-		
+
 		// Choo Choo
-		try {   
-			this.CHOOCHOO_ENCODER_DATA= parser.parseEncoder("ChooChoo/encoder"); 
-			Robot.print("Loaded Encoder \"ChooChoo/encoder\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Encoder \"ChooChoo/encoder\"", true);   }
-		
-		try {   
-			this.CHOOCHOO_MOTOR_DATA = parser.parseMotor("ChooChoo/motor"); 
-			Robot.print("Loaded Motor \"ChooChoo/motor\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Motor \"ChooChoo/motor\"", true);   }
-		
-		try {   
+			this.CHOOCHOO_ENCODER_DATA= parser.parseEncoder("ChooChoo/encoder");  
+			this.CHOOCHOO_MOTOR_DATA = parser.parseMotor("ChooChoo/motor");  
 			this.CHOOCHOO_PID_DATA = parser.parsePID("ChooChoo/PID"); 
-			Robot.print("Loaded PID \"ChooChoo/PID\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load PID \"ChooChoo/PID\"", true);   }
-		
-		try {   
 			this.CHOOCHOO_LIMIT_DATA = parser.parseLimit("ChooChoo/limit"); 
-			Robot.print("Loaded Limit \"ChooChoo/limit\"", false);
-			} 
-		catch (XPathExpressionException e) {   Robot.print("Failed to load Limit \"ChooChoo/limit\"", true);   }
-		
-		try {
 			this.CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "beamHitAngle");
-			Robot.print("Loaded setpoint \"beamHitAngle\" on ChooChoo", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"beamHitAngle\" on ChooChoo", true);   }
-		
-		try {
 			this.CHOOCHOO_SETPOINT_LOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "loadAngle");
-			Robot.print("Loaded setpoint \"loadAngle\" on ChooChoo", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"loadAngle\" on ChooChoo", true);   }
-		
-		try {
 			this.CHOOCHOO_SETPOINT_UNLOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "unloadAngle");
-			Robot.print("Loaded setpoint \"unloadAngle\" on ChooChoo", false);
-			}
-		catch (XPathExpressionException e) {   Robot.print("Failed to load setpoint \"unloadAngle\" on ChooChoo", true);   }
+			
+			
+		/////////////////// Allocate the robot data ////////////////////
+			
 
 		
 		return true;
