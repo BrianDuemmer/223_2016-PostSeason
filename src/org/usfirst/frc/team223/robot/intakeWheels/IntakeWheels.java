@@ -22,7 +22,7 @@ public class IntakeWheels extends Subsystem {
 	
 	////////////// IntakeWheels Subsystem /////////////
 	
-	private MotorData			MOTOR_DATA;
+	public MotorData			MOTOR_DATA;
 	private CANTalon			MOTOR_HDL;
 	
 	
