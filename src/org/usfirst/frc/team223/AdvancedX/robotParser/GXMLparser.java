@@ -54,6 +54,8 @@ public class GXMLparser
 	{
 		this.logger = logger;
 		
+		logger.info("Attempting to open XML configuration file at path \"" + path + "\"...");
+		
 		// Attempt to open the document
 		try
 		{
@@ -295,6 +297,9 @@ public class GXMLparser
 			data.kf = (Double)getElementByName("kf", pidNode, BASIC_TYPE.DOUBLE);
 			data.period = (Double)getElementByName("period", pidNode, BASIC_TYPE.DOUBLE);
 			data.tolerance = (Double)getElementByName("tolerance", pidNode, BASIC_TYPE.DOUBLE);
+			data.min = (Double)getElementByName("min", pidNode, BASIC_TYPE.DOUBLE);
+			data.max = (Double)getElementByName("max", pidNode, BASIC_TYPE.DOUBLE);
+			data.continuous = (Boolean)getElementByName("continuous", pidNode, BASIC_TYPE.BOOL);
 			
 			// Say that we have finished parsing the PID
 			logger.info("Finished parsing PID at path \"" + path + "\"");

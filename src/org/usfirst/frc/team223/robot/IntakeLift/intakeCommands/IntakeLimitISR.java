@@ -2,7 +2,6 @@ package org.usfirst.frc.team223.robot.IntakeLift.intakeCommands;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 /** Set the encoder offset such that the value returned by intakeLift.getEncPos()
@@ -25,7 +24,7 @@ public class IntakeLimitISR extends Command {
     protected void initialize() 
     {
       	// Calculate and set the new encoder offset
-    	double newIntakeEncoderOffset = Robot.intakeLiftSubsys.getRawEncPos() - OI.INTAKELIFT_SETPOINT_LIMIT__POS;
+    	double newIntakeEncoderOffset = Robot.intakeLiftSubsys.getRawEncPos() - Robot.intakeLiftSubsys.SETPOINT_LIMIT__POS;
     	Robot.intakeLiftSubsys.setEncOffset(newIntakeEncoderOffset);
     	
     	//make sure the rest of code knows that we have been zeroed

@@ -6,5 +6,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_101"/>
 	<classpathentry kind="lib" path="C:/Users/develoer/navx-mxp/java/lib/navx_frc.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/apache-log4j-2.7-bin/log4j-1.2-api-2.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Duemmer/navx-mxp/java/lib/navx_frc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

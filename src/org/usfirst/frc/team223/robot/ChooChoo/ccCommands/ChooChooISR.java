@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.ChooChoo.ccCommands;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -21,7 +20,7 @@ public class ChooChooISR extends Command {
     
     protected void initialize() 
     {
-    	double newChooChooOffset = Robot.chooChooSubsys.getRawEncPos() - OI.CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE;
+    	double newChooChooOffset = Robot.chooChooSubsys.getRawEncPos() - Robot.chooChooSubsys.SETPOINT_BEAM__HIT__ANGLE;
     	
     	// Account for angle wrapping. If it is negative, add 360
     	newChooChooOffset %= 360;

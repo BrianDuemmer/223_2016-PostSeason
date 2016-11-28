@@ -23,10 +23,10 @@ public class ZeroCC extends Command {
 
     protected void execute() {
     	// disable the PID
-    	Robot.chooChooSubsys.disable();
+    	Robot.chooChooSubsys.getPIDHandle().disable();
     	
     	// run towards the edge of the beam sensor
-    	if(Robot.chooChooSubsys.chooChooBeam.get())
+    	if(Robot.chooChooSubsys.getLIMIT_HDL().get())
     		Robot.chooChooSubsys.setOutput(-1);
     	
     	else
@@ -39,7 +39,7 @@ public class ZeroCC extends Command {
     	boolean stop = Robot.chooChooSubsys.hasBeenZeroed;
     	
     	// or the back button is pressed
-    	stop |= OI.button_oBack.get();
+    	stop |= Robot.oi.button_oBack.get();
         return stop;
     }
 

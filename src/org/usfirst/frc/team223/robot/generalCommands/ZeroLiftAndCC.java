@@ -1,6 +1,6 @@
 package org.usfirst.frc.team223.robot.generalCommands;
 
-import org.usfirst.frc.team223.robot.OI;
+import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ZeroCC;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.ZeroIntakeLift;
 
@@ -18,7 +18,7 @@ public class ZeroLiftAndCC extends CommandGroup {
     	addParallel(new ZeroIntakeLift());
     	
     	// Sleep for a bit
-		Timer.delay(OI.ZEROLIFTANDCC_CC_START_DELAY);
+		Timer.delay(Robot.oi.ZEROLIFTANDCC_CC_START_DELAY);
 		
 		// Zero the chooChoo after some time has elapsed
 		addSequential(new ZeroCC());

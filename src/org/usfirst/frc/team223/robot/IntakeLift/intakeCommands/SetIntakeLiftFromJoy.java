@@ -37,7 +37,7 @@ public class SetIntakeLiftFromJoy extends Command {
     
     protected void execute() {
     	// get the manual output level from the joystivk
-    	double manualOutput = OI.operatorController.getRawAxis(3) - OI.operatorController.getRawAxis(2);
+    	double manualOutput = Robot.oi.operatorController.getRawAxis(3) - Robot.oi.operatorController.getRawAxis(2);
     	
     	// Tell the robot that we are not in dedicated PID mode
     	Robot.intakeLiftSubsys.inPIDmove = false;
@@ -46,13 +46,13 @@ public class SetIntakeLiftFromJoy extends Command {
     	if(manualOutput != 0)
     	{
     		// Disable the PID
-        	Robot.intakeLiftSubsys.disable();
+        	Robot.intakeLiftSubsys.getPIDHandle().disable();
         	
         	// Set the output to the motor
     		Robot.intakeLiftSubsys.setOutput(manualOutput);
     		
     		// Update the position-maintainer setpoint
-    		Robot.intakeLiftSubsys.setSetpoint(Robot.intakeLiftSubsys.getPosition());
+    		Robot.intakeLiftSubsys.getPIDHandle().setSetpoint(Robot.intakeLiftSubsys.getPos());
     	}
     	
     	

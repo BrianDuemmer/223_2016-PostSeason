@@ -7,11 +7,15 @@ import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
 import org.usfirst.frc.team223.robot.generalCommands.*;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /**
  * This class is the glue that binds the controls on the physical operator a
@@ -23,100 +27,42 @@ public class OI {
 	
 	
 	////////////////// Human Input ///////////////////
-	public static Joystick driverController;
-	public static Joystick operatorController;
+	public Joystick driverController;
+	public Joystick operatorController;
 	
-	public static SmartControlStick stick_dL;
-	public static SmartControlStick stick_dR;
+	public SmartControlStick stick_dL;
+	public SmartControlStick stick_dR;
 	
-	public static SmartControlStick stick_oL;
-	public static SmartControlStick stick_oR;
+	public SmartControlStick stick_oL;
+	public SmartControlStick stick_oR;
 	
 	// Driver controller buttons
-	public static JoystickButton button_dA;
-	public static JoystickButton button_dB;
-	public static JoystickButton button_dX;
-	public static JoystickButton button_dY;
-	public static JoystickButton button_dL;
-	public static JoystickButton button_dR;
-	public static JoystickButton button_dStart;
-	public static JoystickButton button_dBack;
+	public JoystickButton button_dA;
+	public JoystickButton button_dB;
+	public JoystickButton button_dX;
+	public JoystickButton button_dY;
+	public JoystickButton button_dL;
+	public JoystickButton button_dR;
+	public JoystickButton button_dStart;
+	public JoystickButton button_dBack;
 	
 	
 	// Operator controller buttons
-	public static JoystickButton button_oA;
-	public static JoystickButton button_oB;
-	public static JoystickButton button_oX;
-	public static JoystickButton button_oY;
-	public static JoystickButton button_oL;
-	public static JoystickButton button_oR;
-	public static JoystickButton button_oStart;
-	public static JoystickButton button_oBack;
+	public JoystickButton button_oA;
+	public JoystickButton button_oB;
+	public JoystickButton button_oX;
+	public JoystickButton button_oY;
+	public JoystickButton button_oL;
+	public JoystickButton button_oR;
+	public JoystickButton button_oStart;
+	public JoystickButton button_oBack;
 	
 	//////////////////// Parser Data ////////////////////
-	public static String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
+	public String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
 	
 	//////////////////// Logger Data ////////////////////
-	public static Logger logger;
-	
-	
-	
-	//////////////// Drive Subsystem /////////////////
-	
-	public TankCascadeData 		DRIVE_DATA;
-	public TankCascadeController DRIVE_HDL;
-	
-	public double				DRIVE_VEL__FOR__TIME_BRAKE__TIME;
-	public int					DRIVE_DEFAULT__BRAKE__COUNT;
-	
-	public int					FLASHLIGHT_RELAY_PORT;
-	public double				FLASHLIGHT_HOLD__TIME;
-	public Relay				FLASHLIGHT_HDL;
-	
-	
-	
-	//////////// IntakeLift Subsystem /////////////
-	
-	public MotorData			INTAKELIFT_MOTOR_DATA;
-	public CANTalon				INTAKELIFT_MOTOR_HDL;
-	
-	public PIDData				INTAKELIFT_PID_DATA;
-	
-	public EncoderData			INTAKELIFT_ENCODER_DATA;
-	public Encoder				INTAKELIFT_ENCODER_HDL;
-	
-	public LimitData			INTAKELIFT_LIMIT_DATA;
-	public InterruptableLimit	INTAKELIFT_LIMIT_HDL;
-	
-	// Setpoints
-	public double				INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE;
-	public double				INTAKELIFT_SETPOINT_LIMIT__POS;
-	public double				INTAKELIFT_SETPOINT_MAXDOWN;
-	public double				INTAKELIFT_SETPOINT_MAXUP;
+	public Logger logger;
 		
-	
-	////////////// IntakeWheels Subsystem /////////////
-	
-	public MotorData			INTAKEWHEELS_MOTOR_DATA;
-	public CANTalon				INTAKEWHEELS_MOTOR_HDL;
-	
-	
-	//////////////// ChooChoo Subsystem ///////////////
-	
-	public MotorData			CHOOCHOO_MOTOR_DATA;
-	public CANTalon				CHOOCHOO_MOTOR_HDL;
-	
-	public PIDData				CHOOCHOO_PID_DATA;
-	
-	public EncoderData			CHOOCHOO_ENCODER_DATA;
-	
-	public LimitData			CHOOCHOO_LIMIT_DATA;
-	public InterruptableLimit	CHOOCHOO_LIMIT_HDL;
-	
-	// Setpoints
-	public double				CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE;
-	public double				CHOOCHOO_SETPOINT_LOAD__ANGLE;
-	public double				CHOOCHOO_SETPOINT_UNLOAD__ANGLE;
 	
 	
 	//////////// Auto Configutation Values ////////////
@@ -190,66 +136,6 @@ public class OI {
 		button_oStart.whenPressed(new ZeroLiftAndCC());
 
 	}
-	
-	
-	
-	
-	/**
-	 * Loads the entire robot's data from the specified file, and populates all of the data
-	 * needed to run the robot. Be sure to call {@link allocateRobot()} afterwards.
-	 * @param configPath the path to the configuration file to read
-	 * @return if <code>TRUE</code>, then the file was loaded successfully
-	 */
-	public boolean loadData(String configPath)
-	{
-		// Initialize the config file to be ready to be parsed
-			GXMLparser parser = new GXMLparser(configPath, logger);
-		
-			
-		//////////////////// Parse the robot data ////////////////////
-		
-		// Drivetrain 
-			this.DRIVE_DATA = parser.parseTankCascade("DriveTrain"); 
-		
-		//Intake Lift
-			this.INTAKELIFT_ENCODER_DATA = parser.parseEncoder("IntakeLift/encoder"); 
-			this.INTAKELIFT_MOTOR_DATA = parser.parseMotor("IntakeLift/motor");  
-			this.INTAKELIFT_PID_DATA = parser.parsePID("IntakeLift/PID"); 
-			this.INTAKELIFT_LIMIT_DATA = parser.parseLimit("IntakeLift/limit"); 
-			this.INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE = parser.parseSetpoint("IntakeLift/setpoints", "ballGrabAngle");
-			this.INTAKELIFT_SETPOINT_LIMIT__POS = parser.parseSetpoint("IntakeLift/setpoints", "limitPos");
-			this.INTAKELIFT_SETPOINT_MAXDOWN = parser.parseSetpoint("IntakeLift/setpoints", "maxDown");
-			this.INTAKELIFT_SETPOINT_MAXUP = parser.parseSetpoint("IntakeLift/setpoints", "maxUp");
 
-		// Choo Choo
-			this.CHOOCHOO_ENCODER_DATA= parser.parseEncoder("ChooChoo/encoder");  
-			this.CHOOCHOO_MOTOR_DATA = parser.parseMotor("ChooChoo/motor");  
-			this.CHOOCHOO_PID_DATA = parser.parsePID("ChooChoo/PID"); 
-			this.CHOOCHOO_LIMIT_DATA = parser.parseLimit("ChooChoo/limit"); 
-			this.CHOOCHOO_SETPOINT_BEAM__HIT__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "beamHitAngle");
-			this.CHOOCHOO_SETPOINT_LOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "loadAngle");
-			this.CHOOCHOO_SETPOINT_UNLOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "unloadAngle");
-			
-			
-		/////////////////// Allocate the robot data ////////////////////
-			
-
-		
-		return true;
-	}
-	
-	
-	
-	
-	
-	
-	/**
-	 * Allocates all of the physical attributes of the robot (motors, PID loops, etc.). this
-	 * automatically loads everything from the data elements loaded from {@link loadData(...)}
-	 */
-	public void allocateRobot()
-	{
-		
-	}
 }
 

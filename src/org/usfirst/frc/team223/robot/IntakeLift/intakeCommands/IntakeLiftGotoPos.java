@@ -27,10 +27,10 @@ public class IntakeLiftGotoPos extends Command {
 
     protected void initialize() {
     	// Enable the PID controller
-    	Robot.intakeLiftSubsys.enable();
+    	Robot.intakeLiftSubsys.getPIDHandle().enable();
     	
     	// Set the setpoint
-    	Robot.intakeLiftSubsys.setSetpoint(_setpoint);
+    	Robot.intakeLiftSubsys.getPIDHandle().setSetpoint(_setpoint);
     }
 
     
@@ -40,15 +40,15 @@ public class IntakeLiftGotoPos extends Command {
     // Stop when either on target or when the back button is pressed or if
     // the intake lift hasn't been zeroed
     protected boolean isFinished() {
-        return 	Robot.intakeLiftSubsys.onTarget() 		|| 
-        		OI.button_oBack.get() 					|| 
+        return 	Robot.intakeLiftSubsys.getPIDHandle().onTarget() 	|| 
+        		Robot.oi.button_oBack.get() 						|| 
         		Robot.intakeLiftSubsys.hasBeenZeroed;
     }
 
     // Stop the motor, and disable the PID
     protected void end() {
     	Robot.intakeLiftSubsys.setOutput(0);
-    	Robot.intakeLiftSubsys.disable();
+    	Robot.intakeLiftSubsys.getPIDHandle().disable();
     	Robot.intakeLiftSubsys.inPIDmove = false;
     }
 

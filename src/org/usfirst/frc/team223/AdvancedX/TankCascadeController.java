@@ -290,10 +290,8 @@ public class TankCascadeController
      * @param gyro The {@link Gyro} to be used for turn control
      * @param masterPidPeriod the period that the master(position and turn) PID loops run at. 
      * This should be ~3x slower than the slave response time. 0.3s is a good value for this.
-     * @param slavePidPerod The period for the slave (left and right velocity) PIDs. The default 
-     * PID period of 0.05 seconds is a good value for this.
      */
-	public TankCascadeController(DriveSide leftSide, DriveSide rightSide, Gyro gyro, double masterPidPeriod, double slavePidPerod)
+	public TankCascadeController(DriveSide leftSide, DriveSide rightSide, Gyro gyro, double distPidPeriod, double anglePidPeriod)
 	{
 		// Update the instance variables
 		this.leftSide = leftSide;
@@ -309,8 +307,8 @@ public class TankCascadeController
 		TurnPIDOutput turnOut = new TurnPIDOutput();
 		
 		// Initialize the master PID controllers. Set the all of the gains to 0 initially
-		posPID = new PIDController(0, 0, 0, 0, posSrc, posOut, masterPidPeriod);
-		turnPID = new PIDController(0, 0, 0, 0, turnSrc, turnOut, masterPidPeriod);
+		posPID = new PIDController(0, 0, 0, 0, posSrc, posOut, distPidPeriod);
+		turnPID = new PIDController(0, 0, 0, 0, turnSrc, turnOut, anglePidPeriod);
 		
 		// Configure the turn PID Controller
 		turnPID.setContinuous(true);
@@ -549,6 +547,32 @@ public class TankCascadeController
 		// disable if necessary
 		if(disable)
 			disable();
+	}
+	
+	
+	
+	
+	/**
+	 * Frees all of the resources held by this {@link TankCascadeController}. This
+	 * prepares the physical resources used by this object to be reused
+	 */
+	public void free()
+	{   	
+    	// free the resources
+		if(this.leftSide != null)
+			this.leftSide.free();
+		
+		if(this.rightSide != null)
+			this.rightSide.free();
+		
+		if(this.gyro != null)
+			this.gyro.free();
+		
+		if(this.posPID != null)
+			this.posPID.free();
+		
+		if(this.turnPID != null)
+			this.turnPID.free();
 	}
 
 	

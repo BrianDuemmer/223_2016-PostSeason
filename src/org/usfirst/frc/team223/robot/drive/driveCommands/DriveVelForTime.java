@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.drive.driveCommands;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -26,7 +25,7 @@ public class DriveVelForTime extends Command {
     	requires(Robot.driveSubsys);
     	
     	// Wheelbase compensation factor
-    	double wbComp = OI.DRIVE_WHEELBASE_WIDTH * 0.5;
+    	double wbComp = Robot.driveSubsys.DRIVE_DATA.wheelBaseWidth * 0.5;
     	
     	// If degrees per foot is zero, just drive straight
     	if(degPerFoot == 0)
@@ -75,7 +74,7 @@ public class DriveVelForTime extends Command {
     	boolean stop = Timer.getFPGATimestamp() > stopTime;
     	
     	// Or the back button is pressed
-    	stop |= OI.button_dBack.get();
+    	stop |= Robot.oi.button_dBack.get();
     	
         return stop;
     }
@@ -85,14 +84,6 @@ public class DriveVelForTime extends Command {
     {
     	// Turn off the PIDs and stop the motors
     	Robot.driveSubsys.getController().setRawOut(0, 0);
-    	
-    	// Turn on the brakes
-    	Robot.driveSubsys.getController().getLeftSide().setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
-    	Robot.driveSubsys.getController().getRightSide().setBrakeCount(OI.DRIVE_DEFAULT__BRAKE__COUNT);
-    	
-    	// Wait for a little
-    	Timer.delay(OI.DRIVE_VEL__FOR__TIME_BRAKE__TIME);
-    	
     }
 
 

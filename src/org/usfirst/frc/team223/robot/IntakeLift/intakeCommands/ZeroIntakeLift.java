@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.IntakeLift.intakeCommands;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -32,10 +31,10 @@ public class ZeroIntakeLift extends Command {
     // Make the motor move the intakeLift towards the zero point
     protected void execute() {
     	// disable the PID
-    	Robot.intakeLiftSubsys.disable();
+    	Robot.intakeLiftSubsys.getPIDHandle().disable();
     	
     	// Go towards the edge of the limit
-    	if(Robot.intakeLiftSubsys.limit.get())
+    	if(Robot.intakeLiftSubsys.getLimitHandle().get())
     		Robot.intakeLiftSubsys.setOutput(0.5);
     	else
     		Robot.intakeLiftSubsys.setOutput(-0.5);
@@ -44,7 +43,7 @@ public class ZeroIntakeLift extends Command {
     // Reset either after we are successfully zeroed, or when the back button on
     // the operator controller is pressed
     protected boolean isFinished() {
-        return Robot.intakeLiftSubsys.hasBeenZeroed || OI.button_oBack.get();
+        return Robot.intakeLiftSubsys.hasBeenZeroed || Robot.oi.button_oBack.get();
     }
 
     // Turn off the motor, and update the position hold setpoint
@@ -53,11 +52,11 @@ public class ZeroIntakeLift extends Command {
     	
     	// If not in dedicated PID mode, hold at the limit position
     	if(!Robot.intakeLiftSubsys.inPIDmove)
-    		Robot.intakeLiftSubsys.setSetpoint(OI.INTAKELIFT_SETPOINT_LIMIT__POS);
+    		Robot.intakeLiftSubsys.getPIDHandle().setSetpoint(Robot.intakeLiftSubsys.SETPOINT_LIMIT__POS);
     	
     	// if we are, carry on with the move
     	else
-    		Robot.intakeLiftSubsys.enable();
+    		Robot.intakeLiftSubsys.getPIDHandle().enable();
     }
 
 

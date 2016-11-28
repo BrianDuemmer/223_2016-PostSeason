@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.ChooChoo.ccCommands;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -15,7 +14,7 @@ public class UnloadCC extends CommandGroup {
     public  UnloadCC() {
     	
     	// goto the unload position, go in reverse, do not force move
-    	addSequential(new ChooChooGotoSetpoint(OI.CHOOCHOO_SETPOINT_UNLOAD__ANGLE, false, false));
+    	addSequential(new ChooChooGotoSetpoint(Robot.chooChooSubsys.SETPOINT_UNLOAD__ANGLE, false, false));
     	
     }
 }

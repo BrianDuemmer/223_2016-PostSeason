@@ -21,14 +21,14 @@ public class setDriveFromJoy extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	// Calculate the base outputs
-    	double yOut = OI.stick_dL.getY();
-    	double xOut = OI.stick_dR.getX();
+    	double yOut = Robot.oi.stick_dL.getY();
+    	double xOut = Robot.oi.stick_dR.getX();
     	
     	// Scale the output for fine adjust if necessary
-    	if(OI.button_dL.get())
+    	if(Robot.oi.button_dL.get())
     	{
-    		yOut *= OI.DRIVE_FINE__ADJ__OUT;
-    		xOut *= OI.DRIVE_FINE__ADJ__OUT;
+    		yOut *= Robot.driveSubsys.FINE_ADJ_OUT;
+    		xOut *= Robot.driveSubsys.FINE_ADJ_OUT;
     	}
     	
     	// set the output

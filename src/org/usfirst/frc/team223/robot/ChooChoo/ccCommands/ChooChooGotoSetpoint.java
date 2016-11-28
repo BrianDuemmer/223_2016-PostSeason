@@ -1,7 +1,6 @@
 package org.usfirst.frc.team223.robot.ChooChoo.ccCommands;
 
 import org.usfirst.frc.team223.AdvancedX.AngleUtil;
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -33,7 +32,7 @@ public class ChooChooGotoSetpoint extends Command {
     protected void initialize() {
     	
     	double newSet;
-    	double currPos = Robot.chooChooSubsys.getPosition();
+    	double currPos = Robot.chooChooSubsys.getPos();
     	  
     	//normalize the setpoint angle
     	setpoint = AngleUtil.norm360(setpoint);
@@ -54,21 +53,20 @@ public class ChooChooGotoSetpoint extends Command {
     		newSet += goForward ? 360 : -360;
     	
     	// Turn on the PID and move towards newSet
-    	Robot.chooChooSubsys.setSetpoint(newSet);
-    	Robot.chooChooSubsys.enable();
+    	Robot.chooChooSubsys.getPIDHandle().setSetpoint(newSet);
+    	Robot.chooChooSubsys.getPIDHandle().enable();
     }
 
 
-    protected void execute() {
-    }
+    protected void execute() {}
 
 
     protected boolean isFinished() {    	
     	// Stop if on target
-    	boolean stop = Robot.chooChooSubsys.onTarget();
+    	boolean stop = Robot.chooChooSubsys.getPIDHandle().onTarget();
     	
     	// or the back button is pressed
-    	stop |= OI.button_oBack.get();
+    	stop |= Robot.oi.button_oBack.get();
     	
     	// or we are not zeroed
     	stop |= !Robot.chooChooSubsys.hasBeenZeroed;
@@ -79,7 +77,7 @@ public class ChooChooGotoSetpoint extends Command {
 
     protected void end() {
     	// Turn off the PID
-    	Robot.chooChooSubsys.disable();
+    	Robot.chooChooSubsys.getPIDHandle().disable();
     }
 
 

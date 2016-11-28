@@ -6,7 +6,10 @@ import java.util.List;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.SensorBase;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
 /**
@@ -22,7 +25,7 @@ public class DriveSide extends PIDSubsystem
 	PIDSource pidSrc;
 	
 	// All of the motors
-	List<SpeedController> motors;
+	private List<SpeedController> motors;
 	
 	// Encoder data
 	double distPerPulse;
@@ -261,6 +264,66 @@ public class DriveSide extends PIDSubsystem
 	 * @param output
 	 */
 	public void setMaxOutput(double output) {   maxOut = output;   }
+
+
+
+
+	/**
+	 * @return the motors
+	 */
+	public List<SpeedController> getMotors() {
+		return motors;
+	}
+
+
+
+
+	/**
+	 * @param motors the motors to set
+	 */
+	public void setMotors(List<SpeedController> motors) {
+		this.motors = motors;
+	}
+	
+	
+	
+	
+	/**
+	 * Frees all of the resources allocated by the DriveSide
+	 */
+	public void free()
+	{
+		// iterate through the motors and deallocate them
+		for(SpeedController i : motors)
+		{
+			// If it is a PWM controller, free() it
+			if(i.getClass().isAssignableFrom(PWM.class) && i != null)
+				((PWM) i).free();
+			
+			// If it is a CANTalon, delete() it
+			if(i.getClass() == CANTalon.class && i != null)
+				((CANTalon) i).delete();
+			
+			// If it is none of the above, do nothing
+		}
+		
+		
+		// free() the PIDController
+		if(this.getPIDController() != null)
+			this.getPIDController().free();
+		
+		
+		// free() the PIDSource. Try to cast it to a free()-able type. If we cannot, just ignore it
+		if(this.pidSrc.getClass() == CANTalon.class && this.pidSrc != null)
+			((CANTalon) this.pidSrc).delete();
+		
+		else if(this.pidSrc.getClass().isAssignableFrom(SensorBase.class) && this.pidSrc != null)
+			((SensorBase) this.pidSrc).free();
+		
+		// Put another free() here if necessary
+		else{}
+		
+	}
 }
 
 

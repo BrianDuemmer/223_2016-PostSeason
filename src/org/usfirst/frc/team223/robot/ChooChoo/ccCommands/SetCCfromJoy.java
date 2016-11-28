@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.ChooChoo.ccCommands;
 
-import org.usfirst.frc.team223.robot.OI;
 import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -28,9 +27,9 @@ public class SetCCfromJoy extends Command {
 
     // Disable the PID, then set the output
     protected void execute() {
-    	Robot.chooChooSubsys.disable();
+    	Robot.chooChooSubsys.getPIDHandle().disable();
     	
-    	double out = OI.stick_oL.getX();
+    	double out = Robot.oi.stick_dL.getX();
     	Robot.chooChooSubsys.setOutput(out);
     }
 

@@ -1,12 +1,22 @@
 package org.usfirst.frc.team223.robot.ChooChoo;
 
+import org.apache.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
-import org.usfirst.frc.team223.robot.OI;
-import org.usfirst.frc.team223.robot.Robot;
+import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
+import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
+import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
+
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.command.PIDSubsystem;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 
 /**
@@ -14,11 +24,28 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
  * @author Brian Duemmer
  *
  */
-public class ChooChoo extends PIDSubsystem {
-
-	// Physical objects that are part of the subsystem
-	CANTalon 					chooChooMot;
-	public InterruptableLimit	chooChooBeam;
+public class ChooChoo extends Subsystem {
+	
+	private Logger logger;
+	
+	
+	// Data and objects to be acquired from parsing a configuration file
+	private MotorData			MOTOR_DATA;
+	private CANTalon			MOTOR_HDL;
+	
+	private PIDData				PID_DATA;
+	private PIDController		PID_HDL;
+	
+	private EncoderData			ENCODER_DATA;
+	
+	private LimitData			LIMIT_DATA;
+	private InterruptableLimit	LIMIT_HDL;
+	
+	// Setpoints
+	public double				SETPOINT_BEAM__HIT__ANGLE;
+	public double				SETPOINT_LOAD__ANGLE;
+	public double				SETPOINT_UNLOAD__ANGLE;
+	
 	
 	
 	// Tells us if we have been zeroed
@@ -31,48 +58,122 @@ public class ChooChoo extends PIDSubsystem {
 	
 	
 	
+/////////////////////////////// Sub - Classes /////////////////////////////////
+	
+	// Class to act as a PIDInput for the PID loop
+	private class ChooChooPIDSource implements PIDSource
+	{
+		@Override
+		public void setPIDSourceType(PIDSourceType pidSource) {}
+
+		@Override
+		public PIDSourceType getPIDSourceType() {   return PIDSourceType.kDisplacement;   }
+
+		@Override
+		public double pidGet() {   return getPos();   }
+	}
+	
+	
+	
+	
+	// Class to act as a PIDOutput for the PID loop
+	private class ChooChooPIDOutput implements PIDOutput
+	{
+		@Override
+		public void pidWrite(double output) {   setOutput(output);   }
+	}
+	
+	
 ////////////////////////////////// Methods ////////////////////////////////////	
 	
 	
     /**
      * Initialize the ChooChoo (catapult) system. Here all of the subsystem 
      * dependents are handled, as well as the PID controller. 
-     * Important values are loaded from OI.java
      */
-    public ChooChoo() 
+    public ChooChoo(GXMLparser parser, Logger logger) 
     {
-    	// Set the PID constants
-    	super(OI.CHOOCHOO_PID_KP, OI.CHOOCHOO_PID_KI, OI.CHOOCHOO_PID_KD, .02, OI.CHOOCHOO_PID_KF);
+    	// initialize the subsystem
+    	init(parser, logger);
+    }
+    
+    
+    
+    
+    
+    /**
+     * Initialize the ChooChoo (catapult) system. Reads all data from
+     * the configuration file, and allocates it accordingly
+     */
+    public void init(GXMLparser parser, Logger logger)
+    {
+    	this.logger = logger;
     	
-    	// Set the tolerance
-    	setAbsoluteTolerance(OI.CHOOCHOO_PID_TOLERANCE);
+    	// Allocator to use for allocating the parsed data into objects
+    	GXMLAllocator allocator = new GXMLAllocator(this.logger);
     	
+    	
+    	// log us entering the init routine
+    	this.logger.info("\n\r\n\r\n\r====================================== Initializing ChooChoo Subsystem ======================================");
+    	
+    	// parse the data
+    	this.ENCODER_DATA= parser.parseEncoder("ChooChoo/encoder");  
+		this.MOTOR_DATA = parser.parseMotor("ChooChoo/motor");  
+		this.PID_DATA = parser.parsePID("ChooChoo/PID"); 
+		this.LIMIT_DATA = parser.parseLimit("ChooChoo/limit"); 
+		this.SETPOINT_BEAM__HIT__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "beamHitAngle");
+		this.SETPOINT_LOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "loadAngle");
+		this.SETPOINT_UNLOAD__ANGLE = parser.parseSetpoint("ChooChoo/setpoints", "unloadAngle");
+		
+		
+		// allocate the data
+		logger.info("\n\rAllocating ChooChoo data...");
+		
+		this.MOTOR_HDL = (CANTalon) allocator.allocateMotor(this.MOTOR_DATA);
+		this.LIMIT_HDL = allocator.allocateLimit(this.LIMIT_DATA, new ChooChooISR());
+		this.PID_HDL = allocator.allocatePID(PID_DATA, new ChooChooPIDSource(), new ChooChooPIDOutput());
+		
+		// Configure the Encoder on the CANTalon
+		allocator.allocateCANEncoder(this.ENCODER_DATA, this.MOTOR_HDL);
+		
+		
+		
     	// set hasBeenZeroed to false
     	hasBeenZeroed = false;
     	
-    	// initialize motor
-    	chooChooMot = new CANTalon(OI.CHOOCHOO_MOTOR_ID);
-    	chooChooMot.setInverted(OI.CHOOCHOO_MOTOR_INVERT);
-    	chooChooMot.enableBrakeMode(OI.CHOOCHOO_MOTOR_BRAKE);
-    	chooChooMot.setSafetyEnabled(false);
-    	
-    	// initialize the encoder
-    	chooChooMot.setEncPosition(0);
-    	
-    	// initialize the beam sensor
-    	chooChooBeam = new InterruptableLimit
-		    	(
-		    			OI.CHOOCHOO_BEAM_ID, 
-		    			new ChooChooISR(), 
-		    			OI.CHOOCHOO_BEAM_NORMALLY__OPEN,
-		    			true, 
-		    			false,
-		    			OI.CHOOCHOO_BEAM_DEBOUNCE__TIME
-    			);
-    	
-    	// enable interrupts
-    	chooChooBeam.enableInterrupts();
+    	// enable interrupts on the beam sensor
+    	this.LIMIT_HDL.enableInterrupts();
+		
+		logger.info("Finished initializing ChooChoo");
     }
+    
+    
+    
+    
+    
+    /**
+     * Deallocates all physical objects ties to the ChooChoo. This must be called before
+     * {@link ChooChoo#init(GXMLparser, Logger)} in order to prevent conflicts
+     */
+    public void cleanup()
+    {
+    	// log that we are shutting down
+    	logger.info("Shutting down ChooChoo...");
+    	
+    	// free the resources
+    	if(this.LIMIT_HDL != null)
+    		this.LIMIT_HDL.free();
+    	
+    	if(this.MOTOR_HDL != null)
+    		this.MOTOR_HDL.delete();
+    	
+    	if(this.PID_HDL != null)
+    		this.PID_HDL.free();
+    }
+    
+    
+    
+    
     
     
     // Set the default command to output to the motor from the joystick
@@ -84,10 +185,7 @@ public class ChooChoo extends PIDSubsystem {
      * Get the encoder position, while also accounting for encoder inversion 
      * and offset
      */
-    protected double returnPIDInput() 
-    {
-    	return getRawEncPos() - encoderOffset;
-    }
+    public double getPos(){   return getRawEncPos() - encoderOffset;   }
     
     
     
@@ -96,11 +194,12 @@ public class ChooChoo extends PIDSubsystem {
      */
 	public double getRawEncPos() 
 	{
-		// Get the raw encoder position
-		double ret = OI.CHOOCHOO_ENCODER_INVERT ? chooChooMot.getEncPosition() * -1 : chooChooMot.getEncPosition();
+		// Get the raw encoder position, inverting if necessary
+		double ret = this.MOTOR_HDL.getEncPosition();
+		ret *= this.ENCODER_DATA.invert  ?  -1 : 1;
 		
 		// Scale it and return
-		ret *= OI.CHOOCHOO_ENCODER_DEGREES__PER__COUNT;
+		ret *= this.ENCODER_DATA.distPerCount;
 		return ret;
 	}
 	
@@ -118,11 +217,11 @@ public class ChooChoo extends PIDSubsystem {
 	public boolean onAbsoluteTarget()
 	{
 		// Get the absolute position and setpoint
-		double pos = returnPIDInput() % 360;
-		double setpt = getSetpoint() % 360;
+		double pos = getPos() % 360;
+		double setpt = this.PID_HDL.getSetpoint() % 360;
 
 		// See if we are within the tolerance for the PID
-		boolean onTarget = Math.abs(pos - setpt) <= OI.CHOOCHOO_PID_TOLERANCE;
+		boolean onTarget = Math.abs(pos - setpt) <= this.PID_DATA.tolerance;
 		return onTarget;
 	}
 	
@@ -140,7 +239,7 @@ public class ChooChoo extends PIDSubsystem {
 	public boolean onAbsoluteTarget(double target)
 	{
 		// read our current position
-		double pos = returnPIDInput();
+		double pos = getPos();
 		
 		// Scale all of our ranges to be between 0 and 360
 		pos %= 360;
@@ -148,7 +247,7 @@ public class ChooChoo extends PIDSubsystem {
 		target %= 360;
 		
  		// See if we are within the tolerance threshold
-		boolean onTarget = Math.abs(target - pos) <= OI.CHOOCHOO_PID_TOLERANCE;
+		boolean onTarget = Math.abs(target - pos) <= this.PID_DATA.tolerance;
 		
 		return onTarget;
 	}
@@ -159,10 +258,7 @@ public class ChooChoo extends PIDSubsystem {
      * 
      * @param output the value to send to the encoder
      */
-    public void setOutput(double output) 
-    {   
-    	chooChooMot.set(output); 	
-    }
+    public void setOutput(double output){   this.MOTOR_HDL.set(output);   }
     
     
     
@@ -174,23 +270,29 @@ public class ChooChoo extends PIDSubsystem {
     protected void usePIDOutput(double output) 
     {   
     	// Only update the output if the PID is enabled
-    	if(this.getPIDController().isEnabled())
-    		setOutput(output);   
+    	if(this.PID_HDL.isEnabled())
+    		setOutput(output);
     	
     }
-    
-    public void log()
-    {
-    	if(OI.ROBOT_ISDEBUG)
-    	{
-    		String msg = "ChooChoo Encoder Pos: " + Double.toString(getPosition()) + "\n";
-    		msg += "ChooChoo Encoder offset: " + Double.toString(encoderOffset) + "\n\n";
-    		
-    		// print the message to the console
-    		Robot.printToDS(msg , "");
-    		
-    	}
-    }
+
+
+/**
+	 * @return the pID_HDL
+	 */
+	public PIDController getPIDHandle() {
+		return PID_HDL;
+	}
+
+
+
+
+
+	/**
+	 * @return the lIMIT_HDL
+	 */
+	public InterruptableLimit getLIMIT_HDL() {
+		return LIMIT_HDL;
+	}
 
 }
 
