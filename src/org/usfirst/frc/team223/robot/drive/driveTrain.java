@@ -1,6 +1,6 @@
 package org.usfirst.frc.team223.robot.drive;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;

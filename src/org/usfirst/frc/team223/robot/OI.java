@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.AdvancedX.robotParser.*;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
@@ -124,7 +123,7 @@ public class OI {
 		////////////////////////// Operator Buttons ///////////////////////////
 		
 		// when X is pressed, bring the IntakeLift to the ball grab angle
-		button_oX.whenPressed(new IntakeLiftGotoPos(INTAKELIFT_SETPOINT_BALL__GRAB__ANGLE));
+		button_oX.whenPressed(new IntakeLiftGotoPos(Robot.intakeLiftSubsys.SETPOINT_BALL__GRAB__ANGLE));
 		
 		// When A is pressed, load the ChooChoo
 		button_oA.whenPressed(new LoadCC(true));

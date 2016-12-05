@@ -1,8 +1,8 @@
 
 package org.usfirst.frc.team223.robot;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
@@ -37,12 +37,14 @@ public class Robot extends IterativeRobot {
     // initialize the subsystems / the OI
     public void robotInit() 
     {
-    	// Initialize the Logger and the OI
+    	// Initialize the Logger
     	logger = LogManager.getLogger("Robot");
-		oi = new OI();
 		
 		// Initialize the bulk of the robot
 		initSystems();
+		
+		// initialize the OI
+		oi = new OI();
     }
     
     

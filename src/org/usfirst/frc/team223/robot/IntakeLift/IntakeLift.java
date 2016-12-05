@@ -1,7 +1,7 @@
 package org.usfirst.frc.team223.robot.IntakeLift;
 
-import org.apache.log4j.Logger;
 
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;

@@ -60,7 +60,7 @@ public class SetIntakeLiftFromJoy extends Command {
     	else if(Robot.intakeLiftSubsys.hasBeenZeroed)
     	{
     		// Enable the PID
-    		Robot.intakeLiftSubsys.enable();
+    		Robot.intakeLiftSubsys.getPIDHandle().enable();
     	}
     	
     	
@@ -69,7 +69,7 @@ public class SetIntakeLiftFromJoy extends Command {
     	else
     	{
     		// Disable the PID
-        	Robot.intakeLiftSubsys.disable();
+        	Robot.intakeLiftSubsys.getPIDHandle().disable();
         	
         	// Turn the motor off
     		Robot.intakeLiftSubsys.setOutput(0);

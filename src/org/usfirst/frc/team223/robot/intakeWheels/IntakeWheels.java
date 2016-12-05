@@ -1,6 +1,6 @@
 package org.usfirst.frc.team223.robot.intakeWheels;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
@@ -22,7 +22,7 @@ public class IntakeWheels extends Subsystem {
 	
 	////////////// IntakeWheels Subsystem /////////////
 	
-	private MotorData			MOTOR_DATA;
+	public MotorData			MOTOR_DATA;
 	private CANTalon			MOTOR_HDL;
 	
 	

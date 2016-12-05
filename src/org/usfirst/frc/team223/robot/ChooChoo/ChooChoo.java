@@ -1,6 +1,6 @@
 package org.usfirst.frc.team223.robot.ChooChoo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
