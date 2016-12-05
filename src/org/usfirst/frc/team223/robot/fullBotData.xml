@@ -1,0 +1,199 @@
+<?xml version='1.0' standalone='yes' ?>
+<GXML_Root>
+  <FILE_NAME type='String'>fullBotData.xml</FILE_NAME>
+  <IntakeLift mems='5'>
+    <motor mems='5'>
+      <type type='Enum U16' sel='CANTalon'>1</type>
+      <id type='I32'>2</id>
+      <invert type='Bool'>TRUE</invert>
+      <brake type='Bool'>TRUE</brake>
+      <maxOut type='DBL'>1</maxOut>
+    </motor>
+    <encoder mems='5'>
+      <Achannel type='I32'>0</Achannel>
+      <Bchannel type='I32'>1</Bchannel>
+      <IDXchannel type='I32'>-1</IDXchannel>
+      <invert type='Bool'>TRUE</invert>
+      <distPerCount type='DBL'>0.082845</distPerCount>
+    </encoder>
+    <limit mems='4'>
+      <id type='I32'>3</id>
+      <normallyOpen type='Bool'>FALSE</normallyOpen>
+      <interruptEdge type='Enum U16' sel='onHit'>0</interruptEdge>
+      <debounceTime type='DBL'>0.1</debounceTime>
+    </limit>
+    <PID mems='6'>
+      <kp type='DBL'>0.3</kp>
+      <ki type='DBL'>0.01</ki>
+      <kd type='DBL'>0.0001</kd>
+      <kf type='DBL'>0</kf>
+      <period type='DBL'>0.02</period>
+      <tolerance type='DBL'>0.5</tolerance>
+    </PID>
+    <setpoints dim='[4]' type='Cluster'>
+      <Setpoint mems='2'>
+        <name type='String'>ballGrabAngle</name>
+        <value type='DBL'>0</value>
+      </Setpoint>
+      <Setpoint mems='2'>
+        <name type='String'>limitPos</name>
+        <value type='DBL'>5</value>
+      </Setpoint>
+      <Setpoint mems='2'>
+        <name type='String'>maxDown</name>
+        <value type='DBL'>-4</value>
+      </Setpoint>
+      <Setpoint mems='2'>
+        <name type='String'>maxUp</name>
+        <value type='DBL'>113</value>
+      </Setpoint>
+    </setpoints>
+  </IntakeLift>
+  <ChooChoo mems='5'>
+    <motor mems='5'>
+      <type type='Enum U16' sel='CANTalon'>1</type>
+      <id type='I32'>3</id>
+      <invert type='Bool'>FALSE</invert>
+      <brake type='Bool'>TRUE</brake>
+      <maxOut type='DBL'>1</maxOut>
+    </motor>
+    <encoder mems='5'>
+      <Achannel type='I32'>2</Achannel>
+      <Bchannel type='I32'>-1</Bchannel>
+      <IDXchannel type='I32'>-1</IDXchannel>
+      <invert type='Bool'>FALSE</invert>
+      <distPerCount type='DBL'>0.027933</distPerCount>
+    </encoder>
+    <limit mems='4'>
+      <id type='I32'>2</id>
+      <normallyOpen type='Bool'>FALSE</normallyOpen>
+      <interruptEdge type='Enum U16' sel='onHit'>0</interruptEdge>
+      <debounceTime type='DBL'>0.01</debounceTime>
+    </limit>
+    <PID mems='6'>
+      <kp type='DBL'>0.3</kp>
+      <ki type='DBL'>0.01</ki>
+      <kd type='DBL'>0.0001</kd>
+      <kf type='DBL'>0.2</kf>
+      <period type='DBL'>0.02</period>
+      <tolerance type='DBL'>5</tolerance>
+    </PID>
+    <setpoints dim='[3]' type='Cluster'>
+      <Setpoint mems='2'>
+        <name type='String'>beamHitAngle</name>
+        <value type='DBL'>295</value>
+      </Setpoint>
+      <Setpoint mems='2'>
+        <name type='String'>loadAngle</name>
+        <value type='DBL'>321</value>
+      </Setpoint>
+      <Setpoint mems='2'>
+        <name type='String'>unloadAngle</name>
+        <value type='DBL'>0</value>
+      </Setpoint>
+    </setpoints>
+  </ChooChoo>
+  <IntakeWheels mems='1'>
+    <motor mems='5'>
+      <type type='Enum U16' sel='CANTalon'>1</type>
+      <id type='I32'>2</id>
+      <invert type='Bool'>TRUE</invert>
+      <brake type='Bool'>TRUE</brake>
+      <maxOut type='DBL'>1</maxOut>
+    </motor>
+  </IntakeWheels>
+  <DriveTrain mems='7'>
+    <leftSide mems='3'>
+      <Motors dim='[2]' type='Cluster'>
+        <motor mems='5'>
+          <type type='Enum U16' sel='CANTalon'>1</type>
+          <id type='I32'>1</id>
+          <invert type='Bool'>FALSE</invert>
+          <brake type='Bool'>FALSE</brake>
+          <maxOut type='DBL'>1</maxOut>
+        </motor>
+        <motor mems='5'>
+          <type type='Enum U16' sel='CANTalon'>1</type>
+          <id type='I32'>4</id>
+          <invert type='Bool'>FALSE</invert>
+          <brake type='Bool'>TRUE</brake>
+          <maxOut type='DBL'>1</maxOut>
+        </motor>
+      </Motors>
+      <encoder mems='5'>
+        <Achannel type='I32'>-1</Achannel>
+        <Bchannel type='I32'>-1</Bchannel>
+        <IDXchannel type='I32'>-1</IDXchannel>
+        <invert type='Bool'>TRUE</invert>
+        <distPerCount type='DBL'>0.012914</distPerCount>
+      </encoder>
+      <PID mems='6'>
+        <kp type='DBL'>0.3</kp>
+        <ki type='DBL'>0.001</ki>
+        <kd type='DBL'>1</kd>
+        <kf type='DBL'>0.25</kf>
+        <period type='DBL'>0.05</period>
+        <tolerance type='DBL'>0</tolerance>
+      </PID>
+    </leftSide>
+    <rightSide mems='3'>
+      <Motors dim='[2]' type='Cluster'>
+        <motor mems='5'>
+          <type type='Enum U16' sel='CANTalon'>1</type>
+          <id type='I32'>5</id>
+          <invert type='Bool'>TRUE</invert>
+          <brake type='Bool'>FALSE</brake>
+          <maxOut type='DBL'>1</maxOut>
+        </motor>
+        <motor mems='5'>
+          <type type='Enum U16' sel='CANTalon'>1</type>
+          <id type='I32'>6</id>
+          <invert type='Bool'>TRUE</invert>
+          <brake type='Bool'>TRUE</brake>
+          <maxOut type='DBL'>1</maxOut>
+        </motor>
+      </Motors>
+      <encoder mems='5'>
+        <Achannel type='I32'>-1</Achannel>
+        <Bchannel type='I32'>-1</Bchannel>
+        <IDXchannel type='I32'>-1</IDXchannel>
+        <invert type='Bool'>FALSE</invert>
+        <distPerCount type='DBL'>0.012914</distPerCount>
+      </encoder>
+      <PID mems='6'>
+        <kp type='DBL'>0.3</kp>
+        <ki type='DBL'>0.001</ki>
+        <kd type='DBL'>1</kd>
+        <kf type='DBL'>0.25</kf>
+        <period type='DBL'>0.05</period>
+        <tolerance type='DBL'>0</tolerance>
+      </PID>
+    </rightSide>
+    <distancePID mems='6'>
+      <kp type='DBL'>0</kp>
+      <ki type='DBL'>0</ki>
+      <kd type='DBL'>0</kd>
+      <kf type='DBL'>0</kf>
+      <period type='DBL'>0</period>
+      <tolerance type='DBL'>0</tolerance>
+    </distancePID>
+    <anglePID mems='6'>
+      <kp type='DBL'>0</kp>
+      <ki type='DBL'>0</ki>
+      <kd type='DBL'>0</kd>
+      <kf type='DBL'>0</kf>
+      <period type='DBL'>0</period>
+      <tolerance type='DBL'>0</tolerance>
+    </anglePID>
+    <maxOut type='DBL'>1</maxOut>
+    <fineAdj type='DBL'>0.375</fineAdj>
+    <wheelBaseWidth type='DBL'>1.708</wheelBaseWidth>
+  </DriveTrain>
+  <General mems='2'>
+    <flashlight mems='2'>
+      <holdTime type='DBL'>2</holdTime>
+      <relayPort type='I32'>0</relayPort>
+    </flashlight>
+    <zeroLiftAndCCDelay type='DBL'>1.25</zeroLiftAndCCDelay>
+  </General>
+</GXML_Root>
