@@ -1,12 +1,12 @@
 package org.usfirst.frc.team223.robot.drive;
 
-import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser.BASIC_TYPE;
 import org.usfirst.frc.team223.AdvancedX.robotParser.TankCascadeData;
-import org.usfirst.frc.team223.robot.drive.driveCommands.*;
+import org.usfirst.frc.team223.robot.Robot;
+import org.usfirst.frc.team223.robot.drive.driveCommands.setDriveFromJoy;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import net.sf.microlog.core.Logger;
 
 /** Acts as the drivetrain Subsystem of the robot.
  *
@@ -22,7 +23,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
  */
 public class driveTrain extends Subsystem {
 	
-	Logger logger;
+	private Logger logger = Robot.roboLogger.getLogger("Drive Train");
     
 	//////////////// Drive Subsystem /////////////////
 	

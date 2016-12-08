@@ -1,19 +1,21 @@
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
 import java.io.File;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.logging.log4j.Logger;
+import org.usfirst.frc.team223.robot.Robot;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import net.sf.microlog.core.Logger;
 
 
 /**
@@ -39,7 +41,7 @@ public class GXMLparser
 	}
 	
 	// Log4j logger object to print messages
-	Logger logger;
+	Logger logger = Robot.roboLogger.getLogger("GXML Allocator");
 	
 	
 	

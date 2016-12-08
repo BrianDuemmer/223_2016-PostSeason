@@ -3,10 +3,10 @@
  */
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
-import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.DriveSide;
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
+import org.usfirst.frc.team223.robot.Robot;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import net.sf.microlog.core.Logger;
 
 /**
  * This class acts along with {@link GXMLparser}, in that it takes data parsed into data objects
@@ -29,7 +30,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 public class GXMLAllocator {
 	
 	// Log4j logger object to print and log data
-	private Logger logger;
+	private Logger logger = Robot.roboLogger.getLogger("GXML Allocator");
 	
 	
 	

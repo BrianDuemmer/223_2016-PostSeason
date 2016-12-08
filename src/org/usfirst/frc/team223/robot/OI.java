@@ -1,5 +1,5 @@
 package org.usfirst.frc.team223.robot;
-import org.apache.logging.log4j.Logger;
+
 import org.usfirst.frc.team223.AdvancedX.*;
 import org.usfirst.frc.team223.AdvancedX.robotParser.*;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.*;
@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import net.sf.microlog.core.Logger;
 
 /**
  * This class is the glue that binds the controls on the physical operator a
@@ -60,7 +61,7 @@ public class OI {
 	public String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
 	
 	//////////////////// Logger Data ////////////////////
-	public Logger logger;
+	Logger logger = Robot.roboLogger.getLogger("OI");
 		
 	
 	

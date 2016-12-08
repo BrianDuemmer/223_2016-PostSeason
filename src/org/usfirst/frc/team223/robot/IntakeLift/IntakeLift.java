@@ -1,15 +1,16 @@
 package org.usfirst.frc.team223.robot.IntakeLift;
 
 
-import org.apache.logging.log4j.Logger;
-import org.usfirst.frc.team223.AdvancedX.*;
+import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
-import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.*;
+import org.usfirst.frc.team223.robot.Robot;
+import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.IntakeLimitISR;
+import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.SetIntakeLiftFromJoy;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import net.sf.microlog.core.Logger;
 
 
 /**
@@ -27,7 +29,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class IntakeLift extends Subsystem {
 	
-	private Logger logger;
+	private Logger logger = Robot.roboLogger.getLogger("Intake Lift");
 
 	//////////// IntakeLift Subsystem /////////////
 	

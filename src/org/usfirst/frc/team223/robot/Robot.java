@@ -1,8 +1,7 @@
 
 package org.usfirst.frc.team223.robot;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
@@ -13,6 +12,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import net.sf.microlog.core.Logger;
 
 
 /**
@@ -27,7 +28,10 @@ public class Robot extends IterativeRobot {
 	public static IntakeLift intakeLiftSubsys;
 	public static IntakeWheels intakeWheelsSubsys;
 	public static ChooChoo chooChooSubsys;
-	public static Logger logger;
+	
+	public static RoboLogger roboLogger;
+	private static Logger logger;
+	
 	Command auto;
 
     Command autonomousCommand;
@@ -38,7 +42,8 @@ public class Robot extends IterativeRobot {
     public void robotInit() 
     {
     	// Initialize the Logger
-    	logger = LogManager.getLogger("Robot");
+    	roboLogger.init();
+    	this.logger = roboLogger.getLogger("RobotMain");
 		
 		// Initialize the bulk of the robot
 		initSystems();

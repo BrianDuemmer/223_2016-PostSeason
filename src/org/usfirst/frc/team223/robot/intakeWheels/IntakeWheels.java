@@ -1,13 +1,14 @@
 package org.usfirst.frc.team223.robot.intakeWheels;
 
-import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
+import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.intakeWheels.iWheelsCommands.SetIntakeWheelsFromController;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import net.sf.microlog.core.Logger;
 
 /**
  * The class that contains the intake wheels subsystem. Does not include 
@@ -17,8 +18,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class IntakeWheels extends Subsystem {
     
-	Logger logger;
-	
+	private Logger logger = Robot.roboLogger.getLogger("Intake");	
 	
 	////////////// IntakeWheels Subsystem /////////////
 	

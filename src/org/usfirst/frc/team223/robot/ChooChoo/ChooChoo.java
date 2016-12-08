@@ -1,6 +1,5 @@
 package org.usfirst.frc.team223.robot.ChooChoo;
 
-import org.apache.logging.log4j.Logger;
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
@@ -8,6 +7,7 @@ import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
+import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
 
@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import net.sf.microlog.core.Logger;
 
 
 /**
@@ -26,7 +27,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class ChooChoo extends Subsystem {
 	
-	private Logger logger;
+	private Logger logger = Robot.roboLogger.getLogger("Choo Choo");
 	
 	
 	// Data and objects to be acquired from parsing a configuration file
