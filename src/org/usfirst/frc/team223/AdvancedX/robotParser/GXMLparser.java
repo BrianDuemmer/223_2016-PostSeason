@@ -40,8 +40,8 @@ public class GXMLparser
 		ENUM
 	}
 	
-	// Log4j logger object to print messages
-	Logger logger = Robot.roboLogger.getLogger("GXML Allocator");
+	// logger object to print messages
+	Logger logger;
 	
 	
 	
@@ -234,7 +234,7 @@ public class GXMLparser
 			// if ret is not null, we have successfully parsed a value. Print a according message and return
 			if(ret != null)
 			{
-				logger.info("Successfully parsed child \"" + name + "\" from parent \"" + parent.getBaseURI() + "\"");
+				logger.info("Successfully parsed child \"" + name + "\" from parent \"" + parent.getNodeName() + "\"");
 				return ret;
 			}
 		}

@@ -76,23 +76,33 @@ public class GXMLAllocator {
 			return null;
 		}
 		
-	// PIDController object to return
-		PIDController ret = new PIDController(data.kp, data.ki, data.kd, data.kf, pidSource, pidOutput, data.period);
 		
-	// Configure the tolerance
-		ret.setAbsoluteTolerance(data.tolerance);
+		// Attempt to allocate all of the data
+		try
+		{
+		// PIDController object to return
+			PIDController ret = new PIDController(data.kp, data.ki, data.kd, data.kf, pidSource, pidOutput, data.period);
+			
+		// Configure the tolerance
+			ret.setAbsoluteTolerance(data.tolerance);
+			
+		// Configure the input range
+			ret.setInputRange(data.min, data.max);
+			
+		// Configure if the input is continuous
+			ret.setContinuous(data.continuous);
+			
+		// Say that the PID has been allocated successfully
+			logger.info("Successfully allocated PID");
+			
+			return ret;
+		} catch (Exception e)
+		{
+			logger.error("Error allopcating PID controller! DEATILS:\r\n", e);
+		}
 		
-	// Configure the input range
-		ret.setInputRange(data.min, data.max);
-		
-	// Configure if the input is continuous
-		ret.setContinuous(data.continuous);
-		
-	// Say that the PID has been allocated successfully
-		logger.info("Successfully allocated PID");
-		
-		
-		return ret;
+		// If this was reached, there was an error
+		return null;
 	}
 	
 	
@@ -152,8 +162,14 @@ public class GXMLAllocator {
 	// Log us entering the routine
 		logger.info("Attempting to allocate Regular Encoder...");
 		
+		Encoder ret;
+		
 	// Initialize the Encoder object to return
-		Encoder ret = new Encoder(data.Achannel, data.Bchannel, data.IDXchannel, data.invert);
+		if(data.IDXchannel >= 0)
+			ret = new Encoder(data.Achannel, data.Bchannel, data.IDXchannel, data.invert);
+		
+		else
+			ret = new Encoder(data.Achannel, data.Bchannel, data.invert);
 		
 	// Configure the counts per revolution
 		ret.setDistancePerPulse(data.distPerCount);

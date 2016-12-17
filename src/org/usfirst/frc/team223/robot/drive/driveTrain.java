@@ -4,7 +4,9 @@ import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser.BASIC_TYPE;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GyroNavX;
 import org.usfirst.frc.team223.AdvancedX.robotParser.TankCascadeData;
+import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.drive.driveCommands.setDriveFromJoy;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
@@ -23,14 +25,14 @@ import net.sf.microlog.core.Logger;
  */
 public class driveTrain extends Subsystem {
 	
-	private Logger logger = Robot.roboLogger.getLogger("Drive Train");
+	private Logger logger;
     
 	//////////////// Drive Subsystem /////////////////
 	
 	public TankCascadeData 			DRIVE_DATA;
 	private TankCascadeController	DRIVE_HDL;
 	
-	public AHRS 					navx;
+	public GyroNavX 				navx;
 	
 	public double					VEL__FOR__TIME_BRAKE__TIME;
 	public double					FINE_ADJ_OUT;
@@ -48,9 +50,9 @@ public class driveTrain extends Subsystem {
 	 * @param parser the GXMLparser bound to the configuration file
 	 * @param logger the log4j logger to print data to
 	 */
-	public driveTrain(GXMLparser parser, Logger logger)
+	public driveTrain(GXMLparser parser, RoboLogger roboLogger)
 	{
-		init(parser, logger);
+		init(parser, roboLogger);
 	}
 	
 	
@@ -58,10 +60,9 @@ public class driveTrain extends Subsystem {
      * Initialize the DriveTrain system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-	public void init(GXMLparser parser, Logger logger)
+	public void init(GXMLparser parser, RoboLogger roboLogger)
 	{
-		this.logger = logger;
-    	
+		logger = roboLogger.getLogger("Drive Train");
     	// Allocator to use for allocating the parsed data into objects
     	GXMLAllocator allocator = new GXMLAllocator(logger);
     	
@@ -78,8 +79,9 @@ public class driveTrain extends Subsystem {
     	// Allocate the data
 		logger.info("\n\rAllocating DriveTrain data...");
 		
-    	navx = new AHRS(Port.kMXP);
-    	this.DRIVE_HDL = allocator.allocateTankCascadeController(this.DRIVE_DATA, (Gyro)navx);
+    	navx = new GyroNavX(Port.kMXP);
+    	
+    	this.DRIVE_HDL = allocator.allocateTankCascadeController(this.DRIVE_DATA, navx);
     	this.FLASHLIGHT_HDL = new Relay(this.FLASHLIGHT_RELAY_PORT);
     	
     	logger.info("Finished initializing DriveTrain");

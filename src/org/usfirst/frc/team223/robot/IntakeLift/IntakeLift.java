@@ -8,6 +8,7 @@ import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
+import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.IntakeLimitISR;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.SetIntakeLiftFromJoy;
@@ -29,7 +30,7 @@ import net.sf.microlog.core.Logger;
  */
 public class IntakeLift extends Subsystem {
 	
-	private Logger logger = Robot.roboLogger.getLogger("Intake Lift");
+	private Logger logger;
 
 	//////////// IntakeLift Subsystem /////////////
 	
@@ -107,7 +108,7 @@ public class IntakeLift extends Subsystem {
      * switch are initialized, as well as the PID controller. Important values
      * are loaded from OI.java
      */
-    public IntakeLift(GXMLparser parser, Logger logger)   {   init(parser, logger);   }
+    public IntakeLift(GXMLparser parser, RoboLogger roboLogger)   {   init(parser, roboLogger);   }
     
     
     
@@ -119,9 +120,9 @@ public class IntakeLift extends Subsystem {
      * @param parser the {@link GXMLparser} that is bound to the configuration file
      * @param logger the Log4j logger object that will be used to print out any messages
      */
-    public void init(GXMLparser parser, Logger logger)
+    public void init(GXMLparser parser, RoboLogger roboLogger)
     {
-    	this.logger = logger;
+    	this.logger = roboLogger.getLogger("Intake Lift");
     	
     	// Allocator object to allocate the parsed data into objects
     	GXMLAllocator allocator = new GXMLAllocator(logger);
@@ -231,6 +232,15 @@ public class IntakeLift extends Subsystem {
 	 */
 	public PIDController getPIDHandle() {
 		return PID_HDL;
+	}
+	
+	
+	/**
+	 * Logs the sensory information for the IntakeLift
+	 */
+	public void logSensor()
+	{
+		
 	}
 
     

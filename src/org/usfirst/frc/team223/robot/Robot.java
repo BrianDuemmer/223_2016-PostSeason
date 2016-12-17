@@ -9,9 +9,10 @@ import org.usfirst.frc.team223.robot.drive.driveTrain;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 import net.sf.microlog.core.Logger;
 
@@ -29,13 +30,12 @@ public class Robot extends IterativeRobot {
 	public static IntakeWheels intakeWheelsSubsys;
 	public static ChooChoo chooChooSubsys;
 	
-	public static RoboLogger roboLogger;
+	public static NetworkTable nt;
+	
+	public static RoboLogger roboLogger = new RoboLogger();
 	private static Logger logger;
 	
-	Command auto;
-
-    Command autonomousCommand;
-    SendableChooser chooser;
+	private Command auto;
 
     
     // initialize the subsystems / the OI
@@ -43,7 +43,7 @@ public class Robot extends IterativeRobot {
     {
     	// Initialize the Logger
     	roboLogger.init();
-    	this.logger = roboLogger.getLogger("RobotMain");
+    	logger = roboLogger.getLogger("RobotMain");
 		
 		// Initialize the bulk of the robot
 		initSystems();
@@ -67,13 +67,29 @@ public class Robot extends IterativeRobot {
     	logger.info("=================================================================================================================================");
     	
     	// Initialize the parser
-    	GXMLparser parser = new GXMLparser(oi.CONFIG_FILE_PATH, logger);
+    	GXMLparser parser = new GXMLparser(OI.CONFIG_FILE_PATH, roboLogger.getLogger("GXML Parser"));
     	
     	// Initialize the subsystems
-    	Robot.driveSubsys = new driveTrain(parser, logger);
-    	Robot.intakeLiftSubsys = new IntakeLift(parser, logger);
-    	Robot.intakeWheelsSubsys = new IntakeWheels(parser, logger);
-    	Robot.chooChooSubsys = new ChooChoo(parser, logger);
+    	Robot.driveSubsys = new driveTrain(parser, roboLogger);
+    	Robot.intakeLiftSubsys = new IntakeLift(parser, roboLogger);
+    	Robot.intakeWheelsSubsys = new IntakeWheels(parser, roboLogger);
+    	Robot.chooChooSubsys = new ChooChoo(parser, roboLogger);
+    	
+    	
+    	// attempt to initialize NetworkTables
+    	logger.info("Attempting to initialize NetworkTables...");
+    	try
+    	{
+    		NetworkTable.setServerMode();
+    		NetworkTable.setPort(1735);
+    		NetworkTable.initialize();
+    		nt = NetworkTable.getTable("Robot223");
+    		logger.info("Successfully initialized NetworkTables");
+    	} 
+    	catch(Exception e){
+    		logger.fatal("Failed to initialize networkTables! DETAILS: ", e);
+    	}
+    	
     	
     	// Log that we have finished initializing the robot
     	logger.info("============================================= Finished Initializing Robot Systems ===============================================");
@@ -83,7 +99,7 @@ public class Robot extends IterativeRobot {
     
     
     
-    public void freeSystems()
+    public void robotFree()
     {
     	// log us entering this routine
     	logger.info("=================================================================================================================================");
@@ -107,16 +123,57 @@ public class Robot extends IterativeRobot {
     	// for now don't do anything here. This may be used eventually.
     }
 	
+    
+    
+    
     public void autonomousInit() {   auto.start();   }
     
-    public void teleopInit() {   auto.cancel();   }
     
-    public void log() {}
+    
+    
+    public void teleopInit() 
+    {   
+    	try {   auto.cancel();   } catch (Exception e)
+    	{   logger.error("Failed to stop Autonomous command! DETAILS:", e);   }
+    }
+    
+    
+    
+    
+    
+    
+    public void logCommands() 
+    {
+    	// Format an intro message
+    	String logMsg = "\r\n\r\nCURRENT COMMANDS";
+    	
+    	// Add a line for each subsystem to logMsg describing the active command
+    	logMsg += "DriveTrain: " + Robot.driveSubsys.getCurrentCommand().getName() + "\r\n";
+    	logMsg += "Choo Choo: " + Robot.chooChooSubsys.getCurrentCommand().getName() + "\r\n";
+    	logMsg += "Intake Lift: " + Robot.intakeLiftSubsys.getCurrentCommand().getName() + "\r\n";
+    	logMsg += "Intake Wheels: " + Robot.intakeWheelsSubsys.getCurrentCommand().getName() + "\r\n";
+    	
+    	// log the message
+    	logger.info(logMsg);
+    }
+    
+    
     
     
 	public void disabledPeriodic() {   Scheduler.getInstance().run();   }
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
-    public void teleopPeriodic() {   Scheduler.getInstance().run();   }
+    public void teleopPeriodic() 
+    {   
+    	Scheduler.getInstance().run();   
+//    	logCommands();
+    	
+    	
+    	if(Robot.nt != null)
+    	{
+    		Robot.nt.putNumber("MyDouble", Timer.getFPGATimestamp());
+    		logger.info("val: " + nt.getBoolean("CONFIGXML_MainConfig_RELOAD", false));
+    	}
+    }
     
 }
 

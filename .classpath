@@ -4,7 +4,7 @@
 	<classpathentry exported="true" kind="var" path="wpilib" sourcepath="wpilib.sources"/>
 	<classpathentry exported="true" kind="var" path="networktables" sourcepath="networktables.sources"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_101"/>
-	<classpathentry kind="lib" path="C:/Users/develoer/navx-mxp/java/lib/navx_frc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/develoer/navx-mxp/java/lib/navx_frc.jar" sourcepath="C:/Users/develoer/navx-mxp/java/src"/>
 	<classpathentry kind="lib" path="C:/Program Files/microlog/microlog-logger-core-2.3.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

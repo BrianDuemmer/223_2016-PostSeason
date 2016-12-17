@@ -58,10 +58,10 @@ public class OI {
 	public JoystickButton button_oBack;
 	
 	//////////////////// Parser Data ////////////////////
-	public String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
+	public static String CONFIG_FILE_PATH = "media/sda1/MainConfig.xml";
 	
 	//////////////////// Logger Data ////////////////////
-	Logger logger = Robot.roboLogger.getLogger("OI");
+	private Logger logger = Robot.roboLogger.getLogger("OI");
 		
 	
 	
@@ -73,7 +73,7 @@ public class OI {
 	
 	/////////// General Configutation Values //////////
 	
-	public double 				ZEROLIFTANDCC_CC_START_DELAY;
+	public double 				ZEROLIFTANDCC_CC_START_DELAY = 0;
 	
 	
 	

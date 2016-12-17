@@ -28,7 +28,7 @@ public class RoboLogger {
 	private static String fmtString = "%d{HH:mm:ss:SSS} [%P] [%c{1}] %m\r\n";
 	
 	// Set the logging directory
-	private static String logDir = "/home/lvuser/223/logging";
+	private static String logDir = "/media/sda1/logging";
 	
 	// Appender stuff
 	private static PatternFormatter formPattern;
@@ -41,6 +41,7 @@ public class RoboLogger {
 	
 	private static FilteredSocketAppender socketAppender;
 	private static Level socketLevel = Level.TRACE;
+	private static int port = 5801;
 	
 	
 	
@@ -107,7 +108,7 @@ public class RoboLogger {
 		consoleAppender.setLevel(consoleLevel);
 		
 		// Setup the socket appender
-		socketAppender = new FilteredSocketAppender(5800);
+		socketAppender = new FilteredSocketAppender(port);
 		socketAppender.setFormatter(formPattern);
 		socketAppender.setMinLevel(socketLevel);
 		socketAppender.open();

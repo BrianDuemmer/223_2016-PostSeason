@@ -3,6 +3,7 @@ package org.usfirst.frc.team223.robot.intakeWheels;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
+import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.intakeWheels.iWheelsCommands.SetIntakeWheelsFromController;
 
@@ -18,7 +19,7 @@ import net.sf.microlog.core.Logger;
  */
 public class IntakeWheels extends Subsystem {
     
-	private Logger logger = Robot.roboLogger.getLogger("Intake");	
+	private Logger logger;	
 	
 	////////////// IntakeWheels Subsystem /////////////
 	
@@ -31,7 +32,7 @@ public class IntakeWheels extends Subsystem {
 	 * @param parser the GXMLparser bound to the configuration file for the robot
 	 * @param logger the log4j logger that will print out any log messages
 	 */
-	public IntakeWheels(GXMLparser parser, Logger logger)   {   init(parser, logger);   }
+	public IntakeWheels(GXMLparser parser, RoboLogger roboLogger)   {   init(parser, roboLogger);   }
 	
 	
 	
@@ -40,9 +41,9 @@ public class IntakeWheels extends Subsystem {
      * Initialize the IntakeWheels system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-	public void init(GXMLparser parser, Logger logger)
+	public void init(GXMLparser parser, RoboLogger roboLogger)
 	{
-		this.logger = logger;
+		this.logger = roboLogger.getLogger("IntakeWheels");	
     	
     	// Allocator to use for allocating the parsed data into objects
     	GXMLAllocator allocator = new GXMLAllocator(logger);

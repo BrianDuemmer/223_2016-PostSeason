@@ -7,6 +7,7 @@ import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
+import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
@@ -27,7 +28,7 @@ import net.sf.microlog.core.Logger;
  */
 public class ChooChoo extends Subsystem {
 	
-	private Logger logger = Robot.roboLogger.getLogger("Choo Choo");
+	private Logger logger;
 	
 	
 	// Data and objects to be acquired from parsing a configuration file
@@ -92,10 +93,10 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Here all of the subsystem 
      * dependents are handled, as well as the PID controller. 
      */
-    public ChooChoo(GXMLparser parser, Logger logger) 
+    public ChooChoo(GXMLparser parser, RoboLogger roboLogger) 
     {
     	// initialize the subsystem
-    	init(parser, logger);
+    	init(parser, roboLogger);
     }
     
     
@@ -106,9 +107,9 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-    public void init(GXMLparser parser, Logger logger)
+    public void init(GXMLparser parser, RoboLogger roboLogger)
     {
-    	this.logger = logger;
+    	this.logger = roboLogger.getLogger("Choo Choo");
     	
     	// Allocator to use for allocating the parsed data into objects
     	GXMLAllocator allocator = new GXMLAllocator(this.logger);
