@@ -1,7 +1,7 @@
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
 /**
- * POD Type to store data for a motor, as parsed from {@link GXMLparser}
+ * POD Type to store data for a motor, as parsed from {@link GXMLParser}
  * @author Brian Duemmer
  *
  */

@@ -1,13 +1,13 @@
 package org.usfirst.frc.team223.robot.ChooChoo;
 
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
-import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
@@ -93,7 +93,7 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Here all of the subsystem 
      * dependents are handled, as well as the PID controller. 
      */
-    public ChooChoo(GXMLparser parser, RoboLogger roboLogger) 
+    public ChooChoo(GXMLParser parser, RoboLogger roboLogger) 
     {
     	// initialize the subsystem
     	init(parser, roboLogger);
@@ -107,7 +107,7 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-    public void init(GXMLparser parser, RoboLogger roboLogger)
+    public void init(GXMLParser parser, RoboLogger roboLogger)
     {
     	this.logger = roboLogger.getLogger("Choo Choo");
     	
@@ -155,7 +155,7 @@ public class ChooChoo extends Subsystem {
     
     /**
      * Deallocates all physical objects ties to the ChooChoo. This must be called before
-     * {@link ChooChoo#init(GXMLparser, Logger)} in order to prevent conflicts
+     * {@link ChooChoo#init(GXMLParser, Logger)} in order to prevent conflicts
      */
     public void cleanup()
     {

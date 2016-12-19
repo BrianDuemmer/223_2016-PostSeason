@@ -2,7 +2,9 @@
 package org.usfirst.frc.team223.robot;
 
 
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManagerLV;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
 import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
 import org.usfirst.frc.team223.robot.drive.driveTrain;
@@ -13,7 +15,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-
 import net.sf.microlog.core.Logger;
 
 
@@ -32,17 +33,35 @@ public class Robot extends IterativeRobot {
 	
 	public static NetworkTable nt;
 	
-	public static RoboLogger roboLogger = new RoboLogger();
+	public static RoboLogger roboLogger;
 	private static Logger logger;
 	
 	private Command auto;
+	
+	public static GXMLManagerLV gxmlManager;
 
     
     // initialize the subsystems / the OI
     public void robotInit() 
     {
+    	// Initialize the configuration manager
+    	gxmlManager = new GXMLManagerLV("/media/sda1/MainConfig.xml", roboLogger) 
+    	{
+			@Override
+			public boolean reload() 
+			{
+				freeSystems();
+				initSystems();
+				
+				// TODO Determine if the file loading was successful
+				return true;
+			}
+		};
+    	
+		
+		
+		
     	// Initialize the Logger
-    	roboLogger.init();
     	logger = roboLogger.getLogger("RobotMain");
 		
 		// Initialize the bulk of the robot
@@ -61,13 +80,16 @@ public class Robot extends IterativeRobot {
 	 */
     public void initSystems()
     {
+    	// initialize the roboLogger
+    	roboLogger = new RoboLogger("/media/sda1/logging");
+    	
     	// log us entering this routine
     	logger.info("=================================================================================================================================");
     	logger.info("================================================= Initializing Robot Systems ====================================================");
     	logger.info("=================================================================================================================================");
     	
     	// Initialize the parser
-    	GXMLparser parser = new GXMLparser(OI.CONFIG_FILE_PATH, roboLogger.getLogger("GXML Parser"));
+    	GXMLParser parser = gxmlManager.obtainParser(roboLogger.getLogger("GXML Parser"));
     	
     	// Initialize the subsystems
     	Robot.driveSubsys = new driveTrain(parser, roboLogger);
@@ -99,7 +121,7 @@ public class Robot extends IterativeRobot {
     
     
     
-    public void robotFree()
+    public void freeSystems()
     {
     	// log us entering this routine
     	logger.info("=================================================================================================================================");

@@ -1,12 +1,12 @@
 package org.usfirst.frc.team223.robot.drive;
 
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser.BASIC_TYPE;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser.BASIC_TYPE;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GyroNavX;
 import org.usfirst.frc.team223.AdvancedX.robotParser.TankCascadeData;
-import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.drive.driveCommands.setDriveFromJoy;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
@@ -47,10 +47,10 @@ public class driveTrain extends Subsystem {
 	
 	/**
 	 *  Initialize the driveTrain
-	 * @param parser the GXMLparser bound to the configuration file
+	 * @param parser the GXMLParser bound to the configuration file
 	 * @param logger the log4j logger to print data to
 	 */
-	public driveTrain(GXMLparser parser, RoboLogger roboLogger)
+	public driveTrain(GXMLParser parser, RoboLogger roboLogger)
 	{
 		init(parser, roboLogger);
 	}
@@ -60,7 +60,7 @@ public class driveTrain extends Subsystem {
      * Initialize the DriveTrain system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-	public void init(GXMLparser parser, RoboLogger roboLogger)
+	public void init(GXMLParser parser, RoboLogger roboLogger)
 	{
 		logger = roboLogger.getLogger("Drive Train");
     	// Allocator to use for allocating the parsed data into objects
@@ -93,7 +93,7 @@ public class driveTrain extends Subsystem {
 	
     /**
      * Deallocates all physical objects ties to the IntakeWheels. This must be called before
-     * {@link IntakeWheels#init(GXMLparser, Logger)} in order to prevent conflicts
+     * {@link IntakeWheels#init(GXMLParser, Logger)} in order to prevent conflicts
      */
 	public void cleanup()
 	{

@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import net.sf.microlog.core.Logger;
 
 /**
- * This class acts along with {@link GXMLparser}, in that it takes data parsed into data objects
+ * This class acts along with {@link GXMLParser}, in that it takes data parsed into data objects
  * and uses it to allocate an instance of the object itself. Note that only a single instance
  * of this class is enough to allocate all of the robot's objects
  * 

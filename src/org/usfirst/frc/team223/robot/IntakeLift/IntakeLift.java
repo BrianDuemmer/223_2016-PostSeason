@@ -2,13 +2,13 @@ package org.usfirst.frc.team223.robot.IntakeLift;
 
 
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
-import org.usfirst.frc.team223.robot.RoboLogger;
 import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.IntakeLimitISR;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.SetIntakeLiftFromJoy;
@@ -108,7 +108,7 @@ public class IntakeLift extends Subsystem {
      * switch are initialized, as well as the PID controller. Important values
      * are loaded from OI.java
      */
-    public IntakeLift(GXMLparser parser, RoboLogger roboLogger)   {   init(parser, roboLogger);   }
+    public IntakeLift(GXMLParser parser, RoboLogger roboLogger)   {   init(parser, roboLogger);   }
     
     
     
@@ -117,10 +117,10 @@ public class IntakeLift extends Subsystem {
     /**
      * Initializes the {@link IntakeLift} Subsystem.  Reads all data from
      * the configuration file, and allocates it accordingly
-     * @param parser the {@link GXMLparser} that is bound to the configuration file
+     * @param parser the {@link GXMLParser} that is bound to the configuration file
      * @param logger the Log4j logger object that will be used to print out any messages
      */
-    public void init(GXMLparser parser, RoboLogger roboLogger)
+    public void init(GXMLParser parser, RoboLogger roboLogger)
     {
     	this.logger = roboLogger.getLogger("Intake Lift");
     	
@@ -162,7 +162,7 @@ public class IntakeLift extends Subsystem {
     
     /**
      * Deallocates all physical objects ties to the IntakeLift. This must be called before
-     * {@link IntakeLift#init(GXMLparser, Logger)} in order to prevent conflicts
+     * {@link IntakeLift#init(GXMLParser, Logger)} in order to prevent conflicts
      */
     public void cleanup()
     {

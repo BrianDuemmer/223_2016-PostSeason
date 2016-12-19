@@ -1,13 +1,9 @@
-package org.usfirst.frc.team223.robot;
+package org.usfirst.frc.team223.AdvancedX.LoggerUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.FilteredConsoleAppender;
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.FilteredSocketAppender;
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.MyFileAppender;
 
 import net.sf.microlog.core.Level;
 import net.sf.microlog.core.Logger;
@@ -25,30 +21,32 @@ import net.sf.microlog.core.format.PatternFormatter;
 public class RoboLogger {
 
 	// Format string for all loggers
-	private static String fmtString = "%d{HH:mm:ss:SSS} [%P] [%c{1}] %m\r\n";
+	protected String fmtString = "%d{HH:mm:ss:SSS} [%P] [%c{1}] %m\r\n";
 	
 	// Set the logging directory
-	private static String logDir = "/media/sda1/logging";
+	protected String logDir;
 	
 	// Appender stuff
-	private static PatternFormatter formPattern;
+	protected PatternFormatter formPattern;
 	
-	private static FilteredConsoleAppender consoleAppender;
-	private static Level consoleLevel = Level.WARN;
+	protected FilteredConsoleAppender consoleAppender;
+	protected Level consoleLevel = Level.WARN;
 	
-	private static MyFileAppender fileAppender;
-	private static Level fileLevel = Level.TRACE;
+	protected MyFileAppender fileAppender;
+	protected Level fileLevel = Level.TRACE;
 	
-	private static FilteredSocketAppender socketAppender;
-	private static Level socketLevel = Level.TRACE;
-	private static int port = 5801;
-	
-	
+	protected FilteredSocketAppender socketAppender;
+	protected Level socketLevel = Level.TRACE;
+	protected int port = 5801;
 	
 	
 	
-	public void init() 
+	
+	
+	public RoboLogger(String logDir) 
 	{
+		this.logDir = logDir;
+		
 		// make sure the logging dir exists
 		mkdirIfNeeded(logDir);
 		
