@@ -21,7 +21,7 @@ import net.sf.microlog.core.format.PatternFormatter;
 public class RoboLogger {
 
 	// Format string for all loggers
-	protected String fmtString = "%d{HH:mm:ss:SSS} [%P] [%c{1}] %m\r\n";
+	protected String fmtString = "[%P] %d{HH:mm:ss:SSS} [%c{1}]   %m\r\n";
 	
 	// Set the logging directory
 	protected String logDir;

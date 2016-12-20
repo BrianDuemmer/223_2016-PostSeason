@@ -80,7 +80,7 @@ public abstract class GXMLManagerLV implements Runnable
 	 * Create a new instance of {@link GXMLManagerLV} that is bound to the configuration
 	 * file at <code>filePath</code>
 	 */
-	public GXMLManagerLV(String fileName, RoboLogger roboLogger)
+	public GXMLManagerLV(String fileName, RoboLogger roboLogger, NetworkTable nt)
 	{
 		// update instance variables
 		this.fileName = fileName;
@@ -96,8 +96,7 @@ public abstract class GXMLManagerLV implements Runnable
 		this.fileNameKey = "CONFIGXML_" + namespace + "_FILENAME";
 		this.successKey = "CONFIGXML_" + namespace + "_SUCCESS";
 		
-		// obtain the NT table. By default, we want to operate in namespace
-		nt = NetworkTable.getTable(namespace);
+		this.nt = nt;
 	}
 	
 	
@@ -172,6 +171,7 @@ public abstract class GXMLManagerLV implements Runnable
 	 */
 	public void start(int updateRate)
 	{
+		this.logger.info("Starting GXMLManagerLV Background thread with update rate of " + updateRate + " ms");
 		ThreadFactory fact = new DaemonFactory();
 		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(fact);
 		exec.scheduleWithFixedDelay(this, updateRate, updateRate, TimeUnit.MILLISECONDS);
@@ -190,21 +190,37 @@ public abstract class GXMLManagerLV implements Runnable
 	@Override
 	public void run()
 	{	
-		// see if the Dashboard has requested an update, or this is the first call. Reload if it did.
-		if(nt.getBoolean(handshakeKey, false) || this.firstRun)
+		// Attempt to perform an update check, and potentially an update. Be sure to catch any exceptions
+		// here, as they can stop the whole program
+		try
 		{
-			// Set the success flag to the return value from reload()
-			nt.putBoolean(successKey, reload());
+			// see if the Dashboard has requested an update, or this is the first call. Reload if it did.
+			if(nt.getBoolean(handshakeKey, false) || this.firstRun)
+			{
+				// if not the first run, an update from the dashboard was requested
+				if(!this.firstRun)
+						logger.info("Reload request recieved from Dashboard. Attempting Startup cycle...");
+				else
+					logger.info("Attempting initial startup cycle...");
+					
+				// Set the success flag to the return value from reload()
+				nt.putBoolean(successKey, reload());
+				
+				// Set the handshake flag to false
+				nt.putBoolean(handshakeKey, false);
+				
+				// update the filename key to the value of the FILE_NAME attribute of the document.
+				nt.putString(fileNameKey, (String)this.obtainParser(logger).getKeyByPath("FILE_NAME", BASIC_TYPE.STRING));
+			}
 			
-			// Set the handshake flag to false
-			nt.putBoolean(handshakeKey, false);
+			// make sure that firstRun will always be false after this
+			this.firstRun = false;
+			
+			
+		} catch(Exception e)
+		{
+			logger.error("Exception occured during Robot startup cycle. DETAILS: ", e);
 		}
-		
-		// update the filename key to the value of the FILE_NAME attribute of the document.
-		nt.putString(fileNameKey, (String)this.obtainParser(logger).getKeyByPath("FILE_NAME", BASIC_TYPE.STRING));
-		
-		// make sure that firstRun will always be false after this
-		this.firstRun = false;
 	}
 	
 	

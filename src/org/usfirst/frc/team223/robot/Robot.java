@@ -44,8 +44,28 @@ public class Robot extends IterativeRobot {
     // initialize the subsystems / the OI
     public void robotInit() 
     {
+    	// initialize the roboLogger
+    	roboLogger = new RoboLogger("/media/sda1/logging");
+    	
+    	// Initialize the Logger
+    	logger = roboLogger.getLogger("RobotMain");
+    	
+    	// attempt to initialize NetworkTables
+    	logger.info("Attempting to initialize NetworkTables...");
+    	try
+    	{
+    		NetworkTable.setServerMode();
+    		NetworkTable.setPort(1735);
+    		NetworkTable.initialize();
+    		nt = NetworkTable.getTable("SmartDashboard");
+    		logger.info("Successfully initialized NetworkTables");
+    	} 
+    	catch(Exception e){
+    		logger.fatal("Failed to initialize networkTables! DETAILS: ", e);
+    	}
+    	
     	// Initialize the configuration manager
-    	gxmlManager = new GXMLManagerLV("/media/sda1/MainConfig.xml", roboLogger) 
+    	gxmlManager = new GXMLManagerLV("/media/sda1/MainConfig.xml", roboLogger, nt) 
     	{
 			@Override
 			public boolean reload() 
@@ -58,17 +78,7 @@ public class Robot extends IterativeRobot {
 			}
 		};
     	
-		
-		
-		
-    	// Initialize the Logger
-    	logger = roboLogger.getLogger("RobotMain");
-		
-		// Initialize the bulk of the robot
-		initSystems();
-		
-		// initialize the OI
-		oi = new OI();
+		gxmlManager.start(500);
     }
     
     
@@ -80,8 +90,6 @@ public class Robot extends IterativeRobot {
 	 */
     public void initSystems()
     {
-    	// initialize the roboLogger
-    	roboLogger = new RoboLogger("/media/sda1/logging");
     	
     	// log us entering this routine
     	logger.info("=================================================================================================================================");
@@ -97,21 +105,16 @@ public class Robot extends IterativeRobot {
     	Robot.intakeWheelsSubsys = new IntakeWheels(parser, roboLogger);
     	Robot.chooChooSubsys = new ChooChoo(parser, roboLogger);
     	
-    	
-    	// attempt to initialize NetworkTables
-    	logger.info("Attempting to initialize NetworkTables...");
-    	try
-    	{
-    		NetworkTable.setServerMode();
-    		NetworkTable.setPort(1735);
-    		NetworkTable.initialize();
-    		nt = NetworkTable.getTable("Robot223");
-    		logger.info("Successfully initialized NetworkTables");
-    	} 
-    	catch(Exception e){
-    		logger.fatal("Failed to initialize networkTables! DETAILS: ", e);
+		// try to initialize the OI
+    	try 
+    	{  
+    		logger.info("Attempting to initialize OI...");
+    		oi = new OI();  
+    		logger.info("OI initialized successfully");
     	}
-    	
+    	catch (Exception e) {
+    		logger.fatal("Exeption encountered while initializing the OI. DETAILS" , e);
+    	}
     	
     	// Log that we have finished initializing the robot
     	logger.info("============================================= Finished Initializing Robot Systems ===============================================");
@@ -127,13 +130,22 @@ public class Robot extends IterativeRobot {
     	logger.info("=================================================================================================================================");
     	logger.info("================================================ Shutting down Robot Systems ====================================================");
     	logger.info("=================================================================================================================================");
-
     	
-    	// Shut down the subsystems
-    	Robot.driveSubsys.cleanup();
-    	Robot.intakeWheelsSubsys.cleanup();
-    	Robot.intakeLiftSubsys.cleanup();
-    	Robot.chooChooSubsys.cleanup(); 
+    	try
+    	{
+    		logger.info("Attempting to shutdown Robot Systems...");
+    		
+	    	Robot.driveSubsys.cleanup();
+	    	Robot.intakeWheelsSubsys.cleanup();
+	    	Robot.intakeLiftSubsys.cleanup();
+	    	Robot.chooChooSubsys.cleanup();
+	    	
+	    	logger.info("Successfully shut down robot systems");
+    	} 
+    	catch(NullPointerException e)
+    	{
+    		logger.warn("Encountered NullPointerException while shutting down Robot");
+    	}
     	
     	// log that we have finished shutting down the robot
     	logger.info("============================================Finished Shutting down Robot Systems ================================================");
@@ -182,7 +194,17 @@ public class Robot extends IterativeRobot {
     
     
     
-	public void disabledPeriodic() {   Scheduler.getInstance().run();   }
+	public void disabledPeriodic() 
+	{   
+		Scheduler.getInstance().run(); 
+		
+    	if(Robot.nt != null)
+    	{
+    		Robot.nt.putNumber("MyDouble", Timer.getFPGATimestamp());
+    		logger.info("val: " + nt.getBoolean("CONFIGXML_MainConfig_RELOAD", false));
+    	}
+		
+	}
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
     public void teleopPeriodic() 
     {   
