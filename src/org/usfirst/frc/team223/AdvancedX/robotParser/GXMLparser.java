@@ -24,7 +24,7 @@ import net.sf.microlog.core.Logger;
  * @author Brian Duemmer
  *
  */
-public class GXMLparser 
+public class GXMLParser 
 {
 	// References for the active document and XPath engine
 	private Document doc;
@@ -52,7 +52,7 @@ public class GXMLparser
 	 * each XML file
 	 * @param path the path to the target XML file
 	 */
-	public GXMLparser(String path, Logger logger)
+	public GXMLParser(String path, Logger logger)
 	{
 		this.logger = logger;
 		

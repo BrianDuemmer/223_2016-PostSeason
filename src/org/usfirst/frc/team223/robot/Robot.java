@@ -64,6 +64,7 @@ public class Robot extends IterativeRobot {
     		logger.fatal("Failed to initialize networkTables! DETAILS: ", e);
     	}
     	
+    	
     	// Initialize the configuration manager
     	gxmlManager = new GXMLManagerLV("/media/sda1/MainConfig.xml", roboLogger, nt) 
     	{
@@ -78,6 +79,7 @@ public class Robot extends IterativeRobot {
 			}
 		};
     	
+		
 		gxmlManager.start(500);
     }
     
