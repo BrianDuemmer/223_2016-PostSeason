@@ -54,6 +54,8 @@ public class FilteredSocketAppender implements Appender, Runnable
 	private class ClientHandler extends Thread
 	{
 		private Socket socket;
+		
+		@SuppressWarnings("unused")
 		private boolean stop;
 		
 		
@@ -120,12 +122,6 @@ public class FilteredSocketAppender implements Appender, Runnable
 				System.out.println("Error shutting down socket " + e.getMessage());
 			}
 		}
-
-
-		public Socket getSocket() {
-			return socket;
-		}
-		
 	}
 	
 	
@@ -282,11 +278,6 @@ public class FilteredSocketAppender implements Appender, Runnable
 	@Override
 	public boolean isLogOpen() 
 	{
-		boolean ret = false;
-		
-		for(ClientHandler i : this.clients)
-			ret = i != null;
-		
 		return true;
 	}
 

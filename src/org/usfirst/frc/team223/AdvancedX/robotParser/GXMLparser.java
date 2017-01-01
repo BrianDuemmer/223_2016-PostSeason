@@ -1,6 +1,8 @@
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,7 +12,7 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.usfirst.frc.team223.robot.Robot;
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +26,7 @@ import net.sf.microlog.core.Logger;
  * @author Brian Duemmer
  *
  */
-public class GXMLParser 
+public class GXMLparser 
 {
 	// References for the active document and XPath engine
 	private Document doc;
@@ -52,9 +54,9 @@ public class GXMLParser
 	 * each XML file
 	 * @param path the path to the target XML file
 	 */
-	public GXMLParser(String path, Logger logger)
+	public GXMLparser(String path, RoboLogger roboLogger)
 	{
-		this.logger = logger;
+		this.logger = roboLogger.getLogger("GXMLParser");
 		
 		logger.info("Attempting to open XML configuration file at path \"" + path + "\"...");
 		
@@ -129,7 +131,7 @@ public class GXMLParser
 			}
 			
 			// print a message saying that this was successful
-			logger.info("Successfully parsed key \"" + path + "\"");
+			logger.info("Successfully parsed key \"" + path + "\" with value of: " +ret);
 			
 		} catch (XPathException e)
 		{
@@ -234,7 +236,7 @@ public class GXMLParser
 			// if ret is not null, we have successfully parsed a value. Print a according message and return
 			if(ret != null)
 			{
-				logger.info("Successfully parsed child \"" + name + "\" from parent \"" + parent.getNodeName() + "\"");
+				logger.info("Successfully parsed child \"" + name + "\" from path \"" + this.getNodePath(parent) + "\" with value of: " +ret);
 				return ret;
 			}
 		}
@@ -616,6 +618,32 @@ public class GXMLParser
 		
 		// Return the parsed setpoint value
 		return ret;
+	}
+	
+	
+	
+	
+	private String getNodePath(Node key)
+	{
+		String path = "";
+		
+		// list to contain all nodes in path
+		List<Node> nodes = new ArrayList<Node>();
+		
+		// populate nodes with all nodes in path to key
+		while(key.getParentNode() != null) {
+			nodes.add(key);
+			key = key.getParentNode();
+		}
+		
+		// Remove the GXML_Root element
+		nodes.remove(nodes.size() -1);
+		
+		// produce the path
+		for(int i=nodes.size()-1; i>=0; i--)
+			path += "/" + nodes.get(i).getNodeName();
+		
+		return path;
 	}
 }
 

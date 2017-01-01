@@ -1,15 +1,13 @@
 package org.usfirst.frc.team223.robot.ChooChoo;
 
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManager;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
-import org.usfirst.frc.team223.robot.Robot;
-import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.ChooChooISR;
 import org.usfirst.frc.team223.robot.ChooChoo.ccCommands.SetCCfromJoy;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -18,6 +16,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import net.sf.microlog.core.Logger;
 
 
@@ -26,9 +25,18 @@ import net.sf.microlog.core.Logger;
  * @author Brian Duemmer
  *
  */
-public class ChooChoo extends Subsystem {
+public class ChooChoo extends Subsystem implements PIDSource, PIDOutput {
 	
 	private Logger logger;
+	
+	private NetworkTable nt;
+	
+	///////////////// NT Key Names ////////////////
+	private static final String posKeyNT = "ChooChoo_Position";
+	private static final String setptKeyNT = "ChooChoo_Setpoint";
+	private static final String outputKeyNT = "ChooChoo_Output";
+	private static final String zeroedKeyNT = "ChooChoo_Zeroed";
+	private static final String pidEnabledKeyNT = "ChooChoo_PID_Enabled";
 	
 	
 	// Data and objects to be acquired from parsing a configuration file
@@ -56,34 +64,29 @@ public class ChooChoo extends Subsystem {
 	// Offset for the encoder. This value is subtracted from the 
 	// value returned from encoder.getPosition().
 	private double 		encoderOffset;
-
 	
-	
-	
-/////////////////////////////// Sub - Classes /////////////////////////////////
-	
-	// Class to act as a PIDInput for the PID loop
-	private class ChooChooPIDSource implements PIDSource
+	// Method that will be run when an interrupt occurs
+	private Runnable limitHandler = new Runnable()
 	{
 		@Override
-		public void setPIDSourceType(PIDSourceType pidSource) {}
+		public void run()
+		{
+	    	double newChooChooOffset = getRawEncPos() - SETPOINT_BEAM__HIT__ANGLE;
+	    	
+	    	// Account for angle wrapping. If it is negative, add 360
+	    	newChooChooOffset %= 360;
+	    	newChooChooOffset  +=  newChooChooOffset > 0  ?  0 : 360;
+	    	
+	    	setEncOffset(newChooChooOffset);
+	    	
+	    	//make sure the rest of code knows that we have been zeroed
+	    	hasBeenZeroed = true;
+	    	nt.putBoolean(zeroedKeyNT, true);
+		}
+	};
 
-		@Override
-		public PIDSourceType getPIDSourceType() {   return PIDSourceType.kDisplacement;   }
-
-		@Override
-		public double pidGet() {   return getPos();   }
-	}
 	
 	
-	
-	
-	// Class to act as a PIDOutput for the PID loop
-	private class ChooChooPIDOutput implements PIDOutput
-	{
-		@Override
-		public void pidWrite(double output) {   setOutput(output);   }
-	}
 	
 	
 ////////////////////////////////// Methods ////////////////////////////////////	
@@ -93,10 +96,18 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Here all of the subsystem 
      * dependents are handled, as well as the PID controller. 
      */
-    public ChooChoo(GXMLParser parser, RoboLogger roboLogger) 
+    public ChooChoo(GXMLManager manager, NetworkTable nt) 
     {
     	// initialize the subsystem
-    	init(parser, roboLogger);
+    	init(manager);
+    	this.nt = nt;
+    	
+    	// initialize NT values
+    	nt.putNumber(posKeyNT, 0);
+    	nt.putNumber(setptKeyNT, 0);
+    	nt.putNumber(outputKeyNT, 0);
+    	nt.putBoolean(zeroedKeyNT, false);
+    	nt.putBoolean(pidEnabledKeyNT, false);
     }
     
     
@@ -107,12 +118,13 @@ public class ChooChoo extends Subsystem {
      * Initialize the ChooChoo (catapult) system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-    public void init(GXMLParser parser, RoboLogger roboLogger)
+    public void init(GXMLManager manager)
     {
-    	this.logger = roboLogger.getLogger("Choo Choo");
-    	
+		logger = manager.getRoboLogger().getLogger("ChooChoo");
+		
+		GXMLparser parser = manager.obtainParser();
     	// Allocator to use for allocating the parsed data into objects
-    	GXMLAllocator allocator = new GXMLAllocator(this.logger);
+    	GXMLAllocator allocator = manager.obtainAllocator("ChooCHooAllocator");
     	
     	
     	// log us entering the init routine
@@ -132,8 +144,8 @@ public class ChooChoo extends Subsystem {
 		logger.info("\n\rAllocating ChooChoo data...");
 		
 		this.MOTOR_HDL = (CANTalon) allocator.allocateMotor(this.MOTOR_DATA);
-		this.LIMIT_HDL = allocator.allocateLimit(this.LIMIT_DATA, new ChooChooISR());
-		this.PID_HDL = allocator.allocatePID(PID_DATA, new ChooChooPIDSource(), new ChooChooPIDOutput());
+		this.LIMIT_HDL = allocator.allocateLimit(this.LIMIT_DATA, this.limitHandler);
+		this.PID_HDL = allocator.allocatePID(PID_DATA, this, this);
 		
 		// Configure the Encoder on the CANTalon
 		allocator.allocateCANEncoder(this.ENCODER_DATA, this.MOTOR_HDL);
@@ -155,7 +167,7 @@ public class ChooChoo extends Subsystem {
     
     /**
      * Deallocates all physical objects ties to the ChooChoo. This must be called before
-     * {@link ChooChoo#init(GXMLParser, Logger)} in order to prevent conflicts
+     * {@link ChooChoo#init(GXMLparser, Logger)} in order to prevent conflicts
      */
     public void cleanup()
     {
@@ -164,10 +176,16 @@ public class ChooChoo extends Subsystem {
     	
     	// free the resources
     	if(this.LIMIT_HDL != null)
+    	{
     		this.LIMIT_HDL.free();
+    		this.LIMIT_HDL = null;
+    	}
     	
     	if(this.MOTOR_HDL != null)
+    	{
     		this.MOTOR_HDL.delete();
+    		this.MOTOR_HDL = null;
+    	}
     	
     	if(this.PID_HDL != null)
     		this.PID_HDL.free();
@@ -187,7 +205,11 @@ public class ChooChoo extends Subsystem {
      * Get the encoder position, while also accounting for encoder inversion 
      * and offset
      */
-    public double getPos(){   return getRawEncPos() - encoderOffset;   }
+    public double getPos()
+    {   
+    	double pos = getRawEncPos() - encoderOffset;   
+    	return pos;
+    }
     
     
     
@@ -260,7 +282,15 @@ public class ChooChoo extends Subsystem {
      * 
      * @param output the value to send to the encoder
      */
-    public void setOutput(double output){   this.MOTOR_HDL.set(output);   }
+    public void setOutput(double output)
+    {   
+    	this.MOTOR_HDL.set(output);   
+    	
+    	nt.putNumber(outputKeyNT, output);
+		nt.putBoolean(pidEnabledKeyNT, this.getPIDHandle().isEnabled());
+		nt.putNumber(setptKeyNT, this.getPIDHandle().getSetpoint());
+		nt.putNumber(posKeyNT, this.getPos());
+    }
     
     
     
@@ -295,6 +325,30 @@ public class ChooChoo extends Subsystem {
 	public InterruptableLimit getLIMIT_HDL() {
 		return LIMIT_HDL;
 	}
+
+
+
+	
+	@Override
+	public void setPIDSourceType(PIDSourceType pidSource) {}
+
+	@Override
+	public PIDSourceType getPIDSourceType() {   return PIDSourceType.kDisplacement;   }
+
+	@Override
+	public double pidGet() {   return getPos();   }
+
+	@Override
+	public void pidWrite(double output) {   setOutput(output);   }
+
+
+
+
+
+	public CANTalon getMOTOR_HDL() {
+		return MOTOR_HDL;
+	}
+
 
 }
 

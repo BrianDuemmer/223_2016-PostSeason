@@ -1,7 +1,7 @@
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
 /**
- * POD Type to store data for a PID loop, as parsed from {@link GXMLParser}
+ * POD Type to store data for a PID loop, as parsed from {@link GXMLparser}
  * @author Brian Duemmer
  *
  */

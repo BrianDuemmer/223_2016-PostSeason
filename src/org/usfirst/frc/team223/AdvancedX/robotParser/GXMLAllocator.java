@@ -6,8 +6,7 @@ package org.usfirst.frc.team223.AdvancedX.robotParser;
 import org.usfirst.frc.team223.AdvancedX.DriveSide;
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
-import org.usfirst.frc.team223.robot.Robot;
-
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.Encoder;
@@ -16,21 +15,19 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import net.sf.microlog.core.Logger;
 
 /**
- * This class acts along with {@link GXMLParser}, in that it takes data parsed into data objects
- * and uses it to allocate an instance of the object itself. Note that only a single instance
- * of this class is enough to allocate all of the robot's objects
+ * This class acts along with {@link GXMLparser}, in that it takes data parsed into data objects
+ * and uses it to allocate an instance of the object itself.
  * 
  * @author Brian Duemmer
  */
 public class GXMLAllocator {
 	
-	// Log4j logger object to print and log data
-	private Logger logger = Robot.roboLogger.getLogger("GXML Allocator");
+	private Logger logger;
+	private RoboLogger roboLogger;
 	
 	
 	
@@ -38,12 +35,13 @@ public class GXMLAllocator {
 	/**
 	 * Allocate a new instance of the GXMLAllocator. This should only have to be called
 	 * once in the code
-	 * @param logger the Log4j Logger to log data too
+	 * @param roboLogger the {@link RoboLogger} to obtain a {@link Logger} from
 	 */
-	public GXMLAllocator(Logger logger)
+	public GXMLAllocator(RoboLogger roboLogger, String name)
 	{
-		logger.info("Creating new instance of GXMLAllocator");
-		this.logger = logger;
+		this.roboLogger = roboLogger;
+		this.logger = roboLogger.getLogger(name);
+		logger.info("Creating new instance \"" +name+ "\" of GXMLAllocator");
 	}
 	
 	
@@ -76,6 +74,26 @@ public class GXMLAllocator {
 			return null;
 		}
 		
+		// log if any illegal values in PIDData
+		if(data.period <= 0)
+		{
+			logger.error("Illegal value " +data.period+ " for PID period. Setting to default instead");
+			data.period = PIDController.kDefaultPeriod;
+		}
+		
+		if(data.min > data.max && !data.continuous)
+		{
+			logger.error("PID minimum must not be greater than maximum. Setting both to zero...");
+			data.min = 0;
+			data.max = 0;
+		} else if(data.min >= data.max && data.continuous)
+		{
+			logger.error("PID minimum must not be greater or equal to maximum. Setting both to zero and continuous to false...");
+			data.min = 0;
+			data.max = 0;
+			data.continuous = false;
+		}
+		
 		
 		// Attempt to allocate all of the data
 		try
@@ -98,7 +116,7 @@ public class GXMLAllocator {
 			return ret;
 		} catch (Exception e)
 		{
-			logger.error("Error allopcating PID controller! DEATILS:\r\n", e);
+			logger.error("Error allopcating PID controller! DEATILS: ", e);
 		}
 		
 		// If this was reached, there was an error
@@ -192,7 +210,7 @@ public class GXMLAllocator {
 	 * 
 	 * @return a new {@link InterruptableLimit}
 	 */
-	public InterruptableLimit allocateLimit(LimitData data, Command handlerCommand)
+	public InterruptableLimit allocateLimit(LimitData data, Runnable handlerCommand)
 	{
 		logger.info("Allocating new InterruptableLimit...");
 		
@@ -205,7 +223,7 @@ public class GXMLAllocator {
 		boolean onRelease = data.interruptEdge.selection.equals("onRelease") || data.interruptEdge.selection.equals("onBoth");
 		
 	// Initialize the Limit
-		InterruptableLimit ret = new InterruptableLimit(data.id, handlerCommand, data.normallyOpen, onHit, onRelease, data.debounceTime);
+		InterruptableLimit ret = new InterruptableLimit(handlerCommand, data.id, data.normallyOpen, onHit, onRelease, data.debounceTime);
 		
 	// return
 		logger.info("Finished allocating new InterruptableLimit");
@@ -229,6 +247,7 @@ public class GXMLAllocator {
 		if(motor == null)
 		{
 			logger.warn("CANTAlon refernece passed to AllocateCANEncoder is null");
+			return;
 		}
 		
 	// Set the device configurations
@@ -252,14 +271,14 @@ public class GXMLAllocator {
 	 * 
 	 * @return a new {@link DriveSide}
 	 */
-	public DriveSide allocateDriveSide(DriveSideData data)
+	public DriveSide allocateDriveSide(DriveSideData data, String name)
 	{
 		
 	// Log us entering the routine
 		logger.info("Attempting to allocate DriveSide...");
 		
 	// Initialize the DriveSide object to return
-		DriveSide ret = new DriveSide(data.pid.period);
+		DriveSide ret = new DriveSide(data.pid.period, roboLogger.getLogger(name));
 		
 	// Configure the PID
 		ret.setPID(data.pid.kp, data.pid.ki, data.pid.kd, data.pid.kf);
@@ -329,11 +348,11 @@ public class GXMLAllocator {
 			logger.error("Gyro for TankCascadeController is null!");
 		
 	// Allocate the DriveSides
-		DriveSide left = allocateDriveSide(data.leftData);
-		DriveSide right = allocateDriveSide(data.rightData);
+		DriveSide left = allocateDriveSide(data.leftData, "leftDriveSide");
+		DriveSide right = allocateDriveSide(data.rightData, "rightDriveSide");
 		
 	// Initialize the TCC
-		TankCascadeController ret = new TankCascadeController(left, right, gyro, data.distancePID.period, data.anglePID.period);
+		TankCascadeController ret = new TankCascadeController(left, right, gyro, data.distancePID.period, data.anglePID.period, roboLogger);
 		
 	// Set the master PIDs
 		logger.info("Setting Master PIDs...");

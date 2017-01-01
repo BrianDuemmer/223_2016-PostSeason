@@ -3,18 +3,17 @@ package org.usfirst.frc.team223.robot;
 
 
 import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManagerLV;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManager;
 import org.usfirst.frc.team223.robot.ChooChoo.ChooChoo;
 import org.usfirst.frc.team223.robot.IntakeLift.IntakeLift;
 import org.usfirst.frc.team223.robot.drive.driveTrain;
 import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import net.sf.microlog.core.Level;
 import net.sf.microlog.core.Logger;
 
 
@@ -38,14 +37,25 @@ public class Robot extends IterativeRobot {
 	
 	private Command auto;
 	
-	public static GXMLManagerLV gxmlManager;
+	public static GXMLManager gxmlManager;
+	
+	public static final String configPath = "/media/sda1/MainConfig.xml";
+	
+	private static String prevDriveCmd = "";
+	private static String prevIntakeLiftCmd = "";
+	private static String prevIntakeWheelsCmd = "";
+	private static String prevChooChooCmd = "";
 
     
+	
+	
+	
+	
     // initialize the subsystems / the OI
     public void robotInit() 
     {
     	// initialize the roboLogger
-    	roboLogger = new RoboLogger("/media/sda1/logging");
+    	roboLogger = new RoboLogger("/media/sda1/logging", 5801, Level.WARN);
     	
     	// Initialize the Logger
     	logger = roboLogger.getLogger("RobotMain");
@@ -66,21 +76,13 @@ public class Robot extends IterativeRobot {
     	
     	
     	// Initialize the configuration manager
-    	gxmlManager = new GXMLManagerLV("/media/sda1/MainConfig.xml", roboLogger, nt) 
-    	{
-			@Override
-			public boolean reload() 
-			{
-				freeSystems();
-				initSystems();
-				
-				// TODO Determine if the file loading was successful
-				return true;
-			}
+    	gxmlManager = new GXMLManager(configPath, roboLogger, nt) 
+		{
+    		public boolean load() {   return initSystems();   }
+    		public boolean free() {   return freeSystems();   }
 		};
-    	
-		
-		gxmlManager.start(500);
+
+		gxmlManager.start(1000);
     }
     
     
@@ -90,22 +92,27 @@ public class Robot extends IterativeRobot {
 	 * Loads the entire robot's data from the specified file, and populates all of the data
 	 * needed to run the robot.
 	 */
-    public void initSystems()
+    public boolean initSystems()
     {
+    	boolean success = true;
     	
     	// log us entering this routine
     	logger.info("=================================================================================================================================");
     	logger.info("================================================= Initializing Robot Systems ====================================================");
     	logger.info("=================================================================================================================================");
     	
-    	// Initialize the parser
-    	GXMLParser parser = gxmlManager.obtainParser(roboLogger.getLogger("GXML Parser"));
-    	
     	// Initialize the subsystems
-    	Robot.driveSubsys = new driveTrain(parser, roboLogger);
-    	Robot.intakeLiftSubsys = new IntakeLift(parser, roboLogger);
-    	Robot.intakeWheelsSubsys = new IntakeWheels(parser, roboLogger);
-    	Robot.chooChooSubsys = new ChooChoo(parser, roboLogger);
+    	try
+    	{
+	    	Robot.driveSubsys = new driveTrain(gxmlManager, nt);
+	    	Robot.intakeLiftSubsys = new IntakeLift(gxmlManager, nt);
+	    	Robot.intakeWheelsSubsys = new IntakeWheels(gxmlManager, nt);
+	    	Robot.chooChooSubsys = new ChooChoo(gxmlManager, nt);
+    	} catch (Exception e)
+    	{
+    		logger.error("Exception occured while initializing subsystems. DETAILS: ", e);
+    		success = false;
+    	}
     	
 		// try to initialize the OI
     	try 
@@ -116,18 +123,23 @@ public class Robot extends IterativeRobot {
     	}
     	catch (Exception e) {
     		logger.fatal("Exeption encountered while initializing the OI. DETAILS" , e);
+    		success = false;
     	}
     	
     	// Log that we have finished initializing the robot
     	logger.info("============================================= Finished Initializing Robot Systems ===============================================");
+    	
+    	return success;
     }
     
     
     
     
     
-    public void freeSystems()
+    public boolean freeSystems()
     {
+    	boolean success = true;
+    	
     	// log us entering this routine
     	logger.info("=================================================================================================================================");
     	logger.info("================================================ Shutting down Robot Systems ====================================================");
@@ -149,8 +161,16 @@ public class Robot extends IterativeRobot {
     		logger.warn("Encountered NullPointerException while shutting down Robot");
     	}
     	
+    	catch(Exception e)
+    	{
+    		logger.error("Failed to shut down robot systems. DETAILS: " ,e);
+    		success = false;
+    	}
+    	
     	// log that we have finished shutting down the robot
     	logger.info("============================================Finished Shutting down Robot Systems ================================================");
+    	
+    	return success;
     }
 	
     
@@ -178,19 +198,32 @@ public class Robot extends IterativeRobot {
     
     
     
-    public void logCommands() 
+    public void logCommandChange() 
     {
-    	// Format an intro message
-    	String logMsg = "\r\n\r\nCURRENT COMMANDS";
+    	String currDriveCmd = driveSubsys.getCurrentCommand().getName();
+    	String currIntakeLiftCmd = intakeLiftSubsys.getCurrentCommand().getName();
+    	String currIntakeWheelsCmd = intakeWheelsSubsys.getCurrentCommand().getName();
+    	String currChooChooCmd = chooChooSubsys.getCurrentCommand().getName(); 	
     	
-    	// Add a line for each subsystem to logMsg describing the active command
-    	logMsg += "DriveTrain: " + Robot.driveSubsys.getCurrentCommand().getName() + "\r\n";
-    	logMsg += "Choo Choo: " + Robot.chooChooSubsys.getCurrentCommand().getName() + "\r\n";
-    	logMsg += "Intake Lift: " + Robot.intakeLiftSubsys.getCurrentCommand().getName() + "\r\n";
-    	logMsg += "Intake Wheels: " + Robot.intakeWheelsSubsys.getCurrentCommand().getName() + "\r\n";
     	
-    	// log the message
-    	logger.info(logMsg);
+    	if(!currDriveCmd.equals(prevDriveCmd))
+    		logger.info("Command for Drivetrain Subsystem is now \"" +currDriveCmd);
+    	
+    	if(!currIntakeLiftCmd.equals(prevIntakeLiftCmd))
+    		logger.info("Command for IntakeLift Subsystem is now \"" +currIntakeLiftCmd);
+    	
+    	if(!currIntakeWheelsCmd.equals(prevIntakeWheelsCmd))
+    		logger.info("Command for IntakeWheels Subsystem is now \"" +currIntakeWheelsCmd);
+    	
+    	if(!currChooChooCmd.equals(prevChooChooCmd))
+    		logger.info("Command for ChooChoo Subsystem is now \"" +currChooChooCmd);
+    	
+    	
+    	prevDriveCmd = currDriveCmd;
+    	prevIntakeLiftCmd = currIntakeLiftCmd;
+    	prevIntakeWheelsCmd = currIntakeWheelsCmd;
+    	prevChooChooCmd = currChooChooCmd;
+
     }
     
     
@@ -198,27 +231,18 @@ public class Robot extends IterativeRobot {
     
 	public void disabledPeriodic() 
 	{   
-		Scheduler.getInstance().run(); 
-		
-    	if(Robot.nt != null)
-    	{
-    		Robot.nt.putNumber("MyDouble", Timer.getFPGATimestamp());
-    		logger.info("val: " + nt.getBoolean("CONFIGXML_MainConfig_RELOAD", false));
-    	}
-		
+		Scheduler.getInstance().run();
 	}
+	
+	
+	
+	
+	
     public void autonomousPeriodic() {   Scheduler.getInstance().run();   }
     public void teleopPeriodic() 
     {   
-    	Scheduler.getInstance().run();   
-//    	logCommands();
-    	
-    	
-    	if(Robot.nt != null)
-    	{
-    		Robot.nt.putNumber("MyDouble", Timer.getFPGATimestamp());
-    		logger.info("val: " + nt.getBoolean("CONFIGXML_MainConfig_RELOAD", false));
-    	}
+    	Scheduler.getInstance().run();
+    	logCommandChange();
     }
     
 }

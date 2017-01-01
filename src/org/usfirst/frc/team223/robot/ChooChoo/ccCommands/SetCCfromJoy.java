@@ -29,7 +29,7 @@ public class SetCCfromJoy extends Command {
     protected void execute() {
     	Robot.chooChooSubsys.getPIDHandle().disable();
     	
-    	double out = Robot.oi.stick_dL.getX();
+    	double out = Robot.oi.stick_oL.getX();
     	Robot.chooChooSubsys.setOutput(out);
     }
 

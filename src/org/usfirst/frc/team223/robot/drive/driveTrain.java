@@ -1,22 +1,17 @@
 package org.usfirst.frc.team223.robot.drive;
 
 import org.usfirst.frc.team223.AdvancedX.TankCascadeController;
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser.BASIC_TYPE;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManager;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser.BASIC_TYPE;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GyroNavX;
 import org.usfirst.frc.team223.AdvancedX.robotParser.TankCascadeData;
-import org.usfirst.frc.team223.robot.Robot;
 import org.usfirst.frc.team223.robot.drive.driveCommands.setDriveFromJoy;
-import org.usfirst.frc.team223.robot.intakeWheels.IntakeWheels;
-
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import net.sf.microlog.core.Logger;
 
 /** Acts as the drivetrain Subsystem of the robot.
@@ -26,6 +21,7 @@ import net.sf.microlog.core.Logger;
 public class driveTrain extends Subsystem {
 	
 	private Logger logger;
+	private NetworkTable nt;
     
 	//////////////// Drive Subsystem /////////////////
 	
@@ -47,12 +43,11 @@ public class driveTrain extends Subsystem {
 	
 	/**
 	 *  Initialize the driveTrain
-	 * @param parser the GXMLParser bound to the configuration file
-	 * @param logger the log4j logger to print data to
 	 */
-	public driveTrain(GXMLParser parser, RoboLogger roboLogger)
+	public driveTrain(GXMLManager manager, NetworkTable nt)
 	{
-		init(parser, roboLogger);
+		this.nt = nt;
+		init(manager);
 	}
 	
 	
@@ -60,12 +55,14 @@ public class driveTrain extends Subsystem {
      * Initialize the DriveTrain system. Reads all data from
      * the configuration file, and allocates it accordingly
      */
-	public void init(GXMLParser parser, RoboLogger roboLogger)
+	public void init(GXMLManager manager)
 	{
-		logger = roboLogger.getLogger("Drive Train");
+		logger = manager.getRoboLogger().getLogger("DriveTrain");
+		
+		GXMLparser parser = manager.obtainParser();
+		
     	// Allocator to use for allocating the parsed data into objects
-    	GXMLAllocator allocator = new GXMLAllocator(logger);
-    	
+    	GXMLAllocator allocator = manager.obtainAllocator("DriveTrainAllocator");
     	
     	// log us entering the init routine
     	logger.info("\n\r\n\r\n\r====================================== Initializing DriveTrain Subsystem ======================================");
@@ -79,7 +76,10 @@ public class driveTrain extends Subsystem {
     	// Allocate the data
 		logger.info("\n\rAllocating DriveTrain data...");
 		
+		// Allocate the NavX
+		logger.info("Allocating NavX...");
     	navx = new GyroNavX(Port.kMXP);
+    	logger.info("Finished allocatng NavX");
     	
     	this.DRIVE_HDL = allocator.allocateTankCascadeController(this.DRIVE_DATA, navx);
     	this.FLASHLIGHT_HDL = new Relay(this.FLASHLIGHT_RELAY_PORT);
@@ -92,8 +92,8 @@ public class driveTrain extends Subsystem {
 	
 	
     /**
-     * Deallocates all physical objects ties to the IntakeWheels. This must be called before
-     * {@link IntakeWheels#init(GXMLParser, Logger)} in order to prevent conflicts
+     * Deallocates all physical objects ties to the DriveTrain. This must be called before
+     * {@link DriveTrain#init(GXMLManager)} in order to prevent conflicts
      */
 	public void cleanup()
 	{
@@ -105,7 +105,10 @@ public class driveTrain extends Subsystem {
 			this.DRIVE_HDL.free();
 		
 		if(this.FLASHLIGHT_HDL != null)
+		{
 			this.FLASHLIGHT_HDL.free();
+			logger.info("Successfully freed flashlight");
+		}
 	}
 	
 	

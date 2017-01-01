@@ -2,15 +2,13 @@ package org.usfirst.frc.team223.robot.IntakeLift;
 
 
 import org.usfirst.frc.team223.AdvancedX.InterruptableLimit;
-import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import org.usfirst.frc.team223.AdvancedX.robotParser.EncoderData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLAllocator;
-import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLParser;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLManager;
+import org.usfirst.frc.team223.AdvancedX.robotParser.GXMLparser;
 import org.usfirst.frc.team223.AdvancedX.robotParser.LimitData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.MotorData;
 import org.usfirst.frc.team223.AdvancedX.robotParser.PIDData;
-import org.usfirst.frc.team223.robot.Robot;
-import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.IntakeLimitISR;
 import org.usfirst.frc.team223.robot.IntakeLift.intakeCommands.SetIntakeLiftFromJoy;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -20,6 +18,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import net.sf.microlog.core.Logger;
 
 
@@ -28,9 +27,18 @@ import net.sf.microlog.core.Logger;
  * @author Brian Duemmer
  *
  */
-public class IntakeLift extends Subsystem {
+public class IntakeLift extends Subsystem implements PIDSource, PIDOutput {
 	
 	private Logger logger;
+	
+	private NetworkTable nt;
+	
+	///////////////// NT Key Names ////////////////
+	private static final String posKeyNT = "IntakeLift_Position";
+	private static final String setptKeyNT = "IntakeLift_Setpoint";
+	private static final String outputKeyNT = "IntakeLift_Output";
+	private static final String zeroedKeyNT = "IntakeLift_Zeroed";
+	private static final String pidEnabledKeyNT = "IntakeLift_PID_Enabled";
 
 	//////////// IntakeLift Subsystem /////////////
 	
@@ -60,55 +68,45 @@ public class IntakeLift extends Subsystem {
 	
 	// If true, the IntakeLift is in dedicated PID mode (not on position hold)
 	public boolean		inPIDmove;
-
 	
-	
-	
-	
-	
-	/////////////////////////////////// Dependent Classes ///////////////////////////////
-	
-	// Class to act as a PIDInput for the PID loop
-	private class IntakeLiftPIDSource implements PIDSource
+	// Method that will be run when an interrupt occurs
+	private Runnable limitHandler = new Runnable()
 	{
 		@Override
-		public void setPIDSourceType(PIDSourceType pidSource) {}
-
-		@Override
-		public PIDSourceType getPIDSourceType() {   return PIDSourceType.kDisplacement;   }
-
-		
-	    /** Gets the properly scaled and adjusted position of
-	     * the intake lift
-	     * 
-	     * @return the position of the intake lift encoder
-	     */
-		@Override
-		public double pidGet() {   return getPos();   }	
-	}
-	
-	
-	// Class to act as a PIDOutput for the PID loop
-	private class IntakeLiftPIDOutput implements PIDOutput
-	{
-		@Override
-		public void pidWrite(double output) 
+		public void run()
 		{
-	    	// Only update the output if the PID is enabled
-	    	if(getPIDHandle().isEnabled())
-	    		setOutput(output); 
+	      	// Calculate and set the new encoder offset
+	    	double newIntakeEncoderOffset = getRawEncPos() - SETPOINT_LIMIT__POS;
+	    	setEncOffset(newIntakeEncoderOffset);
+	    	
+	    	//make sure the rest of code knows that we have been zeroed
+	    	hasBeenZeroed = true;
+	    	nt.putBoolean(zeroedKeyNT, true);
 		}
-	}
+	};
+
+	
+	
 	
 	
 	/////////////////////////////////////// Methods /////////////////////////////////////
 	
     /**
      * Initialize the Intake Lift system. Here the motor, encoder, and limit
-     * switch are initialized, as well as the PID controller. Important values
-     * are loaded from OI.java
+     * switch are initialized, as well as the PID controller.
      */
-    public IntakeLift(GXMLParser parser, RoboLogger roboLogger)   {   init(parser, roboLogger);   }
+    public IntakeLift(GXMLManager manager, NetworkTable nt)   
+    {   
+    	init(manager);  
+    	this.nt = nt;
+    	
+    	// initialize NT values
+    	nt.putNumber(posKeyNT, 0);
+    	nt.putNumber(setptKeyNT, 0);
+    	nt.putNumber(outputKeyNT, 0);
+    	nt.putBoolean(zeroedKeyNT, false);
+    	nt.putBoolean(pidEnabledKeyNT, false);
+    }
     
     
     
@@ -117,15 +115,16 @@ public class IntakeLift extends Subsystem {
     /**
      * Initializes the {@link IntakeLift} Subsystem.  Reads all data from
      * the configuration file, and allocates it accordingly
-     * @param parser the {@link GXMLParser} that is bound to the configuration file
+     * @param parser the {@link GXMLparser} that is bound to the configuration file
      * @param logger the Log4j logger object that will be used to print out any messages
      */
-    public void init(GXMLParser parser, RoboLogger roboLogger)
+    public void init(GXMLManager manager)
     {
-    	this.logger = roboLogger.getLogger("Intake Lift");
-    	
-    	// Allocator object to allocate the parsed data into objects
-    	GXMLAllocator allocator = new GXMLAllocator(logger);
+		logger = manager.getRoboLogger().getLogger("IntakeLift");
+		
+		GXMLparser parser = manager.obtainParser();
+    	// Allocator to use for allocating the parsed data into objects
+    	GXMLAllocator allocator = manager.obtainAllocator("IntakeLiftAllocator");
     	
     	
     	// log us entering the init routine
@@ -145,8 +144,8 @@ public class IntakeLift extends Subsystem {
 		
 		this.MOTOR_HDL = (CANTalon) allocator.allocateMotor(this.MOTOR_DATA);
 		this.ENCODER_HDL = allocator.allocateRegEncoder(this.ENCODER_DATA);
-		this.LIMIT_HDL = allocator.allocateLimit(this.LIMIT_DATA, new IntakeLimitISR());
-		this.PID_HDL = allocator.allocatePID(PID_DATA, new IntakeLiftPIDSource(), new IntakeLiftPIDOutput());
+		this.LIMIT_HDL = allocator.allocateLimit(this.LIMIT_DATA, this.limitHandler);
+		this.PID_HDL = allocator.allocatePID(PID_DATA, this, this);
 		
     	// set hasBeenZeroed to false
     	hasBeenZeroed = false;
@@ -162,7 +161,7 @@ public class IntakeLift extends Subsystem {
     
     /**
      * Deallocates all physical objects ties to the IntakeLift. This must be called before
-     * {@link IntakeLift#init(GXMLParser, Logger)} in order to prevent conflicts
+     * {@link IntakeLift#init(GXMLparser, Logger)} in order to prevent conflicts
      */
     public void cleanup()
     {
@@ -171,10 +170,26 @@ public class IntakeLift extends Subsystem {
     	
     	// free the resources
     	if(this.LIMIT_HDL != null)
+    	{
+    		logger.info("Attempting to free limit...");
     		this.LIMIT_HDL.free();
+    		this.LIMIT_HDL = null;
+    		logger.info("Finished freeing limit");
+    	}
+    	
+    	if(this.ENCODER_HDL != null)
+    	{
+    		logger.info("Attempting to free encoder...");
+    		this.ENCODER_HDL.free();
+    		this.ENCODER_HDL = null;
+    		logger.info("Finished freeing encoder");
+    	}
     	
     	if(this.MOTOR_HDL != null)
+    	{
     		this.MOTOR_HDL.delete();
+    		this.MOTOR_HDL = null;
+    	}
     	
     	if(this.PID_HDL != null)
     		this.PID_HDL.free();
@@ -193,7 +208,14 @@ public class IntakeLift extends Subsystem {
      * 
      * @param output the value to send to the encoder
      */
-    public void setOutput(double output) {   this.MOTOR_HDL.set(output);   }
+    public void setOutput(double output) 
+    {   
+    	this.MOTOR_HDL.set(output);  
+    	
+    	nt.putNumber(outputKeyNT, output);
+		nt.putBoolean(pidEnabledKeyNT, this.getPIDHandle().isEnabled());
+		nt.putNumber(setptKeyNT, this.getPIDHandle().getSetpoint());
+    }
  
     
     
@@ -215,12 +237,17 @@ public class IntakeLift extends Subsystem {
      * Gets the position of the IntakeLift
      * @return
      */
-    public double getPos() {   return ENCODER_HDL.getDistance() - encoderOffset;   }
+    public double getPos() 
+    {   
+    	double pos = ENCODER_HDL.getDistance() - encoderOffset; 
+    	nt.putNumber(posKeyNT, pos);
+    	return pos;
+    }
     
     
     // Getter methods
     public InterruptableLimit getLimitHandle() {   return this.LIMIT_HDL;   }
-    public CANTalon getMotorHandle() {   return this.MOTOR_HDL;   }
+//    public CANTalon getMotorHandle() {   return this.MOTOR_HDL;   }
     public Encoder getEncoderHandle() {   return this.ENCODER_HDL;   }
 
 
@@ -240,8 +267,49 @@ public class IntakeLift extends Subsystem {
 	 */
 	public void logSensor()
 	{
+		String encPos = String.format("%.1f", this.getPos());
+		String setpt = String.format("%.1f", this.PID_HDL.getSetpoint());
+		String out = String.format("%.1f", this.MOTOR_HDL.getOutputVoltage());
 		
+		logger.info("IntakeLift: enc:" +encPos+ " set:" +setpt+ " out:" +out+ " 0'd:" +this.hasBeenZeroed);
 	}
+	
+
+
+
+
+
+
+	@Override
+	public void setPIDSourceType(PIDSourceType pidSource) {}
+
+	@Override
+	public PIDSourceType getPIDSourceType() {   return PIDSourceType.kDisplacement;   }
+
+	
+    /** Gets the properly scaled and adjusted position of
+     * the intake lift
+     * 
+     * @return the position of the intake lift encoder
+     */
+	@Override
+	public double pidGet() 
+	{   
+		double pos = getPos();
+		return pos;   
+	}	
+
+	
+	
+
+	@Override
+	public void pidWrite(double output) 
+	{		
+    	// Only update the output if the PID is enabled
+    	if(getPIDHandle().isEnabled())
+    		setOutput(output); 
+	}
+
 
     
     

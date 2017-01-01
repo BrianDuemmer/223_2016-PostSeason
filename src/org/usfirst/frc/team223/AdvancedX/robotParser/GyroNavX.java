@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /**
  * Serves as a wrapper class that allows the NavX to implement the {@link Gyro} interface.
- * @author develoer
+ * @author Brian Duemmer
  *
  */
 public class GyroNavX extends AHRS implements Gyro {
@@ -22,7 +22,7 @@ public class GyroNavX extends AHRS implements Gyro {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
+	 * <P/>
 	 * <b>NOTE: </b> This does nothing for the NavX. It will automatically calibrate itself.
 	 */
 	@Override

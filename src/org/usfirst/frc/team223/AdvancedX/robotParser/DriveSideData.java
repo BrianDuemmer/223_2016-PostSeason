@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * POD Type to store data for a DriveSide, as parsed from {@link GXMLParser}
+ * POD Type to store data for a DriveSide, as parsed from {@link GXMLparser}
  * @author Brian Duemmer
  *
  */

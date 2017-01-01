@@ -1,14 +1,16 @@
 package org.usfirst.frc.team223.AdvancedX.LoggerUtil;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import net.sf.microlog.core.Formatter;
 import net.sf.microlog.core.Level;
+import net.sf.microlog.core.Appender;
 import net.sf.microlog.core.Logger;
 import net.sf.microlog.core.LoggerFactory;
-import net.sf.microlog.core.format.PatternFormatter;
 
 
 
@@ -21,37 +23,44 @@ import net.sf.microlog.core.format.PatternFormatter;
 public class RoboLogger {
 
 	// Format string for all loggers
-	protected String fmtString = "[%P] %d{HH:mm:ss:SSS} [%c{1}]   %m\r\n";
+	protected String fmtString = "[%P] %d{ISO8601}_MATCH %M [%c{1}]   %m %T\r\n";
 	
-	// Set the logging directory
+	// logging directory
 	protected String logDir;
 	
 	// Appender stuff
-	protected PatternFormatter formPattern;
+	protected RoboPatternFormatter defaultFormPattern = new RoboPatternFormatter();
 	
-	protected FilteredConsoleAppender consoleAppender;
-	protected Level consoleLevel = Level.WARN;
+	// List of all appenders
+	protected List<Appender> appenders = new ArrayList<Appender>();
 	
-	protected MyFileAppender fileAppender;
-	protected Level fileLevel = Level.TRACE;
-	
-	protected FilteredSocketAppender socketAppender;
-	protected Level socketLevel = Level.TRACE;
-	protected int port = 5801;
+	protected Level defaultLevel = Level.TRACE;
 	
 	
 	
 	
 	
-	public RoboLogger(String logDir) 
+	
+	/**
+	 * Initializes the RoboLogger object
+	 * @param logDir The directory that log files will be saved in. If null or empty string, disables
+	 * file logging
+	 * @param socketPort the port that clients can connect to to receive log messages. If the value is <=0 or 
+	 * >= 65536, this feature is disabled
+	 * @param dsConsoleLevel the minimum {@link Level} that will be logged to the DS Console
+	 */
+	public RoboLogger(String logDir, int socketPort, Level dsConsoleLevel) 
 	{
 		this.logDir = logDir;
 		
-		// make sure the logging dir exists
-		mkdirIfNeeded(logDir);
+		// Set the pattern
+		this.defaultFormPattern.setPattern(fmtString);
 		
-		// initialize the appenders
-		initAppenders();
+		// Setup the appenders
+		this.appenders.add(initSocketAppender(defaultFormPattern, this.defaultLevel, socketPort));
+		this.appenders.add(initFileAppender(defaultFormPattern, this.defaultLevel, logDir));
+		this.appenders.add(initConsoleAppender(defaultFormPattern, dsConsoleLevel));
+
 		
 		// Initialize the logger
 		Logger log = LoggerFactory.getLogger(RoboLogger.class);
@@ -81,10 +90,10 @@ public class RoboLogger {
 		// of what gets logged and what doesn't
 		log.setLevel(Level.TRACE);
 		
-		// Add the appenders
-		log.addAppender(consoleAppender);
-		log.addAppender(fileAppender);
-		log.addAppender(socketAppender);
+		// only add non-null appenders to the logger
+		for(Appender i: this.appenders)
+			if(i != null)
+				log.addAppender(i);
 		
 		
 		// return the finished logger
@@ -93,27 +102,55 @@ public class RoboLogger {
 	
 	
 	
-	
-	private void initAppenders()
+	/**
+	 * Creates the {@link FilteredSocketAppender} that the logger will use
+	 */
+	private FilteredSocketAppender initSocketAppender(Formatter fmt, Level minLevel, int port)
 	{
-		// Setup the pattern formatter to the proper pattern
-		formPattern = new PatternFormatter();
-		formPattern.setPattern(fmtString);
+		// if the port is out of bounds, return null
+		if(port <= 0 || port >= 65536)
+			return null;
+		else
+		{
+			FilteredSocketAppender appender = new FilteredSocketAppender(port);
+			appender.setFormatter(fmt);
+			appender.setMinLevel(minLevel);
+			
+			return appender;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Creates the {@link FilteredConsoleAppender} that the logger will use
+	 */
+	private FilteredConsoleAppender initConsoleAppender(Formatter fmt, Level minLevel)
+	{
+
+			FilteredConsoleAppender appender = new FilteredConsoleAppender();
+			appender.setFormatter(fmt);
+			appender.setLevel(minLevel);
+			
+			return appender;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Creates the {@link FilteredFileAppender} that the logger will use. If logDir is 
+	 * null or empty, then file logging will be disabled
+	 */
+	private FilteredFileAppender initFileAppender(Formatter fmt, Level minLevel, String logDir)
+	{
+		if(logDir == null || logDir.equals(""))
+			return null;
 		
-		// Setup console appender and add it to the logger
-		consoleAppender = new FilteredConsoleAppender();
-		consoleAppender.setFormatter(formPattern);
-		consoleAppender.setLevel(consoleLevel);
-		
-		// Setup the socket appender
-		socketAppender = new FilteredSocketAppender(port);
-		socketAppender.setFormatter(formPattern);
-		socketAppender.setMinLevel(socketLevel);
-		socketAppender.open();
-		
-		
-		
-		// FileAppender
+		// make sure the logging dir exists
+		mkdirIfNeeded(logDir);
 		
 		// initialize the calendar to the date
 		Date date = new Date();
@@ -142,23 +179,13 @@ public class RoboLogger {
 		
 		// full path to the log file
 		String fullLogPath = logDir +"/"+ dirName +"/"+ logName;
-		
-		// Initialize the FileAppender
-		fileAppender = new MyFileAppender();
-		fileAppender.setFormatter(formPattern);
-		fileAppender.setFilePath(fullLogPath);
-		fileAppender.setLevel(fileLevel);
-		
-		
-		try 
-		{
-			fileAppender.open();
-		} catch (IOException e) 
-		{
-//			e.printStackTrace();
-		}
-		
 
+		FilteredFileAppender appender = new FilteredFileAppender();
+		appender.setFilePath(fullLogPath);
+		appender.setFormatter(fmt);
+		appender.setLevel(minLevel);
+		
+		return appender;
 	}
 	
 	

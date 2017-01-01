@@ -11,7 +11,7 @@ import net.sf.microlog.core.Level;
 
 
 
-public class MyFileAppender implements Appender
+public class FilteredFileAppender implements Appender
 {
 	// PrintWriter to output to file
 	private PrintWriter fileOut;
@@ -33,7 +33,7 @@ public class MyFileAppender implements Appender
 	/**
 	 * Creates a new appender to log to the file at the specified path
 	 */
-	public MyFileAppender()
+	public FilteredFileAppender()
 	{
 		// initialize instance variables
 		this.filePath = "";

@@ -3,7 +3,6 @@ package org.usfirst.frc.team223.AdvancedX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
 
 /**
  * Class that allows for a specific command to be called when a state change
@@ -25,8 +24,8 @@ public class InterruptableLimit extends DigitalInput {
 	 * @author Brian Duemmer
 	 *
 	 */
-	class InterruptableLimitArg {
-		public Class<? extends Command> type;
+	private class InterruptableLimitArg {
+		public Runnable handler;
 		public DigitalInput input;
 		public boolean onRising;
 		public boolean onFalling;
@@ -37,16 +36,16 @@ public class InterruptableLimit extends DigitalInput {
 		/**
 		 * Provides a simple, easy POD class to pass multiple arguments into an
 		 * InterruptableLimit ISR
-		 * @param type command type to run
+		 * @param handler the {@link Runnable} object that will be called on an interrupt
 		 * @param input reference to the digitalInput
 		 * @param onRising Whether to fire on the rising edge
 		 * @param onFalling Whether to fire on the falling edge
 		 * @param originalState The original pin state
 		 * @param debounceTime the time (in seconds) that a pin state must hold in order to be counted as an interrupt
 		 */
-		InterruptableLimitArg(Class<? extends Command> type, DigitalInput input, boolean onRising, boolean onFalling, boolean originalState, double debounceTime)
+		InterruptableLimitArg(Runnable handler, DigitalInput input, boolean onRising, boolean onFalling, boolean originalState, double debounceTime)
 		{
-			this.type = type;
+			this.handler = handler;
 			this.input = input;
 			this.onRising = onRising;
 			this.onFalling = onFalling;
@@ -62,6 +61,8 @@ public class InterruptableLimit extends DigitalInput {
 	
 	/**Initializes the InterruptableLimit object.
 	 * 
+	 * @param handler the {@link Runnable} object that will be called on an interrupt
+	 * 
 	 * @param index DigitalInput channel that the limit is connected to
 	 * 
 	 * @param handler Command to be run upon an interrupt. Note that the constructor for
@@ -75,16 +76,10 @@ public class InterruptableLimit extends DigitalInput {
 	 * 
 	 * @param debounceTime time (in seconds) to debounce the digital signal coming in
 	 */	
-	public InterruptableLimit(int index, Command handler, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease, double debounceTime)
+	public InterruptableLimit(Runnable handler, int index, boolean normallyOpen, boolean fireOnHit, boolean fireOnRelease, double debounceTime)
 	{
 		// initialize the input channel
 		super(index);
-		
-		// Make sure handler in't null
-		assert(handler != null);
-		
-		// get the type of the handler command
-		Class<? extends Command> handlerType = handler.getClass();
 		
 		/*
 		 * If normally open is false, then the rising edge on the input would
@@ -99,7 +94,7 @@ public class InterruptableLimit extends DigitalInput {
 		boolean origState = super.get();
 		
 		// Create the arg object to pass to the ISR
-		InterruptableLimitArg arg = new InterruptableLimitArg(handlerType, this, fireOnRising, fireOnFalling, origState, debounceTime);
+		InterruptableLimitArg arg = new InterruptableLimitArg(handler, this, fireOnRising, fireOnFalling, origState, debounceTime);
 		
 		
 		/**
@@ -142,10 +137,7 @@ public class InterruptableLimit extends DigitalInput {
 				
 				// If they aren't zero, then we have tracked interrupts.
 				// Whichever edge has the newer (bigger) timestamp just occurred
-				else
-				{
-					isRising = fallTime < riseTime;
-				}
+				else {   isRising = fallTime < riseTime;   }
 				
 				// See if enough time has elapsed since the last interrupt
 				enoughTime = currTime - Math.min(riseTime, fallTime) > param.debounceTime;
@@ -154,22 +146,8 @@ public class InterruptableLimit extends DigitalInput {
 				correctEdge = (param.onRising && isRising) || (param.onFalling && !isRising);
 				
 				
-				
-				
-				// If the edge is right and enough time has elapsed, run the handler command
-				if(enoughTime && correctEdge)
-				{	
-					// run the command
-					Command cmdInst = null;
-					try {
-						cmdInst = param.type.newInstance();
-					} catch (InstantiationException | IllegalAccessException e) {
-						e.printStackTrace();
-					}
-					
-					if(cmdInst != null)
-						cmdInst.start();
-				}
+				// If the edge is right and enough time has elapsed, run the handler
+				if(enoughTime && correctEdge) {   param.handler.run();   }
 			}
 		};
 				
@@ -190,6 +168,17 @@ public class InterruptableLimit extends DigitalInput {
 	{
 		return super.get() ^ normallyOpen;
 	}
+	
+	
+	/**
+	 * {@inheritDoc}. Also frees the interrupt.
+	 */
+	public void free()
+	{
+		this.cancelInterrupts();
+		super.free();
+	}
+
 }
 
 

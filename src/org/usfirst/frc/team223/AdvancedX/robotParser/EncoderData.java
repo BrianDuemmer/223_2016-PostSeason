@@ -1,7 +1,7 @@
 package org.usfirst.frc.team223.AdvancedX.robotParser;
 
 /**
- * POD Type to store data for an encoder, as parsed from {@link GXMLParser}.
+ * POD Type to store data for an encoder, as parsed from {@link GXMLparser}.
  * Note that this also includes encoders connected to CANTalons 
  * @author Brian Duemmer
  *

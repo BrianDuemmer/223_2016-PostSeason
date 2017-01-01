@@ -1,11 +1,13 @@
 package org.usfirst.frc.team223.AdvancedX;
 
+import org.usfirst.frc.team223.AdvancedX.LoggerUtil.RoboLogger;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import net.sf.microlog.core.Logger;
 
 /**
  * Acts as the master class of the Drive Train cascade control loop. This class holds 
@@ -42,6 +44,9 @@ public class TankCascadeController
     
     // True if the controller is enabled
     private boolean isEnabled;
+    
+    // object to log data output
+    private Logger logger;
     
     
     
@@ -291,8 +296,23 @@ public class TankCascadeController
      * @param masterPidPeriod the period that the master(position and turn) PID loops run at. 
      * This should be ~3x slower than the slave response time. 0.3s is a good value for this.
      */
-	public TankCascadeController(DriveSide leftSide, DriveSide rightSide, Gyro gyro, double distPidPeriod, double anglePidPeriod)
+	public TankCascadeController(DriveSide leftSide, DriveSide rightSide, Gyro gyro, double distPidPeriod, double anglePidPeriod, RoboLogger manager)
 	{
+		this.logger = manager.getLogger("TankCascadeController");
+		
+		// Make sure the variables are not illegal values
+		if(distPidPeriod <= 0)
+		{
+			logger.error("Illegal value " +distPidPeriod+ " for distance PID period. Setting to default instead");
+			distPidPeriod = PIDController.kDefaultPeriod;
+		}
+		
+		if(anglePidPeriod <= 0)
+		{
+			logger.error("Illegal value " +anglePidPeriod+ " for angle PID period. Setting to default instead");
+			anglePidPeriod = PIDController.kDefaultPeriod;
+		}
+		
 		// Update the instance variables
 		this.leftSide = leftSide;
 		this.rightSide = rightSide;
@@ -357,6 +377,7 @@ public class TankCascadeController
 		
 		// Say that we are enabled
 		isEnabled = true;
+		logger.info("Enabling PID Control");
 	}
 	
 	
@@ -377,6 +398,7 @@ public class TankCascadeController
 		
 		// Say that we are disabled
 		isEnabled = false;
+		logger.info("Disabling PID Control");
 	}
 	
 	
@@ -388,6 +410,8 @@ public class TankCascadeController
 	 */
 	public void reset(boolean reEnable)
 	{
+		logger.info("Resseting controllers...");
+		
 		// Reset the PID loops
 		posPID.reset();
 		turnPID.reset();
@@ -453,7 +477,15 @@ public class TankCascadeController
 	 * @param kd derivative gain coefficient
 	 * @param kf feedforward coefficient
 	 */
-	public void setPosPID(double kp, double ki, double kd, double kf) {   posPID.setPID(kp, ki, kd, kf);   }
+	public void setPosPID(double kp, double ki, double kd, double kf) 
+	{   
+		posPID.setPID(kp, ki, kd, kf);   
+		logger.info("PID constants are now: "
+				+ "  kp: "+ kp
+				+ "  ki: "+ ki
+				+ "  kd: "+ kd
+				+ "  kf: "+ kf);
+	}
 	
 	
 	
@@ -464,7 +496,15 @@ public class TankCascadeController
 	 * @param kd derivative gain coefficient
 	 * @param kf feedforward coefficient
 	 */
-	public void setTurnPID(double kp, double ki, double kd, double kf) {   turnPID.setPID(kp, ki, kd, kf);   }
+	public void setTurnPID(double kp, double ki, double kd, double kf) 
+	{   
+		turnPID.setPID(kp, ki, kd, kf);   
+		logger.info("PID constants are now: "
+				+ "  kp: "+ kp
+				+ "  ki: "+ ki
+				+ "  kd: "+ kd
+				+ "  kf: "+ kf);
+	}
 
 
 	
@@ -557,22 +597,39 @@ public class TankCascadeController
 	 * prepares the physical resources used by this object to be reused
 	 */
 	public void free()
-	{   	
+	{ 
+		logger.info("Attempting to shut down TankCascadeController...");
+		
     	// free the resources
 		if(this.leftSide != null)
+		{
 			this.leftSide.free();
+			logger.info("Finished shutting down left side");
+		}
 		
 		if(this.rightSide != null)
+		{
 			this.rightSide.free();
+			logger.info("Finished shutting down right side");
+		}
 		
 		if(this.gyro != null)
+		{
 			this.gyro.free();
+			logger.info("Finished shutting down Gyro");
+		}
 		
 		if(this.posPID != null)
+		{
 			this.posPID.free();
+			logger.info("Finished freeing position PID");
+		}
 		
 		if(this.turnPID != null)
+		{
 			this.turnPID.free();
+			logger.info("Finished freeing turn PID");
+		}
 	}
 
 	

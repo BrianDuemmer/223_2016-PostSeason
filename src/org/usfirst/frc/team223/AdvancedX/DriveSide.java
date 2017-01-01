@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SensorBase;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
+import net.sf.microlog.core.Logger;
 
 /**
  * Implements a single side of a standard tank style drivetrain. This has an embedded
@@ -33,15 +34,21 @@ public class DriveSide extends PIDSubsystem
 	//max output
 	double maxOut;
 	
+	// Object to log data about the driveside
+	private Logger logger;
+	
 	
 	/**
 	 * Constructor for the DriveSide. Make sure to configure the motors, PID, 
 	 * and PIDsource before use
 	 * @param period the time, in seconds, between PID updates
 	 */
-	public DriveSide( double period)
+	public DriveSide(double period, Logger logger)
 	{
 		super(0, 0, 0, period);
+		
+		this.logger = logger;
+		
 		motors = new ArrayList<SpeedController>();
 		
 		// Set the maximum output to a safe default
@@ -55,9 +62,12 @@ public class DriveSide extends PIDSubsystem
 	 * Constructor for the DriveSide. Make sure to configure the motors, PID, 
 	 * and PIDsource before use
 	 */
-	public DriveSide()
+	public DriveSide(Logger logger)
 	{
 		super(0, 0, 0);
+		
+		this.logger = logger;
+		
 		motors = new ArrayList<SpeedController>();
 		
 		// Set the maximum output to a safe default
@@ -76,6 +86,11 @@ public class DriveSide extends PIDSubsystem
 	 */
 	public void setPID(double kp, double ki, double kd, double kf)
 	{
+		logger.info("PID constants are now: "
+				+ "  kp: "+ kp
+				+ "  ki: "+ ki
+				+ "  kd: "+ kd
+				+ "  kf: "+ kf);
 		this.getPIDController().setPID(kp, ki, kd, kf);
 	}
 
@@ -110,7 +125,12 @@ public class DriveSide extends PIDSubsystem
 	 * Adds a motor to the driveSide
 	 * @param mot a fully initialized motor. Don't use it anywhere else
 	 */
-	public void addMotor(SpeedController mot){   motors.add(mot);   }
+	public void addMotor(SpeedController mot)
+	{   
+		motors.add(mot);  
+		logger.info("Motor added to DriveSide. There are now " + motors.size());
+		
+	}
 	
 	
 	
@@ -212,23 +232,6 @@ public class DriveSide extends PIDSubsystem
 		
 	}
 	
-	/**
-	 * Returns a string containing some information about the PIDSource, in the format
-	 * 
-	 * "name - value"
-	 */
-	public String reportPIDSource(String name)
-	{
-		String ret = "";
-		
-		if(pidSrc != null)
-		{
-			ret = name + ": \t" + String.format("%.3f", new Double(this.returnPIDInput()));
-		}
-		
-		return ret;
-	}
-	
 	
 	
 	/**
@@ -237,6 +240,9 @@ public class DriveSide extends PIDSubsystem
 	 */
 	public void setBrakeCount(int motCt)
 	{
+		
+		logger.info("Setting brake count to " +motCt+ " motors");
+		
 		// iterate over the motor list
 		for(SpeedController i : motors)
 		{
@@ -292,35 +298,67 @@ public class DriveSide extends PIDSubsystem
 	 */
 	public void free()
 	{
+		
+		logger.info("Attempting to free DriveSide...");
+		
 		// iterate through the motors and deallocate them
-		for(SpeedController i : motors)
+		for(int i=0; i<motors.size(); i++)
 		{
 			// If it is a PWM controller, free() it
-			if(i.getClass().isAssignableFrom(PWM.class) && i != null)
-				((PWM) i).free();
+			if(motors.get(i) != null && motors.get(i).getClass().isAssignableFrom(PWM.class))
+			{
+				logger.info("Attempting to free a PWM speed controller...");
+				((PWM) motors.get(i)).free();
+				logger.info("Finished freeing PWM Speed controller");
+			}
 			
 			// If it is a CANTalon, delete() it
-			if(i.getClass() == CANTalon.class && i != null)
-				((CANTalon) i).delete();
+			if(motors.get(i) != null && motors.get(i).getClass() == CANTalon.class)
+			{
+				logger.info("Attempting to free a CANTalon...");
+				((CANTalon) motors.get(i)).delete();
+				logger.info("Finished freeing CANTalon");
+			}
 			
-			// If it is none of the above, do nothing
+			// If it equals the PIDSource, set that to null as well. This has to be done due to 
+			// poor design of the CANTalon Class
+			if(motors.get(i).equals(this.pidSrc))
+				this.pidSrc = null;
+			
+			// Whatever it is, set it to null manually. This is because calling delete() a second 
+			// time on a CANTalon causes a JVM crash (SIGSEGV error)
+			motors.set(i, null);
 		}
 		
 		
 		// free() the PIDController
+		logger.info("Attempting to free PID controller...");
 		if(this.getPIDController() != null)
+		{
 			this.getPIDController().free();
+			logger.info("Finished freeing PID Controller");
+		} else
+			logger.warn("PID Controller is null! Taking no action...");
 		
 		
 		// free() the PIDSource. Try to cast it to a free()-able type. If we cannot, just ignore it
-		if(this.pidSrc.getClass() == CANTalon.class && this.pidSrc != null)
+		logger.info("Attempting to free PID Source...");
+		if(this.pidSrc != null && this.pidSrc.getClass() == CANTalon.class)
+		{
 			((CANTalon) this.pidSrc).delete();
+			logger.info("Finished freeing CANTalon PIDSource");
+		}
 		
-		else if(this.pidSrc.getClass().isAssignableFrom(SensorBase.class) && this.pidSrc != null)
+		else if(this.pidSrc != null && this.pidSrc.getClass().isAssignableFrom(SensorBase.class))
+		{
 			((SensorBase) this.pidSrc).free();
+			logger.info("Finished freeing SensorBase PIDSource");
+		}
 		
 		// Put another free() here if necessary
-		else{}
+		else{
+			logger.warn("Unable to free PIDSource! Possibly due to it being freed already");
+		}
 		
 	}
 }
